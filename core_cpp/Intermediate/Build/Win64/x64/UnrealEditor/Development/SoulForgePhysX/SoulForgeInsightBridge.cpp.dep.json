@@ -1,0 +1,23 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\private\\soulforgeinsightbridge.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\proyectos unreal\\explosion\\intermediate\\build\\win64\\x64\\explosioneditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\soulforgephysx\\definitions.soulforgephysx.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\public\\soulforgeinsightbridge.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\unrealeditor\\inc\\soulforgephysx\\uht\\soulforgeinsightbridge.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\interfaces\\ipluginmanager.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\plugindescriptor.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\custombuildsteps.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\localizationdescriptor.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\moduledescriptor.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\plugindisalloweddescriptor.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\pluginreferencedescriptor.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\projects\\public\\versescope.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

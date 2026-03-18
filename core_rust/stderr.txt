@@ -1,0 +1,11 @@
+    Checking soulforge_physx v0.1.0 (C:\proyectos unreal\explosion\Plugins\SoulForgePhysX\core_rust)
+warning: function `estimate_energy` is never used
+   --> src\proxy.rs:746:4
+    |
+746 | fn estimate_energy(proxy: &PhysicsProxy, preset: DamagePreset) -> f32 {
+    |    ^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `soulforge_physx` (lib) generated 1 warning
+    Finished `dev` profile [optimized + debuginfo] target(s) in 0.95s

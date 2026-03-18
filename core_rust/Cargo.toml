@@ -1,0 +1,40 @@
+[package]
+name        = "soulforge_physx"
+version     = "0.1.0"
+edition     = "2021"
+description = "SoulForge PhysX – Núcleo de Cálculo (Rust)"
+authors     = ["SoulForge Team"]
+
+# ─── Tipo de librería ────────────────────────────────────────────────────────
+# cdylib   → .dll / .so / .dylib que C++ puede cargar en tiempo de ejecución
+# staticlib → .lib / .a que C++ puede enlazar en tiempo de compilación
+[lib]
+name       = "soulforge_physx"
+crate-type = ["cdylib", "staticlib"]
+
+# ─── Dependencias ────────────────────────────────────────────────────────────
+[dependencies]
+# Serialización / deserialización JSON para comunicación entre núcleos
+serde      = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Logging interno
+log        = "0.4"
+env_logger = "0.11"
+
+# Paralelismo de datos para fragmentación masiva
+rayon      = "1.10"
+rand       = "0.8"
+parking_lot = "0.12"
+
+[profile.release]
+opt-level     = 3
+lto           = true
+codegen-units = 1
+# ¡CRÍTICO para catch_unwind! "abort" desactivaría nuestro panic safe-guard.
+# Con "unwind", Rust puede atrapar los panics antes de que crucen la frontera FFI.
+panic         = "unwind"
+
+[profile.dev]
+opt-level = 1          # debug con algo de optimización para no ir a paso de tortuga
+panic     = "unwind"   # igual que release para que el safe-guard funcione en dev
