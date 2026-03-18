@@ -157,14 +157,16 @@ impl NodeBuffer {
                             _ => (0.3,  0.7), // Default
                         };
 
-                        (&mut (*p).vel_z)[i] = -(&mut (*p).vel_z)[i] * bounce;
-                        (&mut (*p).vel_x)[i] *= friction;
-                        (&mut (*p).vel_y)[i] *= friction;
-
-                        // Estabilización: Si la velocidad vertical es ínfima, lo pegamos al suelo
-                        if (&(*p).vel_z)[i].abs() < 15.0 {
+                        let bounce_vel = -(&mut (*p).vel_z)[i] * bounce;
+                        if bounce_vel < 30.0 {
                             (&mut (*p).vel_z)[i] = 0.0;
+                        } else {
+                            (&mut (*p).vel_z)[i] = bounce_vel;
                         }
+                        
+                        (&mut (*p).vel_x)[i] *= (1.0 - friction);
+                        (&mut (*p).vel_y)[i] *= (1.0 - friction);
+
                         
                         // Si no tiene velocidad, lo dejamos quieto pero VISIBLE (no quitamos FLAG_ACTIVE)
                         if (&(*p).vel_z)[i] == 0.0 && 

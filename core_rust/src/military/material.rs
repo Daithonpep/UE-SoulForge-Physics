@@ -7,6 +7,7 @@ pub struct JohnsonCookMaterial {
     pub n: f64,  // Exponente de endurecimiento
     pub c: f64,  // Coeficiente de sensibilidad a tasa de deformación
     pub m: f64,  // Exponente térmico
+    pub id: u16, // Material ID para render y colisón
 
     // Propiedades del material
     pub density: f64,
@@ -29,7 +30,7 @@ pub struct JohnsonCookMaterial {
 impl JohnsonCookMaterial {
     pub fn steel_4340() -> Self {
         Self {
-            a: 792e6, b: 510e6, n: 0.26, c: 0.014, m: 1.03,
+            a: 792e6, b: 510e6, n: 0.26, c: 0.014, m: 1.03, id: 0,
             density: 7830.0,
             bulk_modulus: 159e9,
             shear_modulus: 77e9,
@@ -43,7 +44,7 @@ impl JohnsonCookMaterial {
 
     pub fn aluminum_6061() -> Self {
         Self {
-            a: 324e6, b: 114e6, n: 0.42, c: 0.002, m: 1.34,
+            a: 324e6, b: 114e6, n: 0.42, c: 0.002, m: 1.34, id: 2, // usando aluminum para madera
             density: 2703.0,
             bulk_modulus: 69e9,
             shear_modulus: 26e9,
@@ -57,7 +58,7 @@ impl JohnsonCookMaterial {
 
     pub fn concrete_35mpa() -> Self {
         Self {
-            a: 35e6, b: 2e6, n: 0.5, c: 0.007, m: 0.9,
+            a: 35e6, b: 2e6, n: 0.5, c: 0.007, m: 0.9, id: 1, // concreto
             density: 2400.0,
             bulk_modulus: 14e9,
             shear_modulus: 11e9,

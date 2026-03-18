@@ -821,7 +821,7 @@ pub extern "C" fn sf_tick_optimized(dt: c_float) {
 #[no_mangle]
 pub unsafe extern "C" fn sf_add_node(x: f32, y: f32, z: f32, mass: f32, material: u16) -> i32 {
     if let Ok(s) = crate::fragment_sim::state().lock() {
-        match s.nodes.add_node([x, y, z], [0.0; 3], mass, material, -1.0, [1.0, 1.0, 1.0], 0) {
+        match s.nodes.add_node([x, y, z], [0.0; 3], mass, material, -1.0, [1.0, 1.0, 1.0], 0, 0) {
             Some(idx) => idx as i32,
             None => -1,
         }
@@ -847,7 +847,7 @@ pub unsafe extern "C" fn sf_add_nodes_bulk(
             let x = positions[i * 3];
             let y = positions[i * 3 + 1];
             let z = positions[i * 3 + 2];
-            if s.nodes.add_node([x, y, z], [0.0; 3], mass, material, -1.0, [1.0, 1.0, 1.0], 0).is_some() {
+            if s.nodes.add_node([x, y, z], [0.0; 3], mass, material, -1.0, [1.0, 1.0, 1.0], 0, 0).is_some() {
                 added += 1;
             }
         }
@@ -896,7 +896,7 @@ pub unsafe extern "C" fn physics_engine_add_node(
     material: u16,
 ) -> i32 {
     if let Ok(s) = crate::fragment_sim::state().lock() {
-        match s.nodes.add_node([x, y, z], [0.0; 3], mass, material, -1.0, [1.0, 1.0, 1.0], 0) {
+        match s.nodes.add_node([x, y, z], [0.0; 3], mass, material, -1.0, [1.0, 1.0, 1.0], 0, 0) {
             Some(idx) => idx as i32,
             None => -1,
         }

@@ -367,7 +367,9 @@ pub fn destroy(
             frag.mass,
             frag.scale,
             preset as i32,
+            proxy.material.id,
         );
+
         // Despertar agentes cercanos en el enjambre (Chain Reaction)
         crate::swarm::wake_agent_near(frag.position, 120.0);
     }
@@ -464,9 +466,9 @@ fn generate_fragments_layered(
                     (rng.gen::<f32>() - 0.5) * chaos_factor,
                 ];
 
-                vel_v[0] = (vel_v[0] + jitter_dir[0] * 500.0) * jitter_force;
-                vel_v[1] = (vel_v[1] + jitter_dir[1] * 500.0) * jitter_force;
-                vel_v[2] = (vel_v[2] + jitter_dir[2] * 500.0) * jitter_force;
+                vel_v[0] = (vel_v[0] * energy_mult + jitter_dir[0] * 500.0) * jitter_force;
+                vel_v[1] = (vel_v[1] * energy_mult + jitter_dir[1] * 500.0) * jitter_force;
+                vel_v[2] = (vel_v[2] * energy_mult + jitter_dir[2] * 500.0) * jitter_force;
                 
                 // --- FORMAS ALEATORIAS (Scale Variance) ---
                 // Generamos escalas no uniformes para que no sean solo cubos

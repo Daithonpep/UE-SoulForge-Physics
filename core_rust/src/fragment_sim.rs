@@ -67,9 +67,10 @@ pub fn register_fragment(
     mass:     f32,
     scale:     [f32; 3],
     _damage_type: i32,
+    material: u16,
 ) -> Result<u32, String> {
     let s = state().lock().map_err(|e| e.to_string())?;
-    match s.nodes.add_node(position, velocity, mass, 0, -1.0, scale, _category as i32) {
+    match s.nodes.add_node(position, velocity, mass, material, -1.0, scale, _category as i32, _damage_type) {
         Some(idx) => Ok(idx as u32),
         None => Err("Buffer lleno".into()),
     }
@@ -78,7 +79,7 @@ pub fn register_fragment(
 pub fn register_effect_node(pos: [f32; 3], vel: [f32; 3], mass: f32, _radius: f32, life: f32, material: i32) {
     if let Ok(s) = state().lock() {
         // Los efectos (chispas, etc) van a la categoría 'Dust' (3) o especial
-        s.nodes.add_node(pos, vel, mass, material as u16, life, [2.0, 2.0, 2.0], 3);
+        s.nodes.add_node(pos, vel, mass, material as u16, life, [2.0, 2.0, 2.0], 3, 0);
     }
 }
 
@@ -156,11 +157,11 @@ pub fn add_explosion_event(position: [f32; 3], energy_joules: f64) {
 pub fn trigger_auto_power(preset: i32, origin: [f32; 3], energy: f32) {
     if let Ok(mut s) = state().lock() {
         let current_time = s.sim_time;
-        if preset == 1 { // Agujero Negro
+        if preset == 4 { // DamagePreset::Implosion (Agujero Negro)
             s.power_system.active_powers.push(crate::powers::ActivePower {
                 power_type: 1, start_time: current_time, duration: 6.0, origin: [origin[0] as f64, origin[1] as f64, origin[2] as f64], direction: [0.0, 0.0, 1.0], intensity: energy as f64 / 1000.0
             });
-        } else if preset == 4 { // Cinematic / Matrix -> ZeroGravity is ID 2
+        } else if preset == 5 { // DamagePreset::Cinematic (Matrix / ZeroGravity)
             s.power_system.active_powers.push(crate::powers::ActivePower {
                 power_type: 2, start_time: current_time, duration: 8.0, origin: [origin[0] as f64, origin[1] as f64, origin[2] as f64], direction: [0.0, 0.0, 1.0], intensity: energy as f64 / 1000.0
             });
