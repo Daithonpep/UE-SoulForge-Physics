@@ -1,0 +1,24 @@
+# Rust
+/core_rust/target/
+/core_rust/Cargo.lock
+
+# Unreal Engine
+/Binaries/
+/Intermediate/
+/DerivedDataCache/
+/Saved/
+/.vscode/
+/*.xcworkspace
+/*.sln
+/*.suo
+/*.opensdf
+/*.sdf
+/*.opendb
+/*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build scripts
+*.log

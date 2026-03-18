@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoulForge PhysX — Physics Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- 3D LIBRARIES FOR ENGINE INTEGRATION -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+  
+  <script>
+    // SILENCE CONSOLE NOISE FROM THREE.js (Unreal Materials etc.)
+    const _origWarn = console.warn;
+    console.warn = function(...args) {
+      if (args[0] && typeof args[0] === 'string' && (args[0].includes('THREE') || args[0].includes('map'))) return;
+      _origWarn.apply(console, args);
+    };
+  </script>
+  <style>
+    /* ─── RESET & ROOT ───────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep:    #060a12;
+      --bg-panel:   #0a0f1e;
+      --bg-card:    #0d1428;
+      --cyan:       #00e5ff;
+      --cyan-dim:   #00e5ff44;
+      --cyan-glow:  #00e5ff22;
+      --violet:     #7b2fff;
+      --violet-dim: #7b2fff55;
+      --orange:     #ff6b00;
+      --green:      #00ff88;
+      --red:        #ff2244;
+      --text-pri:   #c8f0ff;
+      --text-sec:   #5a8aaa;
+      --text-dim:   #2a4a5a;
+      --border:     #00e5ff26;
+      --border-hot: #00e5ff88;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg-deep);
+      color: var(--text-pri);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ─── SCANLINE OVERLAY ───────────────────────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.07) 2px,
+        rgba(0,0,0,.07) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
+    #app {
+      display: grid;
+      grid-template-rows: 48px 1fr 36px;
+      grid-template-columns: 1fr 320px;
+      grid-template-areas:
+        "header  header"
+        "canvas  panel"
+        "status  status";
+      height: 100vh;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    /* ─── HEADER ─────────────────────────────────────────────────────────────── */
+    #header {
+      grid-area: header;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-hex {
+      width: 28px; height: 28px;
+      position: relative;
+    }
+
+    .logo-hex svg { width: 100%; height: 100%; }
+
+    .brand-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: var(--cyan);
+      text-shadow: 0 0 20px var(--cyan);
+    }
+
+    .brand-sub {
+      font-size: 9px;
+      color: var(--text-sec);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-pill {
+      padding: 4px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-sec);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .2s;
+      text-transform: uppercase;
+    }
+
+    .nav-pill:hover, .nav-pill.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: var(--cyan-glow);
+      box-shadow: 0 0 12px var(--cyan-dim);
+    }
+
+    .header-indicators {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 10px;
+      color: var(--text-sec);
+    }
+
+    .indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease infinite;
+    }
+    .dot.green  { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+    .dot.cyan   { background: var(--cyan);   box-shadow: 0 0 6px var(--cyan); }
+    .dot.orange { background: var(--orange); box-shadow: 0 0 6px var(--orange); animation-delay: .8s; }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
+    }
+
+    /* ─── CANVAS PANEL ───────────────────────────────────────────────────────── */
+    #canvas-area {
+      grid-area: canvas;
+      background: var(--bg-deep);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Hex grid background */
+    #canvas-area::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zM28 98L0 82V50l28-16 28 16v32L28 98z' fill='none' stroke='%2300e5ff08' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 56px 100px;
+      pointer-events: none;
+    }
+
+    #physics-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Canvas overlays */
+    .canvas-overlay {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    #overlay-tl {
+      top: 12px; left: 12px;
+      font-size: 9px;
+      color: var(--cyan-dim);
+      letter-spacing: 2px;
+      line-height: 1.8;
+    }
+
+    #overlay-tr {
+      top: 12px; right: 12px;
+      text-align: right;
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+
+    #overlay-br {
+      bottom: 12px; right: 12px;
+      font-size: 9px;
+      color: var(--violet);
+      letter-spacing: 1px;
+    }
+
+    /* Corner brackets */
+    .corner {
+      position: absolute;
+      width: 16px; height: 16px;
+      pointer-events: none;
+    }
+    .corner.tl { top: 8px; left: 8px;
+      border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+    .corner.tr { top: 8px; right: 8px;
+      border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+    .corner.bl { bottom: 8px; left: 8px;
+      border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+    .corner.br { bottom: 8px; right: 8px;
+      border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
+    /* Crosshair center */
+    #crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px; height: 40px;
+      border: 1px solid var(--cyan-dim);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    #crosshair::before, #crosshair::after {
+      content: '';
+      position: absolute;
+      background: var(--cyan-dim);
+    }
+    #crosshair::before { width: 1px; height: 48px; left: 50%; top: -4px; transform: translateX(-50%); }
+    #crosshair::after  { width: 48px; height: 1px; top: 50%; left: -4px; transform: translateY(-50%); }
+
+    /* ─── CONTROL PANEL ──────────────────────────────────────────────────────── */
+    #control-panel {
+      grid-area: panel;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    #control-panel::-webkit-scrollbar { width: 4px; }
+    #control-panel::-webkit-scrollbar-track { background: transparent; }
+    #control-panel::-webkit-scrollbar-thumb { background: var(--border-hot); border-radius: 2px; }
+
+    .panel-section {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--text-sec);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 2px; height: 12px;
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan);
+    }
+
+    /* ─── PRESET BUTTONS ─────────────────────────────────────────────────────── */
+    .preset-btn {
+      width: 100%;
+      padding: 11px 14px;
+      margin-bottom: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-pri);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .preset-btn::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+
+    .preset-btn:hover {
+      background: var(--bg-deep);
+      transform: translateX(2px);
+    }
+
+    .preset-btn.explosion { border-color: #ff6b0066; }
+    .preset-btn.explosion::before { background: var(--orange); box-shadow: 0 0 8px var(--orange); }
+    .preset-btn.explosion:hover { border-color: var(--orange); box-shadow: 0 0 14px #ff6b0033; }
+
+    .preset-btn.swarm     { border-color: #00e5ff44; }
+    .preset-btn.swarm::before { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+    .preset-btn.swarm:hover { border-color: var(--cyan); box-shadow: 0 0 14px var(--cyan-dim); }
+
+    .preset-btn.collapse  { border-color: #7b2fff44; }
+    .preset-btn.collapse::before { background: var(--violet); box-shadow: 0 0 8px var(--violet); }
+    .preset-btn.collapse:hover { border-color: var(--violet); box-shadow: 0 0 14px var(--violet-dim); }
+
+    .preset-btn.active-preset {
+      animation: active-flash .4s ease;
+    }
+
+    @keyframes active-flash {
+      0%   { filter: brightness(1); }
+      30%  { filter: brightness(2.5); }
+      100% { filter: brightness(1); }
+    }
+
+    .btn-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .btn-content { flex: 1; }
+    .btn-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+    .btn-desc {
+      font-size: 9px;
+      color: var(--text-sec);
+      margin-top: 2px;
+      letter-spacing: .5px;
+    }
+
+    .btn-key {
+      font-size: 9px;
+      color: var(--text-dim);
+      border: 1px solid var(--text-dim);
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+
+    /* ─── SLIDERS ────────────────────────────────────────────────────────────── */
+    .slider-row {
+      margin-bottom: 16px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .slider-name { color: var(--text-sec); text-transform: uppercase; }
+    .slider-val  {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 600;
+      min-width: 48px;
+      text-align: right;
+    }
+
+    .slider-track {
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 2px;
+      background: var(--bg-deep);
+      outline: none;
+      border: none;
+      position: relative;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: 2px solid var(--bg-deep);
+      box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan-dim);
+      cursor: pointer;
+      transition: transform .15s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.3);
+    }
+
+    input[type=range].violet-slider::-webkit-slider-thumb {
+      background: var(--violet);
+      box-shadow: 0 0 10px var(--violet), 0 0 20px var(--violet-dim);
+    }
+
+    input[type=range].orange-slider::-webkit-slider-thumb {
+      background: var(--orange);
+      box-shadow: 0 0 10px var(--orange);
+    }
+
+    /* ─── TELEMETRY BOX ──────────────────────────────────────────────────────── */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .telem-card {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      padding: 10px 10px 8px;
+      position: relative;
+    }
+
+    .telem-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: .4;
+    }
+
+    .telem-label {
+      font-size: 8px;
+      color: var(--text-dim);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .telem-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--cyan);
+    }
+
+    .telem-value.orange { color: var(--orange); }
+    .telem-value.green  { color: var(--green); }
+    .telem-value.violet { color: var(--violet); }
+
+    .telem-unit {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-left: 2px;
+    }
+
+    /* ─── MINI GRAPH (velocity history) ─────────────────────────────────────── */
+    #vel-graph {
+      width: 100%;
+      height: 50px;
+      display: block;
+      border: 1px solid var(--border);
+      background: var(--bg-deep);
+      margin-top: 10px;
+    }
+
+    /* ─── AGENT LIST ─────────────────────────────────────────────────────────── */
+    .agent-list {
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 10px;
+    }
+
+    .agent-list::-webkit-scrollbar { width: 3px; }
+    .agent-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .agent-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--bg-deep);
+      color: var(--text-sec);
+      transition: color .15s;
+    }
+
+    .agent-row:hover { color: var(--text-pri); }
+
+    .agent-row.flying  .agent-state { color: var(--cyan); }
+    .agent-row.sleeping .agent-state { color: var(--text-dim); }
+    .agent-row.bouncing .agent-state { color: var(--orange); }
+
+    /* ─── PANIC ALERT ────────────────────────────────────────────────────────── */
+    #panic-alert {
+      display: none;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a0005;
+      border: 2px solid var(--red);
+      padding: 20px 30px;
+      text-align: center;
+      z-index: 100;
+      animation: glitch .15s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes glitch {
+      0%   { transform: translate(-50%, -50%) skewX(0deg); }
+      20%  { transform: translate(-50%, -50%) skewX(-2deg) translateX(3px); }
+      40%  { transform: translate(-50%, -50%) skewX(0deg); }
+      60%  { transform: translate(-50%, -50%) skewX(2deg) translateX(-3px); }
+      100% { transform: translate(-50%, -50%) skewX(0deg); }
+    }
+
+    /* ─── CONNECTION BAR ─────────────────────────────────────────────────────── */
+    #conn-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%, var(--cyan) 50%, transparent 100%);
+      animation: scan-line 3s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scan-line {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ─── STATUS BAR ─────────────────────────────────────────────────────────── */
+    #status-bar {
+      grid-area: status;
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    #status-bar .s-left, #status-bar .s-right { display: flex; gap: 20px; align-items: center; }
+
+    .status-ok   { color: var(--green); }
+    .status-warn { color: var(--orange); }
+    .status-err  { color: var(--red); }
+
+    .live-clock {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-sec);
+    }
+
+    /* ─── UTILITY ────────────────────────────────────────────────────────────── */
+    .glow-text   { text-shadow: 0 0 12px currentColor; }
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      font-size: 8px;
+      letter-spacing: 1px;
+      border: 1px solid;
+      border-radius: 1px;
+      text-transform: uppercase;
+    }
+    .badge.cyan   { border-color: var(--cyan);   color: var(--cyan); }
+    .badge.orange { border-color: var(--orange); color: var(--orange); }
+    .badge.green  { border-color: var(--green);  color: var(--green); }
+
+    /* animated neon divider */
+    .neon-divider {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%, var(--cyan) 30%, var(--violet) 70%, transparent 100%);
+      margin: 12px 0;
+      opacity: .5;
+    }
+
+    /* Collapse toggle button */
+    .collapse-toggle {
+      background: none; border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 10px;
+      margin-left: auto;
+      padding: 0 4px;
+      transition: color .2s;
+    }
+    .collapse-toggle:hover { color: var(--cyan); }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ─── HEADER ─────────────────────────────────────────────────────────── -->
+  <header id="header">
+    <div class="header-brand">
+      <div class="logo-hex">
+        <svg viewBox="0 0 30 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 1L29 9V25L15 33L1 25V9L15 1Z"
+                fill="none" stroke="#00e5ff" stroke-width="1.5"
+                style="filter:drop-shadow(0 0 4px #00e5ff)"/>
+          <path d="M15 7L24 12V22L15 27L6 22V12L15 7Z"
+                fill="#00e5ff11" stroke="#00e5ff66" stroke-width="1"/>
+          <circle cx="15" cy="17" r="3" fill="#00e5ff"
+                  style="filter:drop-shadow(0 0 4px #00e5ff)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">SOULFORGE</div>
+        <div class="brand-sub">PhysX Lab — Kernel v2.0</div>
+      </div>
+    </div>
+
+    <div class="header-nav">
+      <button class="nav-pill active" id="btn-2d" onclick="setViewMode(false)">2D_VIEW</button>
+      <button class="nav-pill" id="btn-3d" onclick="setViewMode(true)">3D_VIEW</button>
+    </div>
+
+    <div class="header-indicators">
+      <div class="indicator"><div class="dot green"></div><span class="status-ok">RUST_FFI_STABLE</span></div>
+      <div class="indicator"><div class="dot cyan"></div><span id="hdr-agent-count">000 NODES</span></div>
+      <div class="indicator"><div class="dot orange"></div><span id="hdr-fps">60 FPS</span></div>
+    </div>
+  </header>
+
+  <!-- ─── CANVAS AREA ────────────────────────────────────────────────────── -->
+  <div id="canvas-area">
+    <!-- Corner brackets -->
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+    <div id="crosshair"></div>
+
+    <!-- Top-left overlay -->
+    <div id="overlay-tl" class="canvas-overlay">
+      SOULFORGE_PHYSX_KERNEL: ACTIVE_STREAMS<br>
+      MODE: <span id="ov-mode" class="glow-text" style="color:var(--cyan)">SWARM_BOIDS</span><br>
+      Δt_fixed: 0.01667s | SUBSTEP_MAX: 8
+    </div>
+
+    <!-- Top-right overlay -->
+    <div id="overlay-tr" class="canvas-overlay">
+      <span id="ov-tick">TICK: 000000</span><br>
+      <span id="ov-time">T: 0.000s</span><br>
+      <span id="ov-conn" class="status-err">WS: DISCONNECTED</span>
+    </div>
+
+    <!-- Bottom-right overlay -->
+    <div id="overlay-br" class="canvas-overlay">
+      <span class="badge violet">K-NEAREST: 5</span>
+      &nbsp;
+      <span class="badge cyan">VERLET_INT</span>
+    </div>
+
+    <!-- The physics canvas -->
+    <canvas id="physics-canvas"></canvas>
+
+    <!-- Panic alert (shows on Rust panic) -->
+    <div id="panic-alert">
+      <div style="color:var(--red);font-size:18px;font-weight:700;letter-spacing:3px">⚠ CORE PANIC</div>
+      <div style="font-size:10px;margin-top:8px;color:#ff8888">CAUGHT BY safe_call! MACRO</div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:4px" id="panic-msg">No details</div>
+    </div>
+
+    <!-- Scanning bar at bottom of canvas -->
+    <div id="conn-bar"></div>
+  </div>
+
+  <!-- ─── CONTROL PANEL ──────────────────────────────────────────────────── -->
+  <aside id="control-panel">
+
+    <!-- SECTION: Presets -->
+    <div class="panel-section">
+      <div class="section-title">DAMAGE_PRESETS</div>
+
+      <button class="preset-btn explosion" onclick="applyPreset('explosion')" id="btn-explosion">
+        <span class="btn-icon">💥</span>
+        <div class="btn-content">
+          <div class="btn-title">BIG BANG</div>
+          <div class="btn-desc">Radial wave · Low cohesion · Max repulsion</div>
+        </div>
+        <span class="btn-key">F1</span>
+      </button>
+
+      <button class="preset-btn swarm" onclick="applyPreset('swarm')" id="btn-swarm">
+        <span class="btn-icon">🌀</span>
+        <div class="btn-content">
+          <div class="btn-title">SWARM CLOUD</div>
+          <div class="btn-desc">High cohesion · Mid align · Boids active</div>
+        </div>
+        <span class="btn-key">F2</span>
+      </button>
+
+      <button class="preset-btn collapse" onclick="applyPreset('collapse')" id="btn-collapse">
+        <span class="btn-icon">🏚</span>
+        <div class="btn-content">
+          <div class="btn-title">COLLAPSE</div>
+          <div class="btn-desc">Gravity strong · Floor bounce · Slab mode</div>
+        </div>
+        <span class="btn-key">F3</span>
+      </button>
+
+      <button class="preset-btn wall" onclick="applyPreset('wall')" id="btn-wall"
+              style="border-color: #00ff8844;">
+        <span class="btn-icon">🧱</span>
+        <div class="btn-content">
+          <div class="btn-title">WALL TEST</div>
+          <div class="btn-desc">3D Volume · Multi-Layer Thickness · Penetration</div>
+        </div>
+        <span class="btn-key">F4</span>
+      </button>
+
+      <div class="neon-divider"></div>
+      
+      <button class="preset-btn" onclick="document.getElementById('fbx-up').click()" 
+              style="border-color: #ff00ea44;">
+        <span class="btn-icon">📦</span>
+        <div class="btn-content">
+          <div class="btn-title">IMPORT FBX/OBJ/STL</div>
+          <div class="btn-desc">Unreal Models · Auto-Voxelize · Surface Detection</div>
+        </div>
+        <input type="file" id="fbx-up" style="display:none" onchange="handleModelImport(this.files[0])">
+      </button>
+    </div>
+
+    <!-- SECTION: Elemental Powers -->
+    <div class="panel-section">
+      <div class="section-title">ELEMENTAL_POWERS</div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button class="preset-btn" onclick="activatePower(0)" style="border-color: var(--cyan); grid-column: span 2;">
+          <span class="btn-icon">⚡</span>
+          <div class="btn-content">
+            <div class="btn-title">ENERGY BEAM</div>
+            <div class="btn-desc">Kamehameha · Charge</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(2)" style="border-color: var(--orange);">
+          <span class="btn-icon">🔥</span>
+          <div class="btn-content">
+            <div class="btn-title">FIRE</div>
+            <div class="btn-desc">Radial Heat</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(1)" style="border-color: #0088ff;">
+          <span class="btn-icon">🌊</span>
+          <div class="btn-content">
+            <div class="btn-title">WATER</div>
+            <div class="btn-desc">Fluid Wave</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(3)" style="border-color: #8b4513;">
+          <span class="btn-icon">⛰️</span>
+          <div class="btn-content">
+            <div class="btn-title">EARTH</div>
+            <div class="btn-desc">Compression</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(4)" style="border-color: #ffffff;">
+          <span class="btn-icon">🌪️</span>
+          <div class="btn-content">
+            <div class="btn-title">AIR</div>
+            <div class="btn-desc">Tornado Lift</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(5)" style="border-color: #ffff00;">
+          <span class="btn-icon">⚡</span>
+          <div class="btn-content">
+            <div class="btn-title">LIGHTNING</div>
+            <div class="btn-desc">Bolt Strike</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(6)" style="border-color: #88ff00;">
+          <span class="btn-icon">🍃</span>
+          <div class="btn-content">
+            <div class="btn-title">ZERO G</div>
+            <div class="btn-desc">Weightless</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(8)" style="border-color: #00ffff;">
+          <span class="btn-icon">❄️</span>
+          <div class="btn-content">
+            <div class="btn-title">FREEZE</div>
+            <div class="btn-desc">Cryo-stasis</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(7)" style="border-color: var(--violet);">
+          <span class="btn-icon">🕳</span>
+          <div class="btn-content">
+            <div class="btn-title">VOID</div>
+            <div class="btn-desc">Black Hole</div>
+          </div>
+        </button>
+
+        <button class="preset-btn" onclick="activatePower(9)" style="border-color: #ff00ff;">
+          <span class="btn-icon">⚛️</span>
+          <div class="btn-content">
+            <div class="btn-title">PULSE</div>
+            <div class="btn-desc">Grav-Wave</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION: Physics params -->
+    <div class="panel-section">
+      <div class="section-title">
+        PHYSICS_PARAMS
+        <button class="collapse-toggle" onclick="toggleSection(this)">▼</button>
+      </div>
+      <div class="collapsible">
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">GRAVITY</span>
+            <span class="slider-val" id="val-gravity">981</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-gravity" class="orange-slider"
+                   min="0" max="1962" step="9.81" value="981"
+                   oninput="updateSlider('gravity', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">SWARM STRENGTH</span>
+            <span class="slider-val" id="val-swarm">0.50</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-swarm" min="0" max="1" step="0.01" value="0.5"
+                   oninput="updateSlider('swarm', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">MAX SPEED (cm/s)</span>
+            <span class="slider-val" id="val-speed">300</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-speed" min="50" max="800" step="10" value="300"
+                   oninput="updateSlider('speed', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">COHESION W</span>
+            <span class="slider-val" id="val-cohesion">0.80</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-cohesion" class="violet-slider"
+                   min="0" max="3" step="0.05" value="0.8"
+                   oninput="updateSlider('cohesion', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">SEPARATION W</span>
+            <span class="slider-val" id="val-sep">1.80</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-sep" class="orange-slider"
+                   min="0" max="3" step="0.05" value="1.8"
+                   oninput="updateSlider('sep', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">AGENT COUNT</span>
+            <span class="slider-val" id="val-agents">50</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-agents" min="5" max="150" step="5" value="50"
+                   oninput="updateSlider('agents', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">VOXEL_LAYERS</span>
+            <span class="slider-val" id="val-depthLayers">3</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" min="1" max="8" step="1" value="3" 
+                   oninput="updateSlider('depthLayers', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">LAYER_SPACING (THICKNESS)</span>
+            <span class="slider-val" id="val-layerSpacing">40</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" min="10" max="150" step="5" value="40" 
+                   oninput="updateSlider('layerSpacing', this.value)">
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <div class="slider-label">
+            <span class="slider-name">IMPACT RADIUS</span>
+            <span class="slider-val" id="val-impactRadius">80</span>
+          </div>
+          <div class="slider-track">
+            <input type="range" id="sl-impactRadius" class="orange-slider"
+                   min="20" max="300" step="5" value="80"
+                   oninput="updateSlider('impactRadius', this.value)">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION: Telemetry -->
+    <div class="panel-section">
+      <div class="section-title">TELEMETRY</div>
+      <div class="telemetry-grid">
+        <div class="telem-card">
+          <div class="telem-label">Tick/sec</div>
+          <div class="telem-value" id="tel-tps">60<span class="telem-unit">Hz</span></div>
+        </div>
+        <div class="telem-card">
+          <div class="telem-label">Agents</div>
+          <div class="telem-value green" id="tel-agents">50</div>
+        </div>
+        <div class="telem-card">
+          <div class="telem-label">Latency</div>
+          <div class="telem-value orange" id="tel-lat">0.3<span class="telem-unit">ms</span></div>
+        </div>
+        <div class="telem-card">
+          <div class="telem-label">Sub-steps</div>
+          <div class="telem-value violet" id="tel-sub">1</div>
+        </div>
+      </div>
+
+      <!-- Mini velocity graph -->
+      <canvas id="vel-graph"></canvas>
+      <div style="font-size:8px;color:var(--text-dim);margin-top:4px;text-align:right">
+        AVG VELOCITY HISTORY (last 80 frames)
+      </div>
+    </div>
+
+    <!-- SECTION: Fragment status -->
+    <div class="panel-section">
+      <div class="section-title">FRAGMENT_SIM</div>
+      <div class="telemetry-grid" style="margin-bottom:10px">
+        <div class="telem-card">
+          <div class="telem-label">Active</div>
+          <div class="telem-value" id="tel-frag-active">0</div>
+        </div>
+        <div class="telem-card">
+          <div class="telem-label">Sleeping</div>
+          <div class="telem-value orange" id="tel-frag-sleep">0</div>
+        </div>
+      </div>
+      <button onclick="sendCmd('purge')"
+        style="width:100%;padding:7px;background:var(--bg-deep);border:1px solid var(--border);
+               color:var(--text-sec);cursor:pointer;font-family:'JetBrains Mono',monospace;
+               font-size:10px;letter-spacing:1px;transition:all .2s"
+        onmouseover="this.style.borderColor='var(--violet)';this.style.color='var(--violet)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-sec)'">
+        ▶ PURGE_SLEEPING_FRAGMENTS
+      </button>
+    </div>
+
+    <!-- SECTION: Connection -->
+    <div class="panel-section" style="border-bottom:none">
+      <div class="section-title">CORE_LINK</div>
+      <div style="font-size:10px;line-height:2;color:var(--text-sec)">
+        <div>PROTOCOL <span style="color:var(--text-dim)">WebSocket ws://localhost:8765</span></div>
+        <div>DLL <span style="color:var(--text-dim)">soulforge_physx.dll</span></div>
+        <div>FFI <span id="conn-ffi-status" style="color:var(--red)">DISCONNECTED</span></div>
+      </div>
+      <div class="neon-divider"></div>
+      <div style="font-size:9px;color:var(--text-dim);line-height:1.8">
+        Run to connect:<br>
+        <span style="color:var(--cyan)">python lab/server.py</span>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ─── STATUS BAR ─────────────────────────────────────────────────────── -->
+  <div id="status-bar">
+    <div class="s-left">
+      <span id="sb-mode" class="status-ok">MODE: SWARM_BOIDS</span>
+      <span id="sb-rust">RUST: <span class="status-ok">STABLE</span></span>
+      <span id="sb-preset">PRESET: SWARM_CLOUD</span>
+    </div>
+    <div class="s-right">
+      <span id="sb-panics">PANICS: <span class="status-ok">0</span></span>
+      <span id="sb-mem">MEM: 4.2 MB</span>
+      <span class="live-clock" id="sb-clock">--:--:--</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// SOULFORGE PHYSICS LAB — JavaScript Engine
+// ════════════════════════════════════════════════════════════════════════════
+
+// ─── Standard Helpers ────────────────────────────────────────────────────────
+Number.prototype.clamp = function(min, max) {
+  return Math.min(max, Math.max(min, this));
+};
+
+const state = {
+  params: {
+    gravity: 981, swarm: 0.5, speed: 300,
+    cohesion: 0.8, separation: 1.8, agents: 120,
+    impactRadius: 80, depthLayers: 3, layerSpacing: 40
+  },
+  view3d: false,
+  rotation: { x: 0.2, y: -0.4 },
+  agents: [],
+  preset: 'swarm',
+  tick: 0,
+  time: 0,
+  panics: 0,
+  connected: false,
+  ws: null,
+  velHistory: new Array(80).fill(0),
+  fragActive: 0, fragSleep: 0,
+};
+
+function project(x, y, z) {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  if (!state.view3d) return { x, y, scale: 1.0 };
+  
+  let rx = x - cx;
+  let ry = y - cy;
+  let rz = (z || 200) - 200;
+
+  // Rotate Y
+  let cosY = Math.cos(state.rotation.y), sinY = Math.sin(state.rotation.y);
+  let x1 = rx * cosY - rz * sinY;
+  let z1 = rx * sinY + rz * cosY;
+
+  // Rotate X
+  let cosX = Math.cos(state.rotation.x), sinX = Math.sin(state.rotation.x);
+  let y2 = ry * cosX - z1 * sinX;
+  let z2 = ry * sinX + z1 * cosX;
+
+  const fov = 800;
+  const scale = fov / (fov + z2);
+  return { x: cx + x1 * scale, y: cy + y2 * scale, scale: scale };
+}
+
+// ─── Canvas Setup ─────────────────────────────────────────────────────────────
+const canvas = document.getElementById('physics-canvas');
+const ctx    = canvas.getContext('2d');
+const velCvs = document.getElementById('vel-graph');
+const velCtx = velCvs.getContext('2d');
+
+function resizeCanvas() {
+  const area = document.getElementById('canvas-area');
+  canvas.width  = area.clientWidth;
+  canvas.height = area.clientHeight;
+  if (state.preset === 'wall') applyPreset('wall');
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+velCvs.width  = velCvs.offsetWidth  || 280;
+velCvs.height = velCvs.offsetHeight || 50;
+
+// ─── Agent Simulation (Local Boids fallback) ──────────────────────────────────
+function createAgents(n) {
+  const cx = canvas.width  / 2;
+  const cy = canvas.height / 2;
+  return Array.from({ length: n }, (_, i) => ({
+    id: i,
+    x: cx + (Math.random() - .5) * 300,
+    y: cy + (Math.random() - .5) * 300,
+    vx: (Math.random() - .5) * 120,
+    vy: (Math.random() - .5) * 120,
+    ax: 0, ay: 0,
+    trail: [],
+    hue: Math.random() * 40 + 175,   // blue-cyan range
+  }));
+}
+
+state.agents = createAgents(state.params.agents);
+
+// ─── Boids Physics (JS mirror of Rust logic) ──────────────────────────────────
+function tickBoids(dt) {
+  const agents  = state.agents;
+  const maxSpd  = state.params.speed * .3;  // scale for canvas
+  const W_SEP   = state.params.separation;
+  const W_COH   = state.params.cohesion;
+  const W_ALI   = 1.0;
+  const R_SQ    = 160 * 160;
+  const K       = 5;
+
+  const preset = state.preset;
+
+  for (const a of agents) {
+    if (a.isSleeping) continue;
+
+    // OPTIMIZED NEIGHBOR SEARCH: cutoff instead of full sort
+    const near = [];
+    for (const b of agents) {
+      if (b.id === a.id) continue;
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const sq = dx*dx + dy*dy;
+      if (sq < R_SQ) {
+        near.push({ sq, b });
+        if (near.length >= K) break; // Early exit: don't look for more
+      }
+    }
+
+    let sx=0,sy=0, ax_=0,ay_=0, cx_=0,cy_=0;
+    for (const { sq, b } of near) {
+      const d = Math.sqrt(sq) || .001;
+      const s = (sq < 60*60) ? 2/d : 1/d;
+      sx += (a.x - b.x) * s; sy += (a.y - b.y) * s;
+      ax_ += b.vx; ay_ += b.vy;
+      cx_ += b.x;  cy_ += b.y;
+    }
+
+    let fx=0, fy=0;
+    if (near.length > 0) {
+      const k = near.length;
+      // Separation
+      const sl = Math.sqrt(sx*sx+sy*sy)||1;
+      fx += (sx/sl) * W_SEP;
+      fy += (sy/sl) * W_SEP;
+      // Alignment
+      const al = Math.sqrt(ax_*ax_+ay_*ay_)||1;
+      fx += (ax_/al) * W_ALI;
+      fy += (ay_/al) * W_ALI;
+      // Cohesion
+      const cenx = cx_/k - a.x, ceny = cy_/k - a.y;
+      const cl = Math.sqrt(cenx*cenx+ceny*ceny)||1;
+      fx += (cenx/cl) * W_COH;
+      fy += (ceny/cl) * W_COH;
+    }
+
+    // Preset force modifiers
+    if (preset === 'explosion') {
+      const dx = a.x - canvas.width/2, dy = a.y - canvas.height/2;
+      const d = Math.sqrt(dx*dx+dy*dy)||1;
+      fx += (dx/d) * 4;
+      fy += (dy/d) * 4;
+    } else if (preset === 'collapse') {
+      fy += state.params.gravity * .0003; // gravity pull
+      // Bounce off bottom
+      if (a.y > canvas.height - 40) {
+        a.vy *= -.6;
+        a.y = canvas.height - 40;
+      }
+    } else if (preset === 'swarm') {
+      // Slight center pull for cloud
+      const dx = canvas.width/2 - a.x, dy = canvas.height/2 - a.y;
+      const d = Math.sqrt(dx*dx+dy*dy)||1;
+      fx += (dx/d) * .3;
+      fy += (dy/d) * .3;
+    } else if (preset === 'wall') {
+      // When in wall mode, particles that haven't 'exploded' stay in formation
+      if (!a.isFlying) {
+        a.vx = (a.targetX - a.x) * 10;
+        a.vy = (a.targetY - a.y) * 10;
+      }
+    }
+
+    // Swarm strength multiplier
+    const sw = state.params.swarm;
+    a.vx += fx * sw * dt * 60;
+    
+    // Debris Physics: Gravity + Base forces
+    const gravityForce = (a.isFlying || preset === 'collapse') ? state.params.gravity * .0005 : 0;
+    a.vy += (fy * sw + gravityForce) * dt * 60;
+
+    // Apply "Ground" logic and Friction to stop fragments
+    if (a.isFlying || preset === 'collapse') {
+      const floor = canvas.height - 40;
+      if (a.y >= floor) {
+        a.y = floor;
+        a.vx *= 0.85; // Friction
+        a.vy *= -0.3; // Restitution (bounce loss)
+        
+        // SLEEP LOGIC: If moving very slowly on ground, freeze it
+        if (Math.abs(a.vx) < 1.0 && Math.abs(a.vy) < 1.1) {
+          a.vx = 0; a.vy = 0;
+          a.isSleeping = true;
+          a.isFlying = false;
+        }
+      }
+    }
+
+    // Speed limit
+    const spd = Math.sqrt(a.vx*a.vx+a.vy*a.vy)||1;
+    if (spd > maxSpd) { a.vx = a.vx/spd*maxSpd; a.vy = a.vy/spd*maxSpd; }
+
+    // Integrate
+    a.trail.push({ x: a.x, y: a.y });
+    if (a.trail.length > 8) a.trail.shift();
+    a.x += a.vx * dt;
+    a.y += a.vy * dt;
+
+    // Wrap borders (except collapse)
+    if (preset !== 'collapse') {
+      if (a.x < 0) a.x = canvas.width;
+      if (a.x > canvas.width) a.x = 0;
+      if (a.y < 0) a.y = canvas.height;
+      if (a.y > canvas.height) a.y = 0;
+    }
+  }
+}
+
+// ─── Rendering ────────────────────────────────────────────────────────────────
+function render() {
+  ctx.fillStyle = 'rgba(6, 10, 18, 0.3)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const agents = state.agents;
+
+  for (const a of agents) {
+    const p = project(a.x, a.y, a.z || 200);
+    
+    // Draw trail
+    if (a.trail.length > 1 && !a.isSleeping) {
+      ctx.beginPath();
+      const pstart = project(a.trail[0].x, a.trail[0].y, a.trail[0].z || 200);
+      ctx.moveTo(pstart.x, pstart.y);
+      for (let i = 1; i < a.trail.length; i++) {
+        const pt = project(a.trail[i].x, a.trail[i].y, a.trail[i].z || 200);
+        ctx.lineTo(pt.x, pt.y);
+      }
+      ctx.strokeStyle = `hsla(${a.hue},100%,60%,${0.15 * p.scale})`;
+      ctx.lineWidth = 1 * p.scale;
+      ctx.stroke();
+    }
+
+    // Agent dot / Voxel
+    ctx.beginPath();
+    const isVoxel = state.preset === 'wall' || state.preset === 'import';
+    const radius = (isVoxel ? 4.5 : 3.5) * p.scale;
+    
+    if (isVoxel && a.isSleeping) {
+      // Draw rectangular Voxels for imported models
+      const s = radius * 1.5;
+      ctx.rect(p.x - s/2, p.y - s/2, s, s);
+    } else {
+      ctx.arc(p.x, p.y, radius.clamp(0.5, 8), 0, Math.PI*2);
+    }
+    
+    let baseAlpha = 1.0 - ((a.layerZ || 0) * 0.15);
+    let alpha = (baseAlpha * p.scale).clamp(0.1, 1.0);
+    
+    // Dynamic color based on temperature
+    let hue = a.hue || 180;
+    let saturation = 100;
+    let lightness = 70;
+    if (a.temp > 400) {
+      const t = Math.min((a.temp - 300) / 3000, 1.0);
+      hue = 180 - t * 160; // 180 (Cyan) -> 20 (Orange/Red)
+      lightness = 50 + t * 40;
+    }
+
+    const color = isVoxel && a.isSleeping ? 
+      `rgba(150,165,180,${alpha})` : // Structural Grey
+      `hsla(${hue},${saturation}%,${lightness}%,${alpha})`;
+    
+    ctx.fillStyle = color;
+    
+    if (!a.isSleeping || a.temp > 1000) {
+      ctx.shadowBlur = (a.temp > 1000 ? 15 : 8) * p.scale;
+      ctx.shadowColor = `hsla(${hue},100%,60%,${alpha})`;
+    }
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // OPTIMIZED 3D CONNECTIONS: Only for active nodes & low density
+    if (agents.length < 250 && !a.isSleeping && !state.view3d) {
+      for (const b of agents) {
+        if (b.id <= a.id || b.isSleeping) continue;
+        const dx = a.x - b.x, dy = a.y - b.y;
+        if (Math.abs(dx) > 60 || Math.abs(dy) > 60) continue;
+        const d2 = dx*dx + dy*dy;
+        if (d2 < 60*60) {
+          const pb = project(b.x, b.y, b.z || 200);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(pb.x, pb.y);
+          ctx.strokeStyle = `rgba(0,229,255,${(0.12 * p.scale).clamp(0, 0.2)})`;
+          ctx.lineWidth = 0.5 * p.scale;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Draw 3D Ground Grid (Tactical Depth)
+  if (state.view3d || state.preset === 'wall' || state.preset === 'import') {
+    ctx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
+    ctx.setLineDash([]);
+    const gridSize = 400;
+    const step = 40;
+    const groundZ = 400; // Floor plane
+
+    for (let i = -gridSize; i <= gridSize; i += step) {
+      // Lines parallel to X
+      const p1 = project(canvas.width/2 - gridSize, canvas.height/2 + 150, groundZ + i);
+      const p2 = project(canvas.width/2 + gridSize, canvas.height/2 + 150, groundZ + i);
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+      
+      // Lines parallel to Z
+      const p3 = project(canvas.width/2 + i, canvas.height/2 + 150, groundZ - gridSize);
+      const p4 = project(canvas.width/2 + i, canvas.height/2 + 150, groundZ + gridSize);
+      ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+    }
+  }
+
+  // Draw Wall Ghost (3D Volume)
+  if (state.preset === 'wall') {
+    const w = 310, h = 210, d = state.params.layerSpacing * state.params.depthLayers;
+    const x = canvas.width/2 - w/2;
+    const y = canvas.height/2 - h/2;
+    // ... rest of visual hints ...
+
+    ctx.strokeStyle = 'rgba(0, 255, 136, 0.4)';
+    ctx.setLineDash([4, 4]);
+    
+    // Front face
+    ctx.strokeRect(x, y, w, h);
+    
+    // Back face (offset)
+    ctx.strokeRect(x + d, y - d, w, h);
+    
+    // Connecting lines (Corners)
+    ctx.beginPath();
+    ctx.moveTo(x, y); ctx.lineTo(x + d, y - d);
+    ctx.moveTo(x + w, y); ctx.lineTo(x + w + d, y - d);
+    ctx.moveTo(x, y + h); ctx.lineTo(x + d, y - d + h);
+    ctx.moveTo(x + w, y + h); ctx.lineTo(x + w + d, y - d + h);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(0, 255, 136, 0.6)';
+    ctx.font = '9px "JetBrains Mono"';
+    ctx.fillText("STRUCTURAL_VOLUME: ACTIVE", x, y - 15);
+    ctx.fillText("CLICK TO PENETRATE VOXEL LAYERS", x, y + h + 25);
+  }
+}
+
+// ─── Vel Graph ───────────────────────────────────────────────────────────────
+function renderVelGraph() {
+  const w = velCvs.width, h = velCvs.height;
+  velCtx.fillStyle = 'var(--bg-deep, #060a12)';
+  velCtx.fillRect(0,0,w,h);
+
+  const hist = state.velHistory;
+  const max  = Math.max(...hist, 1);
+
+  velCtx.beginPath();
+  const step = w / (hist.length - 1);
+  hist.forEach((v, i) => {
+    const x = i * step;
+    const y = h - (v / max) * (h - 4) - 2;
+    i === 0 ? velCtx.moveTo(x,y) : velCtx.lineTo(x,y);
+  });
+  velCtx.strokeStyle = '#00e5ff';
+  velCtx.lineWidth = 1.5;
+  velCtx.shadowBlur = 6;
+  velCtx.shadowColor = '#00e5ff';
+  velCtx.stroke();
+  velCtx.shadowBlur = 0;
+}
+
+// ─── Update Telemetry ─────────────────────────────────────────────────────────
+let lastFrameTime = performance.now();
+let frameCount = 0, fpsMeasure = 60;
+
+function updateTelemetry() {
+  const avgVel = state.agents.reduce((s,a) =>
+    s + Math.sqrt(a.vx*a.vx+a.vy*a.vy), 0) / (state.agents.length||1);
+
+  state.velHistory.push(avgVel);
+  if (state.velHistory.length > 80) state.velHistory.shift();
+
+  document.getElementById('tel-tps').innerHTML   = `${fpsMeasure}<span class="telem-unit">Hz</span>`;
+  document.getElementById('tel-agents').textContent = state.agents.length;
+  document.getElementById('tel-lat').innerHTML   = `${(Math.random()*.4+.1).toFixed(2)}<span class="telem-unit">ms</span>`;
+  document.getElementById('tel-sub').textContent = state.connected ? '1' : '—';
+  document.getElementById('tel-frag-active').textContent = state.fragActive;
+  document.getElementById('tel-frag-sleep').textContent  = state.fragSleep;
+
+  document.getElementById('hdr-agent-count').textContent =
+    String(state.agents.length).padStart(3,'0') + ' NODES';
+  document.getElementById('hdr-fps').textContent = fpsMeasure + ' FPS';
+
+  document.getElementById('ov-tick').textContent = 'TICK: ' + String(state.tick).padStart(6,'0');
+  document.getElementById('ov-time').textContent = 'T: ' + state.time.toFixed(3) + 's';
+}
+
+// Clock
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('sb-clock').textContent =
+    now.toTimeString().slice(0,8);
+}, 1000);
+
+// ─── Main Loop ────────────────────────────────────────────────────────────────
+let lastT = performance.now();
+
+function mainLoop(now) {
+  const dt = Math.min((now - lastT) / 1000, .033);
+  lastT = now;
+
+  // FPS counter
+  frameCount++;
+  if (now - lastFrameTime > 1000) {
+    fpsMeasure = frameCount;
+    frameCount = 0;
+    lastFrameTime = now;
+  }
+
+  state.tick++;
+  state.time += dt;
+
+  // Physics tick (local JS simulation)
+  if (!state.connected) {
+    tickBoids(dt);
+  }
+
+  render();
+  renderVelGraph();
+  if (state.tick % 4 === 0) updateTelemetry();
+
+  requestAnimationFrame(mainLoop);
+}
+requestAnimationFrame(mainLoop);
+
+// ─── WebSocket Connection ─────────────────────────────────────────────────────
+function connectWS() {
+  try {
+    const ws = new WebSocket('ws://localhost:8765');
+
+    ws.onopen = () => {
+      state.connected = true;
+      state.ws = ws;
+      document.getElementById('ov-conn').textContent  = 'WS: CONNECTED';
+      document.getElementById('ov-conn').className    = 'status-ok';
+      document.getElementById('conn-ffi-status').textContent = 'CONNECTED';
+      document.getElementById('conn-ffi-status').style.color = 'var(--green)';
+    };
+
+    ws.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === 'positions') {
+          // Log cada segundo
+          if (state.tick % 60 === 0) console.log(`[Lab] Sync: ${msg.agents ? msg.agents.length : 0} nodos activos.`);
+          
+          const agCountEl = document.getElementById('hdr-agent-count');
+          if (agCountEl && msg.agents) {
+            agCountEl.textContent = String(msg.agents.length).padStart(3, '0') + ' NODES';
+          }
+
+          if (!msg.agents) return;
+          const newAgents = msg.agents.map((a, i) => {
+            const old = state.agents.find(oa => oa.id === a.id);
+            const agent = old || { id: a.id, trail: [], hue: Math.random()*20+180 };
+            
+            agent.x = a.x * 0.5 + canvas.width/2;
+            agent.y = a.y * 0.5 + canvas.height/2;
+            agent.z = a.z;
+            agent.vx = (a.vx || 0) * 0.3;
+            agent.vy = (a.vy || 0) * 0.3;
+            agent.temp = a.temp || 293.0;
+            agent.isSleeping = false;
+            return agent;
+          });
+          state.agents = newAgents;
+        } else if (msg.type === 'telemetry') {
+          state.fragActive = msg.frag_active || 0;
+          state.fragSleep  = msg.frag_sleep  || 0;
+          document.getElementById('sb-panics').innerHTML =
+            `PANICS: <span class="${msg.panics>0?'status-err':'status-ok'}">${msg.panics}</span>`;
+        } else if (msg.type === 'panic') {
+          showPanic(msg.message);
+        }
+      } catch(e) {/* ignore malformed */}
+    };
+
+    ws.onclose = () => {
+      state.connected = false;
+      state.ws = null;
+      document.getElementById('ov-conn').textContent = 'BACKEND_OFF (RUN run_lab.bat)';
+      document.getElementById('ov-conn').className   = 'status-err';
+      document.getElementById('conn-ffi-status').textContent = 'DISCONNECTED';
+      document.getElementById('conn-ffi-status').style.color = 'var(--red)';
+      // Retry after 2s
+      setTimeout(connectWS, 2000);
+    };
+
+    ws.onerror = () => { ws.close(); };
+  } catch(e) { setTimeout(connectWS, 3000); }
+}
+connectWS();
+
+// ─── Commands ─────────────────────────────────────────────────────────────────
+function sendCmd(type, payload = {}) {
+  if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+    state.ws.send(JSON.stringify({ cmd: type, ...payload }));
+  }
+}
+
+function activatePower(type) {
+  const cx = 0; // Origen central en espacio Rust
+  const cy = 0;
+  
+  // Enviar comando al servidor
+  sendCmd('power', {
+    type: type,
+    x: cx,
+    y: cy,
+    z: 200.0,
+    dx: 1.0, dy: 0.2, dz: 0.0,
+    intensity: 2.0,
+    duration: 10.0
+  });
+
+  console.log(`[Lab] Iniciando poder tipo ${type}`);
+}
+
+function applyPreset(type) {
+  state.preset = type;
+
+  // Flash the button
+  const btnMap = { explosion:'btn-explosion', swarm:'btn-swarm', collapse:'btn-collapse' };
+  for (const [k,v] of Object.entries(btnMap)) {
+    const el = document.getElementById(v);
+    el.classList.toggle('active-preset', k === type);
+  }
+  setTimeout(() => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active-preset'));
+  }, 500);
+
+  // Reset agents for the preset
+  const cx = canvas.width/2, cy = canvas.height/2;
+  if (type === 'explosion') {
+    state.agents.forEach(a => {
+      a.x = cx; a.y = cy;
+      const angle = Math.random() * Math.PI * 2;
+      a.vx = Math.cos(angle) * 200;
+      a.vy = Math.sin(angle) * 200;
+      a.trail = [];
+    });
+  } else if (type === 'swarm') {
+    state.agents.forEach(a => {
+      a.x = cx + (Math.random()-.5)*200;
+      a.y = cy + (Math.random()-.5)*200;
+      a.vx = (Math.random()-.5)*80;
+      a.vy = (Math.random()-.5)*80;
+      a.trail = [];
+    });
+  } else if (type === 'collapse') {
+    state.agents.forEach((a, i) => {
+      a.x = cx + (Math.random()-.5)*300;
+      a.y = 60 + Math.random()*canvas.height*.3;
+      a.vx = (Math.random()-.5)*40;
+      a.vy = Math.random()*20;
+      a.trail = [];
+    });
+  } else if (type === 'wall') {
+    // 3D VOXEL VOLUME: Controlled by Layers & Spacing
+    const n = state.agents.length;
+    const areaW = 310, areaH = 210;
+    
+    const depthLayers = state.params.depthLayers;
+    const spacingZ = state.params.layerSpacing;
+    const spacingXY = 34;
+
+    const cols = Math.floor(areaW / spacingXY);
+    const rows = Math.floor(areaH / spacingXY);
+    const nodesPerLayer = cols * rows;
+    
+    const startX = cx - (cols * spacingXY) / 2;
+    const startY = cy - (rows * spacingXY) / 2;
+
+    state.agents.forEach((a, i) => {
+      const layer = Math.floor(i / nodesPerLayer) % depthLayers;
+      const idxInLayer = i % nodesPerLayer;
+      const row = Math.floor(idxInLayer / cols);
+      const col = idxInLayer % cols;
+
+      a.targetX = startX + col * spacingXY;
+      a.targetY = startY + row * spacingXY;
+      a.layerZ = layer; 
+      a.z = 200 - (layer * spacingZ); // Dynamic Thickness
+      
+      a.x = a.targetX; a.y = a.targetY;
+      a.vx = 0; a.vy = 0;
+      a.isFlying = false; a.isSleeping = true;
+      a.trail = [];
+    });
+  }
+
+  // Update mode display
+  const modeNames = { explosion:'BIG_BANG', swarm:'SWARM_CLOUD', collapse:'COLLAPSE_TEST', wall:'WALL_DESTRUCTION' };
+  document.getElementById('ov-mode').textContent = modeNames[type] || type;
+  document.getElementById('sb-mode').textContent = 'MODE: ' + (modeNames[type] || type);
+  document.getElementById('sb-preset').textContent = 'PRESET: ' + (modeNames[type] || type);
+
+  // Send to Rust if connected
+  sendCmd('preset', { preset: type });
+}
+
+function updateSlider(key, rawVal) {
+  const val = parseFloat(rawVal);
+  state.params[key] = val;
+
+  const fmt = {
+    gravity: v => Math.round(v),
+    swarm:   v => v.toFixed(2),
+    speed:   v => Math.round(v),
+    cohesion:v => v.toFixed(2),
+    sep:     v => v.toFixed(2),
+    agents:  v => Math.round(v),
+  };
+
+  const el = document.getElementById('val-' + key);
+  if (el) el.textContent = (fmt[key] || (v=>v))(val);
+
+  // Resize agent pool if needed
+  if (key === 'agents') {
+    const n = Math.round(val);
+    while (state.agents.length < n) {
+      state.agents.push({
+        id: state.agents.length,
+        x: canvas.width/2 + (Math.random()-.5)*200,
+        y: canvas.height/2 + (Math.random()-.5)*200,
+        vx: (Math.random()-.5)*100, vy: (Math.random()-.5)*100,
+        ax:0, ay:0, trail: [], hue: Math.random()*40+175
+      });
+    }
+    state.agents.length = n;
+    
+    // Auto-rebuild wall if count changes
+    if (state.preset === 'wall') applyPreset('wall');
+  }
+
+  sendCmd('param', { key, value: val });
+}
+
+function toggleSection(btn) {
+  const section = btn.closest('.panel-section').querySelector('.collapsible');
+  if (!section) return;
+  section.style.display = section.style.display === 'none' ? '' : 'none';
+  btn.textContent = section.style.display === 'none' ? '▶' : '▼';
+}
+
+function showPanic(msg) {
+  const el = document.getElementById('panic-alert');
+  document.getElementById('panic-msg').textContent = msg || 'Unknown error';
+  el.style.display = 'block';
+  state.panics++;
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+function setViewMode(is3d) {
+  state.view3d = is3d;
+  document.getElementById('btn-2d').className = is3d ? 'nav-pill' : 'nav-pill active';
+  document.getElementById('btn-3d').className = is3d ? 'nav-pill active' : 'nav-pill';
+  if (state.preset === 'wall') applyPreset('wall');
+}
+
+// Keyboard shortcuts
+window.addEventListener('keydown', e => {
+  if (e.key === 'F1') { e.preventDefault(); applyPreset('explosion'); }
+  if (e.key === 'F2') { e.preventDefault(); applyPreset('swarm'); }
+  if (e.key === 'F3') { e.preventDefault(); applyPreset('collapse'); }
+  if (e.key === 'F4') { e.preventDefault(); applyPreset('wall'); }
+});
+
+// Mouse Interaction (Rotation & Shoot)
+let isDragging = false;
+let lastMouse = { x:0, y:0 };
+
+canvas.addEventListener('mousedown', e => {
+  if (e.button === 1) { // Middle Mouse Click
+    e.preventDefault();
+    isDragging = true;
+    lastMouse = { x:e.clientX, y:e.clientY };
+  } else if (e.button === 0) { // Left Mouse Click
+    handleShoot(e);
+  }
+});
+
+// ─── 3D ENGINE REINFORCEMENT ──────────────────────────────────────────────────
+// SUPPRESS ALL TEXTURES: Blocks CORS and 'substr' errors at the source
+THREE.ImageLoader.prototype.load = function(url, onload) {
+  // Return a 1x1 dummy canvas instead of trying to load a file
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 1;
+  if (onload) setTimeout(() => onload(canvas), 1);
+  return canvas;
+};
+
+// UNIVERSAL 3D VOXELIZER — Version Final
+async function handleModelImport(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  showPanic(`ENGINE: VOXELIZING ${file.name.toUpperCase()}...`);
+  
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const data = e.target.result;
+    let vertices = [];
+    
+    try {
+      let loader = ext === 'obj' ? new THREE.OBJLoader() : 
+                 ext === 'fbx' ? new THREE.FBXLoader() : 
+                 new THREE.STLLoader();
+      
+      if (ext === 'fbx') {
+        loader.setResourcePath(''); // Aggressive texture suppression
+      }
+
+      const model = (ext === 'stl') ? loader.parse(data) : loader.parse(data, '');
+      const root = (ext === 'stl') ? { isMesh: true, geometry: model } : model;
+
+      const processNode = (node) => {
+        if (node.isMesh && node.geometry.attributes.position) {
+          const arr = node.geometry.attributes.position.array;
+          for (let i=0; i<arr.length; i+=3) {
+            vertices.push({ x: arr[i], y: arr[i+1], z: arr[i+2] });
+          }
+        }
+        if (node.children) node.children.forEach(processNode);
+      };
+
+      if (root.isMesh) processNode(root);
+      else root.traverse(processNode);
+
+      if (vertices.length === 0) throw new Error("No mesh found.");
+
+      // Bounds & Normalization
+      let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity, minZ=Infinity, maxZ=-Infinity;
+      vertices.forEach(v => {
+        minX=Math.min(minX, v.x); maxX=Math.max(maxX, v.x);
+        minY=Math.min(minY, v.y); maxY=Math.max(maxY, v.y);
+        minZ=Math.min(minZ, v.z); maxZ=Math.max(maxZ, v.z);
+      });
+
+      const centerX = (minX + maxX)/2, centerY = (minY + maxY)/2, centerZ = (minZ + maxZ)/2;
+      const size = Math.max(maxX-minX, maxY-minY, maxZ-minZ, 1);
+      const targetScale = 280 / size;
+
+      state.preset = 'import';
+      state.agents.forEach((a, i) => {
+        const v = vertices[Math.floor((i / state.agents.length) * (vertices.length-1))];
+        a.targetX = canvas.width/2 + (v.x - centerX) * targetScale;
+        a.targetY = canvas.height/2 - (v.y - centerY) * targetScale;
+        a.z = 200 + (v.z - centerZ) * targetScale;
+        
+        // Structure jitter
+        if (state.agents.length > vertices.length) {
+          a.targetX += (Math.random()-.5)*15; a.targetY += (Math.random()-.5)*15; a.z += (Math.random()-.5)*15;
+        }
+
+        a.x = a.targetX; a.y = a.targetY;
+        a.vx = 0; a.vy = 0;
+        a.isFlying = false; a.isSleeping = true;
+        a.layerZ = Math.floor((v.z - minZ) / (size/6 + 0.1));
+      });
+
+      showPanic(`MODEL LOADED: ${file.name.toUpperCase()} (${vertices.length} VERTS)`);
+      document.getElementById('ov-mode').textContent = 'MODEL_VOXELIZED';
+
+    } catch (err) {
+      showPanic(`IMPORT_ERROR: ${err.message}`);
+    }
+  };
+
+  if (ext === 'obj') reader.readAsText(file);
+  else reader.readAsArrayBuffer(file);
+}
+
+window.addEventListener('mousemove', e => {
+  if (isDragging) {
+    const dx = e.clientX - lastMouse.x;
+    const dy = e.clientY - lastMouse.y;
+    state.rotation.y += dx * 0.01;
+    state.rotation.x += dy * 0.01;
+    lastMouse = { x:e.clientX, y:e.clientY };
+  }
+});
+
+window.addEventListener('mouseup', () => isDragging = false);
+
+function handleShoot(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (state.preset === 'wall') {
+    const w = 310, h = 210, d = 40;
+    const xMin = canvas.width/2 - w/2, xMax = xMin + w + d;
+    const yMin = canvas.height/2 - h/2 - d, yMax = yMin + h + d;
+
+    if (x > xMin && x < xMax && y > yMin && y < yMax) {
+      const radius = state.params.impactRadius;
+      const isShaped = radius > 150;
+
+      state.agents.forEach(a => {
+        const d = Math.sqrt((a.x-x)**2 + (a.y-y)**2);
+        if (d < radius) {
+          const layerDamping = 1.0 - ((a.layerZ || 0) * 0.3);
+          if (layerDamping <= 0 && !isShaped) return;
+          a.isFlying = true;
+          a.isSleeping = false;
+          const power = ((isShaped ? 500 : 250) + (state.params.speed * 0.8)) * Math.max(0.2, layerDamping);
+          a.vx += (a.x - x) * (power / (d+10));
+          a.vy += (a.y - y) * (power / (d+10)) - (isShaped ? power/2 : power/4);
+        }
+      });
+
+      sendCmd('impact', { x, y, radius: radius });
+
+      ctx.fillStyle = isShaped ? 'rgba(255,100,50,0.8)' : 'rgba(255,255,255,0.9)';
+      ctx.beginPath(); 
+      if (isShaped) {
+        ctx.moveTo(x,y);
+        ctx.lineTo(x + 120, y - 60);
+        ctx.lineTo(x + 120, y + 60);
+      } else {
+        ctx.arc(x,y,radius/2,0,Math.PI*2);
+      }
+      ctx.fill();
+    }
+  }
+}
+
+// Init with swarm preset
+setTimeout(() => applyPreset('swarm'), 100);
+</script>
+</body>
+</html>
