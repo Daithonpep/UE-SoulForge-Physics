@@ -47,7 +47,8 @@ enum class EExplosiveType : uint8
     PETN        UMETA(DisplayName = "PETN (Carga Hueca Táctica)"),
     Matrix      UMETA(DisplayName = "Matrix (Gravedad Cero)"),
     Collapse    UMETA(DisplayName = "Colapso (Gravedad Real)"),
-    RealityShatter UMETA(DisplayName = "Realidad Fracturada (Épico)")
+    RealityShatter UMETA(DisplayName = "Realidad Fracturada (Épico)"),
+    Vortex      UMETA(DisplayName = "Vórtice (Tornado)")
 };
 
 UENUM(BlueprintType)
@@ -74,6 +75,7 @@ enum class EPowerType : uint8
 // 2. ESTRUCTURAS DE MEMORIA COMPARTIDA
 // ==================================================
 
+// ESTRUCTURA FFI PURA (SIN REFLEXIÓN DE UNREAL PARA EVITAR VTABLE / PADDING)
 USTRUCT(BlueprintType)
 struct FSoulForgeFragmentData {
     GENERATED_BODY()
@@ -97,6 +99,7 @@ struct FEngineState {
     UPROPERTY(BlueprintReadOnly, Category = "Stats") float Efficiency;
     UPROPERTY(BlueprintReadOnly, Category = "Stats") float SimTime;
 };
+
 
 USTRUCT(BlueprintType)
 struct FShockwaveData {
@@ -145,9 +148,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerVisualEffect, float, BloomIn
 // 3. CONTRATO FFI
 // ==================================================
 
-typedef void (*DetonarNativoFunc)(const char*, float, float, float, float, int32_t);
-typedef void (*GetEngineStateFunc)(float*);
-typedef void (*InsightFilterFunc)(int32*, int32);
+typedef uint32 (*DetonarNativoFunc)(const char*, float, float, float, float, int32_t);
+typedef void (*GetEngineStateFunc)(struct FEngineState*);
 typedef struct FSoulForgeFragmentData* (*GetAllFragmentDataFunc)(uint32, int32*);
 
 extern "C"
@@ -163,9 +165,8 @@ extern "C"
     const char* sf_destroy_proxy(const char* proxy_id, float energy, float dir_x, float dir_y, float dir_z);
 
     // Fast-Path (Láser)
-    void sf_detonar_nativo(const char* proxy_id, float energy, float dir_x, float dir_y, float dir_z, int32_t fragment_count);
-    void sf_get_engine_state(float* estado_ptr);
-    void sf_insight_filter(int32* array_ptr, int32 count);
+    uint32 sf_detonar_nativo(const char* proxy_id, float energy, float preset, float frag_level, float radius, int32_t fragment_count);
+    void sf_get_engine_state(struct FEngineState* estado_ptr);
     struct FSoulForgeFragmentData* sf_get_all_fragment_data(uint32_t filter_hash, int32* out_count);
 
     // Fragmentos

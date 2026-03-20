@@ -26,7 +26,7 @@ struct FSoulForgeFragmentData;
 
 // ********** Begin ScriptStruct FSoulForgeFragmentData ********************************************
 struct Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_79_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_81_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -36,7 +36,7 @@ struct FSoulForgeFragmentData;
 
 // ********** Begin ScriptStruct FEngineState ******************************************************
 struct Z_Construct_UScriptStruct_FEngineState_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_94_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_96_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FEngineState_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -46,7 +46,7 @@ struct FEngineState;
 
 // ********** Begin ScriptStruct FShockwaveData ****************************************************
 struct Z_Construct_UScriptStruct_FShockwaveData_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_103_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_106_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FShockwaveData_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -56,7 +56,7 @@ struct FShockwaveData;
 
 // ********** Begin ScriptStruct FActivePowerPayload ***********************************************
 struct Z_Construct_UScriptStruct_FActivePowerPayload_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_111_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_114_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FActivePowerPayload_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -66,7 +66,7 @@ struct FActivePowerPayload;
 
 // ********** Begin ScriptStruct FRenderData *******************************************************
 struct Z_Construct_UScriptStruct_FRenderData_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_123_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_126_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FRenderData_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -76,7 +76,7 @@ struct FRenderData;
 
 // ********** Begin ScriptStruct FActivePowerInstance **********************************************
 struct Z_Construct_UScriptStruct_FActivePowerInstance_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_132_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_135_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FActivePowerInstance_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -85,14 +85,14 @@ struct FActivePowerInstance;
 // ********** End ScriptStruct FActivePowerInstance ************************************************
 
 // ********** Begin Delegate FOnPowerVisualEffect **************************************************
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_142_DELEGATE \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_145_DELEGATE \
 SOULFORGEPHYSX_API void FOnPowerVisualEffect_DelegateWrapper(const FMulticastScriptDelegate& OnPowerVisualEffect, float BloomIntensity);
 
 
 // ********** End Delegate FOnPowerVisualEffect ****************************************************
 
 // ********** Begin Class USoulForgeBridge *********************************************************
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_RPC_WRAPPERS_NO_PURE_DECLS \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execSpawnNodeOptimized); \
 	DECLARE_FUNCTION(execUpdateAllPowers); \
 	DECLARE_FUNCTION(execActivarPoder); \
@@ -120,7 +120,7 @@ SOULFORGEPHYSX_API void FOnPowerVisualEffect_DelegateWrapper(const FMulticastScr
 struct Z_Construct_UClass_USoulForgeBridge_Statics;
 SOULFORGEPHYSX_API UClass* Z_Construct_UClass_USoulForgeBridge_NoRegister();
 
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_INCLASS_NO_PURE_DECLS \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesUSoulForgeBridge(); \
 	friend struct ::Z_Construct_UClass_USoulForgeBridge_Statics; \
@@ -131,7 +131,7 @@ public: \
 	DECLARE_SERIALIZER(USoulForgeBridge)
 
 
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_ENHANCED_CONSTRUCTORS \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_ENHANCED_CONSTRUCTORS \
 	/** Standard constructor, called after all reflected properties have been initialized */ \
 	NO_API USoulForgeBridge(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get()); \
 	/** Deleted move- and copy-constructors, should never be used */ \
@@ -143,13 +143,13 @@ public: \
 	NO_API virtual ~USoulForgeBridge();
 
 
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_202_PROLOG
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_203_PROLOG
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_INCLASS_NO_PURE_DECLS \
-	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_205_ENHANCED_CONSTRUCTORS \
+	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_INCLASS_NO_PURE_DECLS \
+	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h_206_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 
@@ -206,7 +206,8 @@ template<> SOULFORGEPHYSX_NON_ATTRIBUTED_API UEnum* StaticEnum<EMaterialType>();
 	op(EExplosiveType::PETN) \
 	op(EExplosiveType::Matrix) \
 	op(EExplosiveType::Collapse) \
-	op(EExplosiveType::RealityShatter) 
+	op(EExplosiveType::RealityShatter) \
+	op(EExplosiveType::Vortex) 
 
 enum class EExplosiveType : uint8;
 template<> struct TIsUEnumClass<EExplosiveType> { enum { Value = true }; };

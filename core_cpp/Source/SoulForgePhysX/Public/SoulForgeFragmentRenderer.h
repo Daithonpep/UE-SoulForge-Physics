@@ -19,7 +19,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Components/HierarchicalInstancedStaticMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "SoulForgeBridge.h"
 #include "SoulForgeFragmentRenderer.generated.h"
@@ -75,7 +75,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SoulForge|Renderer")
     void NotifyExplosion() { UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Explosión notificada.")); }
 
-	UHierarchicalInstancedStaticMeshComponent* HISMForCategory(int32 Category);
+	UInstancedStaticMeshComponent* HISMForCategory(int32 Category);
     void EnsureHISMsCreated();
 
 	// ── Configuración de Meshes por categoría ─────────────────────────────────
@@ -91,6 +91,10 @@ public:
 	/** Mesh para grava fina. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SoulForge|Meshes")
 	TObjectPtr<UStaticMesh> GravelMesh;
+
+	/** Mesh para polvo/partículas muy pequeñas. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SoulForge|Meshes")
+	TObjectPtr<UStaticMesh> DustMesh;
 
 	/** Material base compartido por todos los fragmentos. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SoulForge|Meshes")
@@ -119,15 +123,18 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	// Cuatro HISM: uno por categoría (Slab, Chunk, Gravel, Dust).
+	// Cuatro ISM: uno por categoría (Slab, Chunk, Gravel, Dust).
 	UPROPERTY()
-	TObjectPtr<UHierarchicalInstancedStaticMeshComponent> HISMSlab;
+	TObjectPtr<UInstancedStaticMeshComponent> HISMSlab;
 
 	UPROPERTY()
-	TObjectPtr<UHierarchicalInstancedStaticMeshComponent> HISMChunk;
+	TObjectPtr<UInstancedStaticMeshComponent> HISMChunk;
 
 	UPROPERTY()
-	TObjectPtr<UHierarchicalInstancedStaticMeshComponent> HISMGravel;
+	TObjectPtr<UInstancedStaticMeshComponent> HISMGravel;
+
+	UPROPERTY()
+	TObjectPtr<UInstancedStaticMeshComponent> HISMDust;
 
 	/** Lista de todos los fragmentos registrados. */
 	TArray<FSoulForgeFragmentInstance> Fragments;
@@ -135,7 +142,7 @@ private:
 	/** Cuántos fragmentos siguen activos (no dormidos). */
 	int32 ActiveCount = 0;
 
-	UHierarchicalInstancedStaticMeshComponent* InitHISM(
+	UInstancedStaticMeshComponent* InitHISM(
 		UStaticMesh* Mesh,
 		const FName& Name
 	);

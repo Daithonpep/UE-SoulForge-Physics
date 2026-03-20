@@ -27,14 +27,25 @@ USoulForgeDestructible::USoulForgeDestructible()
 
 void USoulForgeDestructible::DeactivateOriginal()
 {
-    if (UStaticMeshComponent* SMC = GetOwner()->FindComponentByClass<UStaticMeshComponent>())
+    if (!GetOwner()) return;
+
+    TArray<UStaticMeshComponent*> MeshComponents;
+    GetOwner()->GetComponents<UStaticMeshComponent>(MeshComponents);
+
+    for (UStaticMeshComponent* SMC : MeshComponents)
     {
+        // NO ocultamos el renderer de fragmentos ni sus hijos HISM
+        if (SMC == FragmentRenderer || SMC->IsA<UInstancedStaticMeshComponent>()) 
+        {
+            continue;
+        }
+
         SMC->SetSimulatePhysics(false); 
         SMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
         // REGLA DE ORO DE LA FORJA: 
-        // Si el component es la RAÍZ, no lo ocultamos (eso ocultaría a sus hijos HISM).
-        // En su lugar, simplemente removemos la mallas estática.
+        // Si el component es la RAÍZ, no lo ocultamos (eso ocultaría a sus hijos de forma jerárquica).
+        // En su lugar, simplemente removemos la mallas estática de la vista.
         if (SMC == GetOwner()->GetRootComponent())
         {
             SMC->SetStaticMesh(nullptr);
@@ -44,7 +55,7 @@ void USoulForgeDestructible::DeactivateOriginal()
         {
             SMC->SetVisibility(false, false); 
             SMC->SetHiddenInGame(true);
-            UE_LOG(LogTemp, Log, TEXT("[SoulForge] Mesh secundario oculto."));
+            UE_LOG(LogTemp, Log, TEXT("[SoulForge-Cleanup] Mesh secundario oculto: %s"), *SMC->GetName());
         }
     }
 }
@@ -126,15 +137,7 @@ void USoulForgeDestructible::BeginPlay()
         NodePool[i].Escala3D = FVector(1.0f);
     }
 
-    // 3. CREAMOS EL RENDERIZADOR SÚPER RÁPIDO (ISM)
-    if (GetOwner()) {
-        InstancedRenderer = NewObject<UInstancedStaticMeshComponent>(GetOwner());
-        if (InstancedRenderer) {
-            InstancedRenderer->RegisterComponent();
-            InstancedRenderer->SetStaticMesh(MallaDelNodo);
-            InstancedRenderer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        }
-    }
+    // -------------------------------------
 
     // Sincronizamos las propiedades militares antes de la simulación
     USoulForgeBridge::SetProxyMilitar(ProxyName, MaterialType, PhysicsLOD);
@@ -181,40 +184,55 @@ void USoulForgeDestructible::TickComponent(float DeltaTime, ELevelTick TickType,
     if (bUsarRenderizadoRustico && FragmentRenderer)
     {
         int32 RustCount = 0;
-        // Usamos el hash calculado en BeginPlay
+        // UNI-CORE: Pasamos ObjectFilterHash para ver SOLO los fragmentos de este actor
         FSoulForgeFragmentData* RustData = USoulForgeBridge::GetAllFragmentData(ObjectFilterHash, RustCount);
 
-        // --- DIAGNÓSTICO DE TELEMETRÍA (SOLICITADO POR USUARIO) ---
         if (RustCount > 0) 
         {
-            static int32 LogCounter = 0;
-            if (LogCounter++ % 120 == 0) // Logueamos cada ~2 segundos
-            {
-                UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Debug] Actor: %s | Hash: %u | Fragmentos en Rust: %d"), 
-                       *GetOwner()->GetName(), ObjectFilterHash, RustCount);
+            // --- DIAGNÓSTICO EXTREMO (V8.8) ---
+            static int32 DebugSkip = 0;
+            bool bShouldLog = (DebugSkip++ % 120 == 0); // Cada ~2 segundos
+
+            if (bShouldLog) {
+                UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Insight] Actor: %s | Nodos en memoria Rust: %d"), *GetOwner()->GetName(), RustCount);
             }
 
-            // Agrupamos por categoría (0, 1, 2)
-            TArray<FTransform> Grouped[3];
+            // Agrupamos por categoría (0, 1, 2, 3)
+            TArray<FTransform> Grouped[4];
             
             for (int32 i = 0; i < RustCount; ++i)
             {
-                int32 Cat = FMath::Clamp(RustData[i].Category, 0, 2);
+                int32 Cat = FMath::Clamp(RustData[i].Category, 0, 3);
                 
-                // Conversión protegida
                 FVector Pos(RustData[i].X, RustData[i].Y, RustData[i].Z);
-                FRotator Rot(RustData[i].Pitch, RustData[i].Yaw, RustData[i].Roll);
                 FVector Scale(RustData[i].ScaleX, RustData[i].ScaleY, RustData[i].ScaleZ);
+                FRotator Rot(RustData[i].Pitch, RustData[i].Yaw, RustData[i].Roll);
+
+                if (bShouldLog && i < 3) {
+                    UE_LOG(LogTemp, Display, TEXT("  > Fragm %d: Cat=%d | Pos=%s | Scale=%s"), i, Cat, *Pos.ToString(), *Scale.ToString());
+                }
+
+                // VALIDACIÓN DE SEGURIDAD: Si la escala es casi 0, forzamos visibilidad
+                if (Scale.SizeSquared() < 0.0001f) Scale = FVector(1.0f);
 
                 Grouped[Cat].Add(FTransform(Rot.Quaternion(), Pos, Scale));
             }
 
-            // Enviamos los batches al renderer (FILTRADO POR ACTOR)
-            for (int32 c = 0; c < 3; ++c)
+            // Enviamos los batches al renderer
+            for (int32 c = 0; c < 4; ++c)
             {
-                if (Grouped[c].Num() > 0)
+                FragmentRenderer->UpdateHISMTransforms(c, Grouped[c]);
+            }
+
+            // AJUSTE DINÁMICO DE SUELO (Sigue-Montañas v1.0)
+            // Usamos el primer fragmento (el más pesado) para detectar si el terreno ha cambiado
+            if (RustCount > 0 && DebugSkip % 30 == 0) // Cada 0.5s
+            {
+                FHitResult TerrainHit;
+                FVector MyPos(RustData[0].X, RustData[0].Y, RustData[0].Z);
+                if (GetWorld()->LineTraceSingleByChannel(TerrainHit, MyPos + FVector(0,0,500), MyPos - FVector(0,0,1000), ECC_Visibility))
                 {
-                    FragmentRenderer->UpdateHISMTransforms(c, Grouped[c]);
+                    USoulForgeBridge::SetGroundZ(TerrainHit.ImpactPoint.Z);
                 }
             }
         }
@@ -287,9 +305,11 @@ void USoulForgeDestructible::TriggerDestruction()
     // --- DETECCIÓN DINÁMICA DE SUELO (EVITAR ATRAVESAR EL PISO) ---
     FHitResult GroundHit;
     FVector TraceStart = GetOwner()->GetActorLocation();
-    FVector TraceEnd = TraceStart - FVector(0, 0, 10000.0f); // Trazamos 100 metros hacia abajo
+    FVector TraceEnd = TraceStart - FVector(0, 0, 50000.0f); // Trazamos 500 metros hacia abajo
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(GetOwner());
+    // También ignoramos el renderer para que no nos bloquee el rayo
+    if (FragmentRenderer) Params.AddIgnoredComponent(FragmentRenderer.Get());
 
     if (GetWorld()->LineTraceSingleByChannel(GroundHit, TraceStart, TraceEnd, ECC_Visibility, Params))
     {
@@ -314,7 +334,8 @@ void USoulForgeDestructible::TriggerDestruction()
         case EExplosiveType::PETN:           RustPreset = 3; break;
         case EExplosiveType::Matrix:         RustPreset = 4; break;
         case EExplosiveType::Collapse:       RustPreset = 5; break;
-        case EExplosiveType::RealityShatter: RustPreset = 6; break;
+        case EExplosiveType::RealityShatter: RustPreset=6; break;
+        case EExplosiveType::Vortex:         RustPreset = 7; break;
         default: RustPreset = 0; break;
     }
 
@@ -334,6 +355,8 @@ void USoulForgeDestructible::TriggerDestruction()
             GetOwner()->GetActorRotation()
         );
     }
+
+    if (FragmentRenderer) { FragmentRenderer->NotifyExplosion(); }
 }
 
 void USoulForgeDestructible::PreviewExplosion()
@@ -380,8 +403,8 @@ void USoulForgeDestructible::RecibirImpacto(FVector PuntoDeGolpe, FVector Direcc
     
     if (FragmentRenderer) { FragmentRenderer->NotifyExplosion(); }
 
-    if (RealCount > 0) {
-        for (int32 i = 0; i < FMath::Min(RealCount, MaxNodos); i++) {
+    if (RealCount > 0 && OutFragments.Num() > 0) {
+        for (int32 i = 0; i < FMath::Min(OutFragments.Num(), MaxNodos); i++) {
             NodePool[i].bEstaActivo = 1;
             NodePool[i].Posicion = FVector(OutFragments[i].X, OutFragments[i].Y, OutFragments[i].Z);
             NodePool[i].Rotacion = FQuat::Identity; // La rotación base
@@ -505,7 +528,19 @@ void USoulForgeDestructible::PreparaRenderizadoFragmentos()
             UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Visual] No se encontró textura base, usando material limpio."));
         }
 
-        InstancedRenderer->SetMaterial(0, ShardMID);
+        if (InstancedRenderer) {
+            InstancedRenderer->SetMaterial(0, ShardMID);
+        }
+
+        if (FragmentRenderer) {
+            FragmentRenderer->FragmentMaterial = ShardMID;
+            // Forzar actualización en HISMs existentes
+            FragmentRenderer->EnsureHISMsCreated();
+            if (auto* S = FragmentRenderer->HISMForCategory(0)) S->SetMaterial(0, ShardMID);
+            if (auto* C = FragmentRenderer->HISMForCategory(1)) C->SetMaterial(0, ShardMID);
+            if (auto* G = FragmentRenderer->HISMForCategory(2)) G->SetMaterial(0, ShardMID);
+            if (auto* D = FragmentRenderer->HISMForCategory(3)) D->SetMaterial(0, ShardMID);
+        }
     }
 }
 

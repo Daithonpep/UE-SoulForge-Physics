@@ -7,7 +7,6 @@
         "Includes": [
             "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\soulforgephysx\\definitions.soulforgephysx.h",
             "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\public\\soulforgefragmentrenderer.h",
-            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\classes\\components\\hierarchicalinstancedstaticmeshcomponent.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\classes\\components\\instancedstaticmeshcomponent.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\public\\elements\\sminstance\\sminstancemanager.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\public\\elements\\sminstance\\sminstanceelementid.h",
@@ -20,7 +19,6 @@
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\public\\instancedstaticmesh\\isminstancedatasceneproxy.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\public\\instancedstaticmesh\\instanceattributetracker.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\instancedstaticmeshcomponent.generated.h",
-            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\hierarchicalinstancedstaticmeshcomponent.generated.h",
             "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\public\\soulforgebridge.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\uobject\\noexporttypes.h",
             "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\uobject\\propertyaccessutil.h",

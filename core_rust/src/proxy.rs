@@ -11,13 +11,29 @@ use rand::Rng;
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 #[repr(i32)]
 pub enum DamagePreset {
-    Explosion = 0,     // TNT: explosión radial clásica
-    Implosion = 1,     // Agujero Negro: succión hacia epicentro
-    Impact = 2,        // Impacto direccional
-    ShapedCharge = 3,  // Carga hueca: cono de fragmentos
-    Cinematic = 4,     // Matrix: gravedad cero
-    Collapse = 5,      // Júpiter: colapso gravitacional
-    RealityShatter = 6,// Realidad Fracturada: ondas dimensionales
+    Explosion = 0,
+    Implosion = 1,
+    Impact = 2,
+    ShapedCharge = 3,
+    Cinematic = 4,
+    Collapse = 5,
+    RealityShatter = 6,
+    Vortex = 7,
+}
+
+impl DamagePreset {
+    pub fn from_i32(val: i32) -> Self {
+        match val {
+            1 => Self::Implosion,
+            2 => Self::Impact,
+            3 => Self::ShapedCharge,
+            4 => Self::Cinematic,
+            5 => Self::Collapse,
+            6 => Self::RealityShatter,
+            7 => Self::Vortex,
+            _ => Self::Explosion,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -26,8 +42,8 @@ pub enum FragmentCategory { Slab = 0, Chunk = 1, Gravel = 2, Dust = 3 }
 impl FragmentCategory {
     pub fn size_scale(&self) -> f32 {
         match self {
-            // Escalas pequeñas: los fragmentos son ESCOMBROS, no cubos enteros
-            Self::Slab => 0.35, Self::Chunk => 0.18, Self::Gravel => 0.08, Self::Dust => 0.03,
+            // Escalas aumentadas para visibilidad de Júpiter
+            Self::Slab => 0.85, Self::Chunk => 0.45, Self::Gravel => 0.25, Self::Dust => 0.12,
         }
     }
     pub fn base_mass(&self) -> f32 {
@@ -52,6 +68,7 @@ impl FragmentLayout {
             DamagePreset::Cinematic    => (0.06, 0.16, 0.29, 0.49),
             DamagePreset::Collapse     => (0.00, 0.16, 0.28, 0.56),
             DamagePreset::RealityShatter => (0.03, 0.16, 0.27, 0.54),
+            DamagePreset::Vortex         => (0.05, 0.20, 0.35, 0.40),
         };
         
         // Escalamos al target_count (mínimo 10 fragmentos)
@@ -118,10 +135,10 @@ fn get_effect_physics(preset: DamagePreset, energy: f32) -> EffectPhysics {
             gravity_override: -980.0,
         },
         DamagePreset::Implosion => EffectPhysics {
-            // Agujero Negro: Estallido inicial, luego succión
-            radial_force: 800.0 * power,
-            vertical_boost: 500.0 * power,
-            randomness: 400.0,
+            // Agujero Negro: Empuje inicial VIOLENTO para que vuelen lejos (1300)
+            radial_force: 1300.0 * power,
+            vertical_boost: 600.0 * power,
+            randomness: 500.0,
             gravity_override: 0.0,
         },
         DamagePreset::Impact => EffectPhysics {
@@ -137,10 +154,10 @@ fn get_effect_physics(preset: DamagePreset, energy: f32) -> EffectPhysics {
             gravity_override: -980.0,
         },
         DamagePreset::Cinematic => EffectPhysics {
-            // Matrix: gravedad cero, fragmentos flotan lento
-            radial_force: 600.0 * power,
-            vertical_boost: 400.0 * power,
-            randomness: 600.0,
+            // Matrix: Explosión inicial potente + Congelación
+            radial_force: 1400.0 * power,
+            vertical_boost: 600.0 * power,
+            randomness: 800.0,
             gravity_override: 0.0,
         },
         DamagePreset::Collapse => EffectPhysics {
@@ -151,10 +168,18 @@ fn get_effect_physics(preset: DamagePreset, energy: f32) -> EffectPhysics {
             gravity_override: -1500.0,
         },
         DamagePreset::RealityShatter => EffectPhysics {
+            // Ruptura de Realidad: Caos total, gravedad cero (1500)
             radial_force: 1500.0 * power,
-            vertical_boost: 1200.0 * power,
-            randomness: 800.0,
-            gravity_override: -980.0,
+            vertical_boost: 800.0 * power,
+            randomness: 2000.0, // Caos extremo
+            gravity_override: 0.0,
+        },
+        DamagePreset::Vortex => EffectPhysics {
+            // Vórtice: Expansión moderada + Tornado dinámico
+            radial_force: 600.0 * power,
+            vertical_boost: 300.0 * power,
+            randomness: 400.0,
+            gravity_override: 0.0,
         },
     }
 }
@@ -164,23 +189,20 @@ fn get_effect_physics(preset: DamagePreset, energy: f32) -> EffectPhysics {
 // ═══════════════════════════════════════════════════════════
 
 pub fn destroy(
-    id: String, 
+    id: &str, 
     preset: DamagePreset, 
     energy: f32, 
-    _epi: [f32; 3], 
-    _radius: f32, 
     frag_level: f32,
-    custom_count: u32
-) -> Result<String, String> {
+    custom_count: i32
+) -> (u32, u32) {
     let proxy = {
-        let mut s = state().lock().map_err(|e| e.to_string())?;
-        s.proxies.remove(&id).ok_or_else(|| format!("Proxy [{}] no encontrado", id))?
+        let Ok(mut s) = crate::proxy::state().lock() else { return (0, 0) };
+        let Some(p) = s.proxies.remove(id) else { return (0, 0) };
+        p
     };
 
-    // Hash idéntico al de C++ para que los fragmentos coincidan
-    let hash = fnv1a_hash(&id);
-    
-    let layout = FragmentLayout::for_preset(preset, frag_level, custom_count);
+    let hash = fnv1a_hash(id);
+    let layout = FragmentLayout::for_preset(preset, frag_level, custom_count as u32);
     let physics = get_effect_physics(preset, energy);
     let mut rng = rand::thread_rng();
 
@@ -209,28 +231,23 @@ pub fn destroy(
             let vy = (dy/d) * physics.radial_force + rng.gen_range(-physics.randomness..physics.randomness);
             let vz = (dz/d) * physics.radial_force + physics.vertical_boost + rng.gen_range(-physics.randomness..physics.randomness);
 
+            let s = cat.size_scale() * rng.gen_range(0.8..1.2);
             fragment_sim::register_v7(
                 [px, py, pz], 
                 [vx, vy, vz], 
                 cat.base_mass(), 
-                cat.size_scale() * rng.gen_range(0.8..1.2), 
+                [s, s, s], // Escapa inicial uniforme
                 *cat as i32, 
-                hash  // ← AHORA PASAMOS EL HASH CORRECTO
+                hash
             );
         }
     }
 
     // El modo del efecto controla la física post-detonación en fragment_sim
-    // Epicentro = posición del proxy (NO el parámetro _epi que llega como [0,0,0])
     fragment_sim::trigger_auto_power(preset as i32, proxy.position, energy);
     
-    crate::ffi::sf_log(&format!(
-        "✅ [{}] hash={} fragmentos={} preset={:?}", 
-        id, hash, 
-        layout.slabs + layout.chunks + layout.gravels + layout.dusts,
-        preset
-    ));
-    Ok(id)
+    let total_count = layout.slabs + layout.chunks + layout.gravels + layout.dusts;
+    (hash, total_count)
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -246,6 +263,12 @@ pub fn state() -> &'static Mutex<ProxyState> {
 pub fn register(id: String, pos: [f32; 3], ext: [f32; 3], den: f32) {
     if let Ok(mut s) = state().lock() {
         s.proxies.insert(id.clone(), PhysicsProxy::new(id, pos, ext, den));
+    }
+}
+
+pub fn remove(id: &str) {
+    if let Ok(mut s) = state().lock() {
+        s.proxies.remove(id);
     }
 }
 

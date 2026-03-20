@@ -1,5 +1,3 @@
-// ─── SoulForgeFragmentRenderer.cpp ───────────────────────────────────────────
-
 #include "SoulForgeFragmentRenderer.h"
 #include "SoulForgeBridge.h"
 
@@ -10,7 +8,6 @@ USoulForgeFragmentRenderer::USoulForgeFragmentRenderer()
 
 void USoulForgeFragmentRenderer::ExplodeIntoFragments(FString JsonData)
 {
-	// Esta función es legacy. Ahora usamos DetonarNativo que devuelve un array de estructuras.
 }
 
 void USoulForgeFragmentRenderer::ClearAllFragments()
@@ -24,14 +21,24 @@ void USoulForgeFragmentRenderer::BeginPlay()
 
     // Auto-detectar mesh del actor si no se asignaron meshes de fragmento
     UStaticMesh* FallbackMesh = nullptr;
-    if (!SlabMesh || !ChunkMesh || !GravelMesh)
+    if (!SlabMesh || !ChunkMesh || !GravelMesh || !DustMesh)
     {
         if (AActor* Owner = GetOwner())
         {
-            if (UStaticMeshComponent* SMC = Owner->FindComponentByClass<UStaticMeshComponent>())
+            TArray<UStaticMeshComponent*> MeshComponents;
+            Owner->GetComponents<UStaticMeshComponent>(MeshComponents);
+            
+            for (UStaticMeshComponent* SMC : MeshComponents)
             {
-                FallbackMesh = SMC->GetStaticMesh();
-                UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Auto-detectado mesh: %s"), FallbackMesh ? *FallbackMesh->GetName() : TEXT("null"));
+                // Ignorar HISMs internos del propio sistema de fragmentos
+                if (SMC == this || SMC->IsA<UInstancedStaticMeshComponent>()) continue;
+                
+                if (SMC->GetStaticMesh())
+                {
+                    FallbackMesh = SMC->GetStaticMesh();
+                    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Auto-detectado mesh base: %s"), *FallbackMesh->GetName());
+                    break;
+                }
             }
         }
     }
@@ -39,49 +46,46 @@ void USoulForgeFragmentRenderer::BeginPlay()
     if (!SlabMesh)   SlabMesh   = FallbackMesh;
     if (!ChunkMesh)  ChunkMesh  = FallbackMesh;
     if (!GravelMesh) GravelMesh = FallbackMesh;
+    if (!DustMesh)   DustMesh   = FallbackMesh;
 
-    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Inicializando HISMs en BeginPlay..."));
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Inicializando HISMs (Slab, Chunk, Gravel, Dust)..."));
 
 	HISMSlab   = InitHISM(SlabMesh,   TEXT("HISMSlab"));
     HISMChunk  = InitHISM(ChunkMesh,  TEXT("HISMChunk"));
     HISMGravel = InitHISM(GravelMesh, TEXT("HISMGravel"));
+    HISMDust   = InitHISM(DustMesh,   TEXT("HISMDust"));
 
-    if (HISMSlab && HISMChunk && HISMGravel) {
-        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] ✅ Todos los HISMs creados y registrados."));
+    if (HISMSlab && HISMChunk && HISMGravel && HISMDust) {
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] ✅ Todos los HISMs (4 categorías) creados con éxito."));
     } else {
-        UE_LOG(LogTemp, Error, TEXT("[SoulForge-Renderer] ❌ Error creando los componentes HISM!"));
+        UE_LOG(LogTemp, Error, TEXT("[SoulForge-Renderer] ❌ Error creando uno o más componentes HISM!"));
     }
+    
+    // FORZAR INICIALIZACIÓN TEMPRANA (Evita tirones en explosión)
+    EnsureHISMsCreated();
 }
 
-UHierarchicalInstancedStaticMeshComponent* USoulForgeFragmentRenderer::InitHISM(
-    UStaticMesh* Mesh,
-    const FName& Name
-)
+UInstancedStaticMeshComponent* USoulForgeFragmentRenderer::InitHISM(UStaticMesh* Mesh, const FName& Name)
 {
-    UHierarchicalInstancedStaticMeshComponent* HISM = NewObject<UHierarchicalInstancedStaticMeshComponent>(
-        GetOwner(), UHierarchicalInstancedStaticMeshComponent::StaticClass(), Name
+    UInstancedStaticMeshComponent* HISM = NewObject<UInstancedStaticMeshComponent>(
+        GetOwner(), UInstancedStaticMeshComponent::StaticClass(), Name
     );
 
     if (!HISM) { return nullptr; }
 
     HISM->RegisterComponent();
-    HISM->AttachToComponent(
-        GetOwner()->GetRootComponent(),
-        FAttachmentTransformRules::KeepWorldTransform
-    );
+    HISM->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 
     if (Mesh) { HISM->SetStaticMesh(Mesh); }
     if (FragmentMaterial) { HISM->SetMaterial(0, FragmentMaterial); }
 
     HISM->SetCastShadow(true);
+    HISM->SetMobility(EComponentMobility::Movable);
     HISM->bSelectable = false;
-    
-    // --- OPTIMIZACIÓN CRÍTICA (Anticrash) ---
-    // Los fragmentos son miles; no pueden afectar la navegación ni tener colisión compleja
     HISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     HISM->SetCanEverAffectNavigation(false);
     HISM->bFillCollisionUnderneathForNavmesh = false;
-    HISM->bUseAsOccluder = false; // Ahorra GPU
+    HISM->bUseAsOccluder = false;
     HISM->SetGenerateOverlapEvents(false);
 
     return HISM;
@@ -95,12 +99,11 @@ void USoulForgeFragmentRenderer::EndPlay(const EEndPlayReason::Type EndPlayReaso
 
 void USoulForgeFragmentRenderer::TickUpdate(float DeltaTime)
 {
-    // La actualización ahora se hace vía Shared Memory Pool en el USoulForgeDestructible
 }
 
 void USoulForgeFragmentRenderer::Cleanup()
 {
-    auto ClearHISM = [](UHierarchicalInstancedStaticMeshComponent* H)
+    auto ClearHISM = [](UInstancedStaticMeshComponent* H)
     {
         if (H) { H->ClearInstances(); }
     };
@@ -108,6 +111,7 @@ void USoulForgeFragmentRenderer::Cleanup()
     ClearHISM(HISMSlab);
     ClearHISM(HISMChunk);
     ClearHISM(HISMGravel);
+    ClearHISM(HISMDust);
 
     Fragments.Empty();
     ActiveCount = 0;
@@ -118,7 +122,7 @@ int32 USoulForgeFragmentRenderer::GetActiveFragmentCount() const
     return ActiveCount;
 }
 
-UHierarchicalInstancedStaticMeshComponent* USoulForgeFragmentRenderer::HISMForCategory(int32 Category)
+UInstancedStaticMeshComponent* USoulForgeFragmentRenderer::HISMForCategory(int32 Category)
 {
     EnsureHISMsCreated();
     
@@ -127,66 +131,76 @@ UHierarchicalInstancedStaticMeshComponent* USoulForgeFragmentRenderer::HISMForCa
         case 0:  return HISMSlab;
         case 1:  return HISMChunk;
         case 2:  return HISMGravel;
+        case 3:  return HISMDust;
         default: return nullptr;
     }
 }
 
 void USoulForgeFragmentRenderer::EnsureHISMsCreated()
 {
-    if (HISMSlab != nullptr) return;
+    if (AActor* Owner = GetOwner())
+    {
+        TArray<UInstancedStaticMeshComponent*> FoundHISMs;
+        Owner->GetComponents<UInstancedStaticMeshComponent>(FoundHISMs);
 
-    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] 🚀 Inicialización ON-DEMAND de HISMs ante posible fallo de BeginPlay."));
-
-    HISMSlab   = InitHISM(SlabMesh,   TEXT("HISMSlab"));
-    HISMChunk  = InitHISM(ChunkMesh,  TEXT("HISMChunk"));
-    HISMGravel = InitHISM(GravelMesh, TEXT("HISMGravel"));
-
-    if (HISMSlab && HISMChunk && HISMGravel) {
-        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] ✅ Pools creados bajo demanda con éxito."));
+        for (auto* H : FoundHISMs) {
+            FString HName = H->GetName();
+            if (HName.Contains(TEXT("HISMSlab")))   HISMSlab = H;
+            else if (HName.Contains(TEXT("HISMChunk")))  HISMChunk = H;
+            else if (HName.Contains(TEXT("HISMGravel"))) HISMGravel = H;
+            else if (HName.Contains(TEXT("HISMDust")))   HISMDust = H;
+        }
     }
+
+    // Inicializar o actualizar mallas si es necesario
+    auto SetupHISM = [&](TObjectPtr<UInstancedStaticMeshComponent>& Target, UStaticMesh* Mesh, const FName& Name) {
+        if (!Target) {
+            Target = InitHISM(Mesh, Name);
+        } else if (Mesh && !Target->GetStaticMesh()) {
+            Target->SetStaticMesh(Mesh);
+            if (FragmentMaterial) Target->SetMaterial(0, FragmentMaterial);
+        }
+    };
+
+    SetupHISM(HISMSlab,   SlabMesh,   TEXT("SF_HISMSlab"));
+    SetupHISM(HISMChunk,  ChunkMesh,  TEXT("SF_HISMChunk"));
+    SetupHISM(HISMGravel, GravelMesh, TEXT("SF_HISMGravel"));
+    SetupHISM(HISMDust,   DustMesh,   TEXT("SF_HISMDust"));
 }
 
 void USoulForgeFragmentRenderer::UpdateHISMTransforms(int32 Category, const TArray<FTransform>& NewTransforms)
 {
-    static bool bLogCallOnce = false;
-    if (!bLogCallOnce) {
-        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer-Entry] Llamada a UpdateHISMTransforms: Categoría %d, Transformaciones %d"), Category, NewTransforms.Num());
-        bLogCallOnce = true;
-    }
+    UInstancedStaticMeshComponent* TargetHISM = HISMForCategory(Category);
+    if (!TargetHISM) return;
 
-    // 1. Buscamos qué tipo de pedazo vamos a actualizar (Slab, Chunk o Gravel)
-    UHierarchicalInstancedStaticMeshComponent* TargetHISM = HISMForCategory(Category);
-    
-    if (!TargetHISM || NewTransforms.Num() == 0) {
-        static bool bLogFailOnce = false;
-        if (!bLogFailOnce) {
-            UE_LOG(LogTemp, Error, TEXT("[SoulForge-Renderer-Entry] ❌ Error: HISM para categoría %d es NULO o no hay transformaciones."), Category);
-            bLogFailOnce = true;
-        }
-        return;
-    }
-
-    // 2. Si no hay suficientes instancias creadas, las creamos de golpe
     int32 CurrentInstances = TargetHISM->GetInstanceCount();
     int32 RequiredInstances = NewTransforms.Num();
 
+    // 1. Ampliar el pool si es necesario (Add es barato)
     if (CurrentInstances < RequiredInstances)
     {
-        // Añadimos las que faltan en la posición cero temporalmente
         TArray<FTransform> PaddingTransforms;
-        PaddingTransforms.Init(FTransform::Identity, RequiredInstances - CurrentInstances);
+        PaddingTransforms.Init(FTransform(FQuat::Identity, FVector::ZeroVector, FVector::ZeroVector), RequiredInstances - CurrentInstances);
         TargetHISM->AddInstances(PaddingTransforms, false);
     }
-    else if (CurrentInstances > RequiredInstances)
+    
+    // 2. Actualización total o parcial
+    if (RequiredInstances > 0)
     {
-        // Si sobran (porque algunos se destruyeron), podríamos borrarlos, 
-        // pero por rendimiento es mejor solo escalarlos a 0 o simplemente ignorarlos
-        // ya que BatchUpdate solo actualizará los primeros RequiredInstances.
+        TargetHISM->BatchUpdateInstancesTransforms(0, NewTransforms, true, true, true);
     }
 
-    // 3. LA INYECCIÓN DIRECTA: Actualizamos todas las posiciones en 1 solo frame
-    // Ponemos bMarkRenderStateDirty a FALSE para evitar que el sistema se congele
-    // tratando de reconstruir el Octree cada vez que un fragmento se mueve 1cm.
-    TargetHISM->BatchUpdateInstancesTransforms(0, NewTransforms, true, false, true);
-    TargetHISM->MarkRenderTransformDirty();
+    // 3. Ocultar los sobrantes (Pool Management)
+    // En lugar de RemoveInstance (muy lento), escalamos a 0 los que no necesitemos hoy.
+    if (CurrentInstances > RequiredInstances)
+    {
+        TArray<int32> IndicesToHide;
+        TArray<FTransform> HideTransforms;
+        for (int32 i = RequiredInstances; i < CurrentInstances; ++i)
+        {
+            IndicesToHide.Add(i);
+            HideTransforms.Add(FTransform(FQuat::Identity, FVector::ZeroVector, FVector::ZeroVector));
+        }
+        TargetHISM->BatchUpdateInstancesTransforms(RequiredInstances, HideTransforms, true, true, true);
+    }
 }

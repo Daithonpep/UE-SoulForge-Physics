@@ -254,6 +254,8 @@ struct Z_Construct_UEnum_SoulForgePhysX_EExplosiveType_Statics
 		{ "RealityShatter.Name", "EExplosiveType::RealityShatter" },
 		{ "TNT.DisplayName", "TNT (Explosi\xc3\xb3n Convencional)" },
 		{ "TNT.Name", "EExplosiveType::TNT" },
+		{ "Vortex.DisplayName", "V\xc3\xb3rtice (Tornado)" },
+		{ "Vortex.Name", "EExplosiveType::Vortex" },
 	};
 #endif // WITH_METADATA
 	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
@@ -264,6 +266,7 @@ struct Z_Construct_UEnum_SoulForgePhysX_EExplosiveType_Statics
 		{ "EExplosiveType::Matrix", (int64)EExplosiveType::Matrix },
 		{ "EExplosiveType::Collapse", (int64)EExplosiveType::Collapse },
 		{ "EExplosiveType::RealityShatter", (int64)EExplosiveType::RealityShatter },
+		{ "EExplosiveType::Vortex", (int64)EExplosiveType::Vortex },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct Z_Construct_UEnum_SoulForgePhysX_EExplosiveType_Statics 
@@ -390,11 +393,11 @@ struct Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics
 	static constexpr UECodeGen_Private::FMetaDataPairParam Struct_MetaDataParams[] = {
 		{ "BlueprintType", "true" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// ==================================================\n// 2. ESTRUCTURAS DE MEMORIA COMPARTIDA\n// ==================================================\n" },
+		{ "Comment", "// ESTRUCTURA FFI PURA (SIN REFLEXI\xc3\x93N DE UNREAL PARA EVITAR VTABLE / PADDING)\n" },
 #endif
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "2. ESTRUCTURAS DE MEMORIA COMPARTIDA" },
+		{ "ToolTip", "ESTRUCTURA FFI PURA (SIN REFLEXI\xc3\x93N DE UNREAL PARA EVITAR VTABLE / PADDING)" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_X_MetaData[] = {
@@ -1394,7 +1397,7 @@ const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_USoulForgeBrid
 const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_PosicionActual = { "PosicionActual", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, PosicionActual), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Energia = { "Energia", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Energia), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo = { "Explosivo", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Explosivo), Z_Construct_UEnum_SoulForgePhysX_EExplosiveType, METADATA_PARAMS(0, nullptr) }; // 2832337441
+const UECodeGen_Private::FEnumPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo = { "Explosivo", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Explosivo), Z_Construct_UEnum_SoulForgePhysX_EExplosiveType, METADATA_PARAMS(0, nullptr) }; // 1116665067
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_CantidadNodos = { "CantidadNodos", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, CantidadNodos), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Radio = { "Radio", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Radio), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::PropPointers[] = {
@@ -1483,8 +1486,8 @@ const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_USoulForgeBrid
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_Energy = { "Energy", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, Energy), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_Preset = { "Preset", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, Preset), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_FragLevel = { "FragLevel", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, FragLevel), METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData_Inner = { "OutData", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FSoulForgeFragmentData, METADATA_PARAMS(0, nullptr) }; // 1825213573
-const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData = { "OutData", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, OutData), EArrayPropertyFlags::None, METADATA_PARAMS(0, nullptr) }; // 1825213573
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData_Inner = { "OutData", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FSoulForgeFragmentData, METADATA_PARAMS(0, nullptr) }; // 3758934569
+const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData = { "OutData", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, OutData), EArrayPropertyFlags::None, METADATA_PARAMS(0, nullptr) }; // 3758934569
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_CantidadNodos = { "CantidadNodos", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, CantidadNodos), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::PropPointers[] = {
@@ -2539,8 +2542,8 @@ struct Z_Construct_UClass_USoulForgeBridge_Statics
 		{ &Z_Construct_UFunction_USoulForgeBridge_ApplySettings, "ApplySettings" }, // 1087382506
 		{ &Z_Construct_UFunction_USoulForgeBridge_BorrarProxyEnRust, "BorrarProxyEnRust" }, // 614299429
 		{ &Z_Construct_UFunction_USoulForgeBridge_CalcularOnda, "CalcularOnda" }, // 3728353418
-		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar, "DetonarMilitar" }, // 823911029
-		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarNativo, "DetonarNativo" }, // 3292975459
+		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar, "DetonarMilitar" }, // 332403523
+		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarNativo, "DetonarNativo" }, // 195762033
 		{ &Z_Construct_UFunction_USoulForgeBridge_FiltrarInstancias, "FiltrarInstancias" }, // 932500953
 		{ &Z_Construct_UFunction_USoulForgeBridge_GetExplosionPreview, "GetExplosionPreview" }, // 2246220172
 		{ &Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState, "GetPerformanceState" }, // 576613424
@@ -2608,11 +2611,11 @@ struct Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhy
 		{ ESoulForgeDamagePreset_StaticEnum, TEXT("ESoulForgeDamagePreset"), &Z_Registration_Info_UEnum_ESoulForgeDamagePreset, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 391389145U) },
 		{ EPhysicsLOD_StaticEnum, TEXT("EPhysicsLOD"), &Z_Registration_Info_UEnum_EPhysicsLOD, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2707074426U) },
 		{ EMaterialType_StaticEnum, TEXT("EMaterialType"), &Z_Registration_Info_UEnum_EMaterialType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 497896940U) },
-		{ EExplosiveType_StaticEnum, TEXT("EExplosiveType"), &Z_Registration_Info_UEnum_EExplosiveType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2832337441U) },
+		{ EExplosiveType_StaticEnum, TEXT("EExplosiveType"), &Z_Registration_Info_UEnum_EExplosiveType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1116665067U) },
 		{ EPowerType_StaticEnum, TEXT("EPowerType"), &Z_Registration_Info_UEnum_EPowerType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1062630852U) },
 	};
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ FSoulForgeFragmentData::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewStructOps, TEXT("SoulForgeFragmentData"),&Z_Registration_Info_UScriptStruct_FSoulForgeFragmentData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeFragmentData), 1825213573U) },
+		{ FSoulForgeFragmentData::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewStructOps, TEXT("SoulForgeFragmentData"),&Z_Registration_Info_UScriptStruct_FSoulForgeFragmentData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeFragmentData), 3758934569U) },
 		{ FEngineState::StaticStruct, Z_Construct_UScriptStruct_FEngineState_Statics::NewStructOps, TEXT("EngineState"),&Z_Registration_Info_UScriptStruct_FEngineState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FEngineState), 3212734741U) },
 		{ FShockwaveData::StaticStruct, Z_Construct_UScriptStruct_FShockwaveData_Statics::NewStructOps, TEXT("ShockwaveData"),&Z_Registration_Info_UScriptStruct_FShockwaveData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FShockwaveData), 3033931910U) },
 		{ FActivePowerPayload::StaticStruct, Z_Construct_UScriptStruct_FActivePowerPayload_Statics::NewStructOps, TEXT("ActivePowerPayload"),&Z_Registration_Info_UScriptStruct_FActivePowerPayload, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FActivePowerPayload), 442066524U) },
@@ -2620,10 +2623,10 @@ struct Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhy
 		{ FActivePowerInstance::StaticStruct, Z_Construct_UScriptStruct_FActivePowerInstance_Statics::NewStructOps, TEXT("ActivePowerInstance"),&Z_Registration_Info_UScriptStruct_FActivePowerInstance, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FActivePowerInstance), 3403567033U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_USoulForgeBridge, USoulForgeBridge::StaticClass, TEXT("USoulForgeBridge"), &Z_Registration_Info_UClass_USoulForgeBridge, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeBridge), 354908870U) },
+		{ Z_Construct_UClass_USoulForgeBridge, USoulForgeBridge::StaticClass, TEXT("USoulForgeBridge"), &Z_Registration_Info_UClass_USoulForgeBridge, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeBridge), 3865647248U) },
 	};
 }; // Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_2073485562{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_1184881266{
 	TEXT("/Script/SoulForgePhysX"),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ClassInfo),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ScriptStructInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ScriptStructInfo),

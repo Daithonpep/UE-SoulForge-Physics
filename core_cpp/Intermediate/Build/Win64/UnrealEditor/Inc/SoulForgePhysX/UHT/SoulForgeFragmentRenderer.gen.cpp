@@ -13,8 +13,8 @@ void EmptyLinkFunctionForGeneratedCodeSoulForgeFragmentRenderer() {}
 
 // ********** Begin Cross Module References ********************************************************
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FTransform();
-ENGINE_API UClass* Z_Construct_UClass_UHierarchicalInstancedStaticMeshComponent_NoRegister();
 ENGINE_API UClass* Z_Construct_UClass_UInstancedStaticMeshComponent();
+ENGINE_API UClass* Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister();
 ENGINE_API UClass* Z_Construct_UClass_UMaterialInterface_NoRegister();
 ENGINE_API UClass* Z_Construct_UClass_UStaticMesh_NoRegister();
 SOULFORGEPHYSX_API UClass* Z_Construct_UClass_USoulForgeFragmentRenderer();
@@ -577,6 +577,16 @@ struct Z_Construct_UClass_USoulForgeFragmentRenderer_Statics
 		{ "ToolTip", "Mesh para grava fina." },
 #endif
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DustMesh_MetaData[] = {
+		{ "Category", "SoulForge|Meshes" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Mesh para polvo/part\xc3\xad""culas muy peque\xc3\xb1""as. */" },
+#endif
+		{ "ModuleRelativePath", "Public/SoulForgeFragmentRenderer.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Mesh para polvo/part\xc3\xad""culas muy peque\xc3\xb1""as." },
+#endif
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FragmentMaterial_MetaData[] = {
 		{ "Category", "SoulForge|Meshes" },
 #if !UE_BUILD_SHIPPING
@@ -589,12 +599,12 @@ struct Z_Construct_UClass_USoulForgeFragmentRenderer_Statics
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HISMSlab_MetaData[] = {
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// Cuatro HISM: uno por categor\xc3\xad""a (Slab, Chunk, Gravel, Dust).\n" },
+		{ "Comment", "// Cuatro ISM: uno por categor\xc3\xad""a (Slab, Chunk, Gravel, Dust).\n" },
 #endif
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/SoulForgeFragmentRenderer.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Cuatro HISM: uno por categor\xc3\xad""a (Slab, Chunk, Gravel, Dust)." },
+		{ "ToolTip", "Cuatro ISM: uno por categor\xc3\xad""a (Slab, Chunk, Gravel, Dust)." },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HISMChunk_MetaData[] = {
@@ -605,16 +615,22 @@ struct Z_Construct_UClass_USoulForgeFragmentRenderer_Statics
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/SoulForgeFragmentRenderer.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HISMDust_MetaData[] = {
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/SoulForgeFragmentRenderer.h" },
+	};
 #endif // WITH_METADATA
 
 // ********** Begin Class USoulForgeFragmentRenderer constinit property declarations ***************
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_SlabMesh;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_ChunkMesh;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_GravelMesh;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_DustMesh;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_FragmentMaterial;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_HISMSlab;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_HISMChunk;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_HISMGravel;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_HISMDust;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class USoulForgeFragmentRenderer constinit property declarations *****************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
@@ -647,18 +663,22 @@ struct Z_Construct_UClass_USoulForgeFragmentRenderer_Statics
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_SlabMesh = { "SlabMesh", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, SlabMesh), Z_Construct_UClass_UStaticMesh_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SlabMesh_MetaData), NewProp_SlabMesh_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_ChunkMesh = { "ChunkMesh", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, ChunkMesh), Z_Construct_UClass_UStaticMesh_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ChunkMesh_MetaData), NewProp_ChunkMesh_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_GravelMesh = { "GravelMesh", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, GravelMesh), Z_Construct_UClass_UStaticMesh_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GravelMesh_MetaData), NewProp_GravelMesh_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_DustMesh = { "DustMesh", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, DustMesh), Z_Construct_UClass_UStaticMesh_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DustMesh_MetaData), NewProp_DustMesh_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_FragmentMaterial = { "FragmentMaterial", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, FragmentMaterial), Z_Construct_UClass_UMaterialInterface_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FragmentMaterial_MetaData), NewProp_FragmentMaterial_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMSlab = { "HISMSlab", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMSlab), Z_Construct_UClass_UHierarchicalInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMSlab_MetaData), NewProp_HISMSlab_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMChunk = { "HISMChunk", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMChunk), Z_Construct_UClass_UHierarchicalInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMChunk_MetaData), NewProp_HISMChunk_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMGravel = { "HISMGravel", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMGravel), Z_Construct_UClass_UHierarchicalInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMGravel_MetaData), NewProp_HISMGravel_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMSlab = { "HISMSlab", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMSlab), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMSlab_MetaData), NewProp_HISMSlab_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMChunk = { "HISMChunk", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMChunk), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMChunk_MetaData), NewProp_HISMChunk_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMGravel = { "HISMGravel", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMGravel), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMGravel_MetaData), NewProp_HISMGravel_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMDust = { "HISMDust", nullptr, (EPropertyFlags)0x0144000000080008, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeFragmentRenderer, HISMDust), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HISMDust_MetaData), NewProp_HISMDust_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_SlabMesh,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_ChunkMesh,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_GravelMesh,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_DustMesh,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_FragmentMaterial,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMSlab,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMChunk,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMGravel,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::NewProp_HISMDust,
 };
 static_assert(UE_ARRAY_COUNT(Z_Construct_UClass_USoulForgeFragmentRenderer_Statics::PropPointers) < 2048);
 // ********** End Class USoulForgeFragmentRenderer Property Definitions ****************************
@@ -706,10 +726,10 @@ struct Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhy
 		{ FSoulForgeFragmentInstance::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeFragmentInstance_Statics::NewStructOps, TEXT("SoulForgeFragmentInstance"),&Z_Registration_Info_UScriptStruct_FSoulForgeFragmentInstance, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeFragmentInstance), 949133894U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_USoulForgeFragmentRenderer, USoulForgeFragmentRenderer::StaticClass, TEXT("USoulForgeFragmentRenderer"), &Z_Registration_Info_UClass_USoulForgeFragmentRenderer, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeFragmentRenderer), 4272035281U) },
+		{ Z_Construct_UClass_USoulForgeFragmentRenderer, USoulForgeFragmentRenderer::StaticClass, TEXT("USoulForgeFragmentRenderer"), &Z_Registration_Info_UClass_USoulForgeFragmentRenderer, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeFragmentRenderer), 100560509U) },
 	};
 }; // Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_1109931181{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_2921585913{
 	TEXT("/Script/SoulForgePhysX"),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ClassInfo),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ScriptStructInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ScriptStructInfo),

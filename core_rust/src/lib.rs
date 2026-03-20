@@ -20,10 +20,10 @@ pub struct CFragment {
 
 #[repr(C)]
 pub struct REngineState {
-    pub cpu_time: f32,
-    pub gpu_time: f32,
-    pub active_nodes: i32,
-    pub pending_cleanups: i32,
+    pub active_nodes: f32,
+    pub fps: f32,
+    pub efficiency: f32,
+    pub sim_time: f32,
 }
 
 #[no_mangle]

@@ -225,7 +225,7 @@ FEngineState USoulForgeBridge::GetPerformanceState()
     FEngineState State;
     FMemory::Memzero(&State, sizeof(FEngineState));
     if (CppGetEngineState) {
-        CppGetEngineState((float*)&State);
+        CppGetEngineState(&State);
     }
     return State;
 }
@@ -244,10 +244,9 @@ int32 USoulForgeBridge::DetonarNativo(FString ProxyId, float Energy, int32 Prese
     {
         FTCHARToUTF8 ConvertId(*ProxyId);
         // Usamos dist=FragLevel y radius=150.0 (o el radio configurado)
-        CppDetonarNativo(ConvertId.Get(), Energy, (float)Preset, FragLevel, 150.0f, CantidadNodos);
+        return (int32)CppDetonarNativo(ConvertId.Get(), Energy, (float)Preset, FragLevel, 150.0f, CantidadNodos);
     }
     
-    OutData.Empty();
     return 0;
 }
 

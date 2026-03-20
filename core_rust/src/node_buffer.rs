@@ -152,7 +152,7 @@ impl NodeBuffer {
             (&mut (*p).lifetime)[idx] = life;
             
             // JUPITER REALISM V4: Deformación No-Cúbica
-            let chaos = unsafe { GLOBAL_CHAOS };
+            let chaos = GLOBAL_CHAOS;
             let r_seed = (pos[0] * 123.0 + pos[1] * 456.0 + pos[2] * 789.0).abs() as u32;
             
             // Si nos pasan una escala física (desde proxy.rs), la respetamos.
@@ -213,8 +213,11 @@ impl NodeBuffer {
                 let temp = self.temperature[i];
                 let color = if self.material_id[i] == 100 { 0xFFFFFF00 } else if temp > 1000.0 { 0xFF0055FF } else { 0xFF888888 };
                 write.colors.push(color);
-                let scale = if self.material_id[i] == 100 { 2.0 } else { 5.0 };
-                write.scales.push(scale);
+                
+                // USAR ESCALAS REALES DEL NODO (Júpiter etc.)
+                write.scales.push(self.scale_x[i]);
+                write.scales.push(self.scale_y[i]);
+                write.scales.push(self.scale_z[i]);
             }
         }
         write.count = (write.positions.len() / 3) as u32;
