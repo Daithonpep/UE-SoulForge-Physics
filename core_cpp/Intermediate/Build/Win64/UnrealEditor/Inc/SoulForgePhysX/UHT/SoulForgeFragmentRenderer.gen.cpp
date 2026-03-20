@@ -338,6 +338,48 @@ DEFINE_FUNCTION(USoulForgeFragmentRenderer::execGetActiveFragmentCount)
 }
 // ********** End Class USoulForgeFragmentRenderer Function GetActiveFragmentCount *****************
 
+// ********** Begin Class USoulForgeFragmentRenderer Function NotifyExplosion **********************
+struct Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion_Statics
+{
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
+		{ "Category", "SoulForge|Renderer" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Se\xc3\xb1""aliza que ha ocurrido una explosi\xc3\xb3n para activar efectos internos */" },
+#endif
+		{ "ModuleRelativePath", "Public/SoulForgeFragmentRenderer.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Se\xc3\xb1""aliza que ha ocurrido una explosi\xc3\xb3n para activar efectos internos" },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function NotifyExplosion constinit property declarations ***********************
+// ********** End Function NotifyExplosion constinit property declarations *************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeFragmentRenderer, nullptr, "NotifyExplosion", 	nullptr, 
+	0, 
+0,
+RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion_Statics::Function_MetaDataParams)},  };
+UFunction* Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion()
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion_Statics::FuncParams);
+	}
+	return ReturnFunction;
+}
+DEFINE_FUNCTION(USoulForgeFragmentRenderer::execNotifyExplosion)
+{
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_THIS->NotifyExplosion();
+	P_NATIVE_END;
+}
+// ********** End Class USoulForgeFragmentRenderer Function NotifyExplosion ************************
+
 // ********** Begin Class USoulForgeFragmentRenderer Function TickUpdate ***************************
 struct Z_Construct_UFunction_USoulForgeFragmentRenderer_TickUpdate_Statics
 {
@@ -407,13 +449,7 @@ struct Z_Construct_UFunction_USoulForgeFragmentRenderer_UpdateHISMTransforms_Sta
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "SoulForge|Renderer" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Esta es la funci\xc3\xb3n que tu Destructible llamar\xc3\xa1 para pasarle los datos de Rust */" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeFragmentRenderer.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Esta es la funci\xc3\xb3n que tu Destructible llamar\xc3\xa1 para pasarle los datos de Rust" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NewTransforms_MetaData[] = {
 		{ "NativeConst", "" },
@@ -586,6 +622,7 @@ struct Z_Construct_UClass_USoulForgeFragmentRenderer_Statics
 		{ .NameUTF8 = UTF8TEXT("ClearAllFragments"), .Pointer = &USoulForgeFragmentRenderer::execClearAllFragments },
 		{ .NameUTF8 = UTF8TEXT("ExplodeIntoFragments"), .Pointer = &USoulForgeFragmentRenderer::execExplodeIntoFragments },
 		{ .NameUTF8 = UTF8TEXT("GetActiveFragmentCount"), .Pointer = &USoulForgeFragmentRenderer::execGetActiveFragmentCount },
+		{ .NameUTF8 = UTF8TEXT("NotifyExplosion"), .Pointer = &USoulForgeFragmentRenderer::execNotifyExplosion },
 		{ .NameUTF8 = UTF8TEXT("TickUpdate"), .Pointer = &USoulForgeFragmentRenderer::execTickUpdate },
 		{ .NameUTF8 = UTF8TEXT("UpdateHISMTransforms"), .Pointer = &USoulForgeFragmentRenderer::execUpdateHISMTransforms },
 	};
@@ -595,8 +632,9 @@ struct Z_Construct_UClass_USoulForgeFragmentRenderer_Statics
 		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_ClearAllFragments, "ClearAllFragments" }, // 1174759602
 		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_ExplodeIntoFragments, "ExplodeIntoFragments" }, // 1397567751
 		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_GetActiveFragmentCount, "GetActiveFragmentCount" }, // 3939083673
+		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_NotifyExplosion, "NotifyExplosion" }, // 3624358274
 		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_TickUpdate, "TickUpdate" }, // 1713791674
-		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_UpdateHISMTransforms, "UpdateHISMTransforms" }, // 3803126216
+		{ &Z_Construct_UFunction_USoulForgeFragmentRenderer_UpdateHISMTransforms, "UpdateHISMTransforms" }, // 4258942432
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -668,10 +706,10 @@ struct Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhy
 		{ FSoulForgeFragmentInstance::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeFragmentInstance_Statics::NewStructOps, TEXT("SoulForgeFragmentInstance"),&Z_Registration_Info_UScriptStruct_FSoulForgeFragmentInstance, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeFragmentInstance), 949133894U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_USoulForgeFragmentRenderer, USoulForgeFragmentRenderer::StaticClass, TEXT("USoulForgeFragmentRenderer"), &Z_Registration_Info_UClass_USoulForgeFragmentRenderer, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeFragmentRenderer), 15878775U) },
+		{ Z_Construct_UClass_USoulForgeFragmentRenderer, USoulForgeFragmentRenderer::StaticClass, TEXT("USoulForgeFragmentRenderer"), &Z_Registration_Info_UClass_USoulForgeFragmentRenderer, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeFragmentRenderer), 4272035281U) },
 	};
 }; // Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_4006531728{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_1109931181{
 	TEXT("/Script/SoulForgePhysX"),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ClassInfo),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ScriptStructInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeFragmentRenderer_h__Script_SoulForgePhysX_Statics::ScriptStructInfo),

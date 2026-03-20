@@ -286,9 +286,9 @@ fn calculate_flocking_forces_optimized(agent: &SwarmAgent, neighbors: &[&SwarmAg
 
     const PERCEPTION_RADIUS_SQ: f32 = 200.0 * 200.0;
     const SEP_RADIUS_SQ:   f32 = 75.0 * 75.0;
-    const W_SEP: f32 = 1.8;
-    const W_ALI: f32 = 1.0;
-    const W_COH: f32 = 0.8;
+    const W_SEP: f32 = 0.8; // Reducido drásticamente (1.8 -> 0.8) para evitar el "Sky Launch"
+    const W_ALI: f32 = 1.2; // Más cohesión grupal
+    const W_COH: f32 = 1.4; // Menos competencia por el espacio
 
     let mut separation = [0.0f32; 3];
     let mut alignment  = [0.0f32; 3];

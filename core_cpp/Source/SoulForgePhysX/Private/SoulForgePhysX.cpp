@@ -10,12 +10,11 @@ FDestroyProxyFunc FSoulForgePhysXModule::CppDestroyProxy = nullptr;
 FDestroyProxyAvanzadoFunc FSoulForgePhysXModule::CppDestroyProxyAvanzado = nullptr;
 extern DetonarNativoFunc CppDetonarNativo;
 extern GetEngineStateFunc CppGetEngineState;
-extern InsightFilterFunc CppInsightFilter;
 
 void FSoulForgePhysXModule::StartupModule()
 {
     FString PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("SoulForgePhysX"))->GetBaseDir();
-    FString DllPath = FPaths::Combine(*PluginBaseDir, TEXT("Binaries/Win64/soulforge_core.dll"));
+    FString DllPath = FPaths::Combine(*PluginBaseDir, TEXT("Binaries/Win64/soulforge_physx.dll"));
 
     PhysXHandle = FPlatformProcess::GetDllHandle(*DllPath);
 
@@ -27,15 +26,14 @@ void FSoulForgePhysXModule::StartupModule()
         CppDestroyProxyAvanzado = (FDestroyProxyAvanzadoFunc)FPlatformProcess::GetDllExport(PhysXHandle, TEXT("sf_destroy_proxy_advanced"));
         CppDetonarNativo = (DetonarNativoFunc)FPlatformProcess::GetDllExport(PhysXHandle, TEXT("sf_detonar_nativo"));
         CppGetEngineState = (GetEngineStateFunc)FPlatformProcess::GetDllExport(PhysXHandle, TEXT("sf_get_engine_state"));
-        CppInsightFilter = (InsightFilterFunc)FPlatformProcess::GetDllExport(PhysXHandle, TEXT("sf_insight_filter"));
 
-        if (!CppDetonarNativo || !CppGetEngineState || !CppInsightFilter) {
-            UE_LOG(LogTemp, Warning, TEXT("[SoulForge] No se pudieron enlazar todos los simbolos Laser."));
+        if (!CppDetonarNativo || !CppGetEngineState) {
+            UE_LOG(LogTemp, Warning, TEXT("[SoulForge] No se pudieron enlazar todos los simbolos Laser desde el Nucleo Unificado."));
         }
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("[SoulForge] ERROR: No se pudo cargar soulforge_core.dll en %s"), *DllPath);
+        UE_LOG(LogTemp, Error, TEXT("[SoulForge] ERROR: No se pudo cargar soulforge_physx.dll en %s"), *DllPath);
     }
 }
 

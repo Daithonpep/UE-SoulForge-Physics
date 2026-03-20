@@ -18,7 +18,7 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 
 // ********** Begin ScriptStruct FSoulForgeNode ****************************************************
 struct Z_Construct_UScriptStruct_FSoulForgeNode_Statics;
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_26_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_24_GENERATED_BODY \
 	friend struct ::Z_Construct_UScriptStruct_FSoulForgeNode_Statics; \
 	SOULFORGEPHYSX_API static class UScriptStruct* StaticStruct();
 
@@ -27,26 +27,22 @@ struct FSoulForgeNode;
 // ********** End ScriptStruct FSoulForgeNode ******************************************************
 
 // ********** Begin Class USoulForgeDestructible ***************************************************
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_RPC_WRAPPERS_NO_PURE_DECLS \
-	DECLARE_FUNCTION(execPreparaRenderizadoFragmentos); \
-	DECLARE_FUNCTION(execGetHealth); \
-	DECLARE_FUNCTION(execRecibirImpacto); \
-	DECLARE_FUNCTION(execApplyDamage); \
-	DECLARE_FUNCTION(execActivarInsight); \
-	DECLARE_FUNCTION(execForzarEncendidoRust); \
-	DECLARE_FUNCTION(execPreviewExplosion); \
-	DECLARE_FUNCTION(execResetInternalState); \
-	DECLARE_FUNCTION(execAutoLinkToRust); \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_RPC_WRAPPERS_NO_PURE_DECLS \
 	DECLARE_FUNCTION(execActivateKamehameha); \
 	DECLARE_FUNCTION(execSpawnNodeGrid); \
-	DECLARE_FUNCTION(execTriggerDestruction); \
-	DECLARE_FUNCTION(execDeactivateOriginal);
+	DECLARE_FUNCTION(execActivarInsight); \
+	DECLARE_FUNCTION(execForzarEncendidoRust); \
+	DECLARE_FUNCTION(execResetInternalState); \
+	DECLARE_FUNCTION(execPreviewExplosion); \
+	DECLARE_FUNCTION(execRecibirImpacto); \
+	DECLARE_FUNCTION(execApplyDamage); \
+	DECLARE_FUNCTION(execTriggerDestruction);
 
 
 struct Z_Construct_UClass_USoulForgeDestructible_Statics;
 SOULFORGEPHYSX_API UClass* Z_Construct_UClass_USoulForgeDestructible_NoRegister();
 
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_INCLASS_NO_PURE_DECLS \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesUSoulForgeDestructible(); \
 	friend struct ::Z_Construct_UClass_USoulForgeDestructible_Statics; \
@@ -57,7 +53,7 @@ public: \
 	DECLARE_SERIALIZER(USoulForgeDestructible)
 
 
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_ENHANCED_CONSTRUCTORS \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_ENHANCED_CONSTRUCTORS \
 	/** Deleted move- and copy-constructors, should never be used */ \
 	USoulForgeDestructible(USoulForgeDestructible&&) = delete; \
 	USoulForgeDestructible(const USoulForgeDestructible&) = delete; \
@@ -67,13 +63,13 @@ public: \
 	NO_API virtual ~USoulForgeDestructible();
 
 
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_37_PROLOG
-#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_GENERATED_BODY \
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_33_PROLOG
+#define FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_GENERATED_BODY \
 PRAGMA_DISABLE_DEPRECATION_WARNINGS \
 public: \
-	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_RPC_WRAPPERS_NO_PURE_DECLS \
-	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_INCLASS_NO_PURE_DECLS \
-	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_40_ENHANCED_CONSTRUCTORS \
+	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_RPC_WRAPPERS_NO_PURE_DECLS \
+	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_INCLASS_NO_PURE_DECLS \
+	FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h_36_ENHANCED_CONSTRUCTORS \
 private: \
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
 

@@ -17,6 +17,7 @@ enum class ESoulForgeDamagePreset : uint8
     Collapse     UMETA(DisplayName = "Collapse (Gravity)"),
     Impact       UMETA(DisplayName = "Impact (Cone)"),
     ShapedCharge UMETA(DisplayName = "Shaped Charge (Penetrator)"),
+    RealityShatter UMETA(DisplayName = "Reality Shatter (Epic)"),
 };
 
 UENUM(BlueprintType)
@@ -45,7 +46,8 @@ enum class EExplosiveType : uint8
     RDX         UMETA(DisplayName = "RDX (Cañón de Riel)"),
     PETN        UMETA(DisplayName = "PETN (Carga Hueca Táctica)"),
     Matrix      UMETA(DisplayName = "Matrix (Gravedad Cero)"),
-    Collapse    UMETA(DisplayName = "Colapso (Gravedad Real)")
+    Collapse    UMETA(DisplayName = "Colapso (Gravedad Real)"),
+    RealityShatter UMETA(DisplayName = "Realidad Fracturada (Épico)")
 };
 
 UENUM(BlueprintType)
@@ -78,6 +80,9 @@ struct FSoulForgeFragmentData {
     UPROPERTY(BlueprintReadOnly) float X;
     UPROPERTY(BlueprintReadOnly) float Y;
     UPROPERTY(BlueprintReadOnly) float Z;
+    UPROPERTY(BlueprintReadOnly) float Pitch;
+    UPROPERTY(BlueprintReadOnly) float Yaw;
+    UPROPERTY(BlueprintReadOnly) float Roll;
     UPROPERTY(BlueprintReadOnly) float ScaleX;
     UPROPERTY(BlueprintReadOnly) float ScaleY;
     UPROPERTY(BlueprintReadOnly) float ScaleZ;
@@ -87,10 +92,10 @@ struct FSoulForgeFragmentData {
 USTRUCT(BlueprintType)
 struct FEngineState {
     GENERATED_BODY()
-    UPROPERTY(BlueprintReadOnly) float CPUTime;
-    UPROPERTY(BlueprintReadOnly) float GPUTime;
-    UPROPERTY(BlueprintReadOnly) int32 ActiveNodes;
-    UPROPERTY(BlueprintReadOnly) int32 PendingCleanups;
+    UPROPERTY(BlueprintReadOnly, Category = "Stats") float ActiveNodes;
+    UPROPERTY(BlueprintReadOnly, Category = "Stats") float FPS;
+    UPROPERTY(BlueprintReadOnly, Category = "Stats") float Efficiency;
+    UPROPERTY(BlueprintReadOnly, Category = "Stats") float SimTime;
 };
 
 USTRUCT(BlueprintType)
@@ -143,7 +148,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerVisualEffect, float, BloomIn
 typedef void (*DetonarNativoFunc)(const char*, float, float, float, float, int32_t);
 typedef void (*GetEngineStateFunc)(float*);
 typedef void (*InsightFilterFunc)(int32*, int32);
-typedef struct FSoulForgeFragmentData* (*GetAllFragmentDataFunc)(int32*);
+typedef struct FSoulForgeFragmentData* (*GetAllFragmentDataFunc)(uint32, int32*);
 
 extern "C"
 {
@@ -161,7 +166,7 @@ extern "C"
     void sf_detonar_nativo(const char* proxy_id, float energy, float dir_x, float dir_y, float dir_z, int32_t fragment_count);
     void sf_get_engine_state(float* estado_ptr);
     void sf_insight_filter(int32* array_ptr, int32 count);
-    struct FSoulForgeFragmentData* sf_get_all_fragment_data(int32* out_count);
+    struct FSoulForgeFragmentData* sf_get_all_fragment_data(uint32_t filter_hash, int32* out_count);
 
     // Fragmentos
     bool sf_get_fragment_pos(uint32_t id, float* out_x, float* out_y, float* out_z);
@@ -215,7 +220,7 @@ public:
 
     /** 💥 DESTRUCCIÓN NATIVA */
     UFUNCTION(BlueprintCallable, Category = "SoulForge|Proxy")
-    static int32 DetonarNativo(FString ProxyId, float Energy, TArray<FSoulForgeFragmentData>& OutData, int32 CantidadNodos = 0);
+    static int32 DetonarNativo(FString ProxyId, float Energy, int32 Preset, float FragLevel, TArray<FSoulForgeFragmentData>& OutData, int32 CantidadNodos = 0);
 
     // Métodos Legacy / Auxiliares
     UFUNCTION(BlueprintCallable, Category = "SoulForge|Proxy")
@@ -237,6 +242,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SoulForge|Admin")
     static void SetGlobalPower(float Multiplier);
 
+    /** Ajusta qué tan deformados/caóticos son los fragmentos (0.0 = Cubos perfectos, 1.0 = Caos total) */
+    UFUNCTION(BlueprintCallable, Category = "SoulForge|Admin")
+    static void SetGlobalChaos(float ChaosFactor);
+
     /** Limpia la memoria del núcleo de Rust */
     UFUNCTION(BlueprintCallable, Category = "Soul Forge|Core")
     static void LimpiarNucleo();
@@ -251,7 +260,7 @@ public:
 
     /** Detonación con actualización de GPS en tiempo real y número de fragmentos configurable */
     UFUNCTION(BlueprintCallable, Category = "SoulForge|Proxy")
-    static void DetonarMilitar(FString ProxyId, FVector PosicionActual, float Energia, EExplosiveType Explosivo, int32 CantidadNodos = 0);
+    static void DetonarMilitar(FString ProxyId, FVector PosicionActual, float Energia, EExplosiveType Explosivo, int32 CantidadNodos = 0, float Radio = 250.0f);
 
     /** Inyección masiva de nodos para evitar lag en el FFI (1000+ nodos en una sola llamada) */
     UFUNCTION(BlueprintCallable, Category = "SoulForge|PhysX")
@@ -269,7 +278,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SoulForge|PhysX")
     static void SetGroundZ(float Z);
 
-    /** Obtiene el puntero directo a las posiciones de los nodos (X, Y, Z interleaved) */
+    /** [Zero-Copy] Obtiene el puntero directo al Master Buffer de posiciones para Niagara */
+    static const TArray<FVector>& GetMasterPositions(int32& OutCount);
+
+    /** [Deprecated] Obtiene el puntero directo a las posiciones (float interleavado) */
     static const float* GetNodePositions(int32* OutCount);
 
     /** Obtiene el puntero directo a las temperaturas de los nodos (1 float por nodo) */
@@ -284,7 +296,7 @@ public:
     static void UpdateAllPowers(const TArray<FActivePowerPayload>& Payloads, float DeltaTime);
 
     /** Acceso directo a la memoria compartida de Rust */
-    static FSoulForgeFragmentData* GetAllFragmentData(int32& OutCount);
+    static FSoulForgeFragmentData* GetAllFragmentData(uint32 FilterHash, int32& OutCount);
 
     /** 🚀 NUEVA API DE NODOS */
     UFUNCTION(BlueprintCallable, Category = "SoulForge")

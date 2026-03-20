@@ -27,16 +27,26 @@ USoulForgeDestructible::USoulForgeDestructible()
 
 void USoulForgeDestructible::DeactivateOriginal()
 {
-	if (UStaticMeshComponent* SMC = GetOwner()->FindComponentByClass<UStaticMeshComponent>())
-	{
-        // --- ¡NUEVO! Apagamos la física para que Unreal no se queje ---
+    if (UStaticMeshComponent* SMC = GetOwner()->FindComponentByClass<UStaticMeshComponent>())
+    {
         SMC->SetSimulatePhysics(false); 
-        // --------------------------------------------------------------
+        SMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		SMC->SetVisibility(false);
-		SMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		UE_LOG(LogTemp, Log, TEXT("[SoulForge] Mesh original de '%s' desactivado."), *GetOwner()->GetName());
-	}
+        // REGLA DE ORO DE LA FORJA: 
+        // Si el component es la RAÍZ, no lo ocultamos (eso ocultaría a sus hijos HISM).
+        // En su lugar, simplemente removemos la mallas estática.
+        if (SMC == GetOwner()->GetRootComponent())
+        {
+            SMC->SetStaticMesh(nullptr);
+            UE_LOG(LogTemp, Warning, TEXT("[SoulForge] Root Mesh removido para preservar hijos."));
+        }
+        else
+        {
+            SMC->SetVisibility(false, false); 
+            SMC->SetHiddenInGame(true);
+            UE_LOG(LogTemp, Log, TEXT("[SoulForge] Mesh secundario oculto."));
+        }
+    }
 }
 
 // ─── OnRegister: El "Cerebro Total" basado en Nombre ────────────────────────────
@@ -69,41 +79,47 @@ void USoulForgeDestructible::BeginPlay()
 {
     Super::BeginPlay();
 
-    // El nombre ya viene de OnRegister
-    if (ProxyName.IsEmpty() && GetOwner()) {
-        ProxyName = GetOwner()->GetActorLabel();
-        if (ProxyName.IsEmpty()) ProxyName = GetOwner()->GetName();
+    // --- RESET TOTAL DE ESTADO DE SESIÓN (CRÍTICO) ---
+    this->ProxyId = 0;
+    this->bIsEngineReady = false;
+    this->bDestroyed = false;
+    this->Health = 1.0f;
+
+    // --- EL PUENTE MANUAL DE ENCENDIDO ---
+    USoulForgeBridge::Initialize();
+    
+    ProxyName = GetOwner()->GetName();
+
+    // --- AUTO-CONFIGURACIÓN DE GEOMETRÍA REAL ---
+    if (UStaticMeshComponent* SMC = GetOwner()->FindComponentByClass<UStaticMeshComponent>())
+    {
+        HalfExtent = SMC->Bounds.BoxExtent;
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge] Auto-detectado HalfExtent: %s"), *HalfExtent.ToString());
     }
 
-    UE_LOG(LogTemp, Display, TEXT("[SoulForge] Iniciando con Identidad Persistente: %s"), *ProxyName);
-    if (ProxyId > 0) {
-        return; 
-    }
+    // Hash para el filtrado Zero-Copy
+    auto GetSoulForgeStableHash = [](const FString& s) -> uint32 {
+        uint32 h = 2166136261u;
+        FTCHARToUTF8 Convert(*s);
+        const char* ptr = Convert.Get();
+        while (ptr && *ptr) {
+            h = h ^ (uint32)((uint8)*ptr);
+            h = h * 16777619u;
+            ptr++;
+        }
+        return h;
+    };
+    ObjectFilterHash = GetSoulForgeStableHash(ProxyName);
 
-    // ESTO DEBE SALIR EN CUANTO LE DES A PLAY
-    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-C++] COMPONENTE INICIALIZADO EN: %s"), *GetOwner()->GetName());
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Link] Identidad: %s | Hash de Filtrado: %u"), *ProxyName, ObjectFilterHash);
 
-    // --- ESTO ES LO QUE FALTA: ARRANQUE FORZADO ---
-    PrimaryComponentTick.SetTickFunctionEnable(true); 
-    // ----------------------------------------------
-
-    // --- EL GRITO DEL NÚCLEO DE RENDIMIENTO ---
-    UE_LOG(LogTemp, Display, TEXT("[SoulForge-Rendimiento] Núcleo enlazado. Límite de fragmentos (Pool): %d"), MaxNodos);
-    // ------------------------------------------
-
-    // 1. Buscamos el Renderer si no viene de serie
+    // 1. Buscamos el Renderer
     if (!FragmentRenderer)
     {
         FragmentRenderer = GetOwner()->FindComponentByClass<USoulForgeFragmentRenderer>();
     }
 
-    if (FragmentRenderer) {
-        UE_LOG(LogTemp, Log, TEXT("[SoulForge-C++] Renderer encontrado y vinculado."));
-    } else {
-        UE_LOG(LogTemp, Error, TEXT("[SoulForge-C++] ERROR: No tienes el Renderer asignado en el Blueprint!"));
-    }
-
-    // 2. RESERVAMOS LA RAM (Lógica interna esencial)
+    // 2. RESERVAMOS LA RAM (Soporte per-actor)
     NodePool.SetNumUninitialized(MaxNodos);
     for (int32 i = 0; i < MaxNodos; i++) {
         NodePool[i].bEstaActivo = 0;
@@ -119,13 +135,6 @@ void USoulForgeDestructible::BeginPlay()
             InstancedRenderer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         }
     }
-
-    // --- EL PUENTE MANUAL DE ENCENDIDO ---
-    // ¡AQUÍ DESPERTAMOS A RUST ANTES DE PEDIRLE NADA!
-    USoulForgeBridge::Initialize();
-    
-    // Y le decimos dónde está el suelo (por defecto Z=0)
-    USoulForgeBridge::SetGroundZ(0.0f);
 
     // Sincronizamos las propiedades militares antes de la simulación
     USoulForgeBridge::SetProxyMilitar(ProxyName, MaterialType, PhysicsLOD);
@@ -144,55 +153,82 @@ void USoulForgeDestructible::TickComponent(float DeltaTime, ELevelTick TickType,
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    // --- ¡EL RELOJ DE LA FÍSICA! ---
-    // Sincronizamos el tiempo de Unreal con la integración de Rust.
-    USoulForgeBridge::TickPhysics(DeltaTime);
-    // -------------------------------
-
-
-    // Actualizar Visuales (Niagara y Rústico)
-    UpdateNiagaraVisuals();
-
-    if (bUsarRenderizadoRustico && FragmentRenderer)
+    // 1. Reloj de la física – guard para que solo corra 1 vez por frame
     {
-        // 1. OBTENER DATOS MASIVOS (Shared Memory)
-        int32 RustCount = 0;
-        FSoulForgeFragmentData* RustData = USoulForgeBridge::GetAllFragmentData(RustCount);
-
-        if (RustData && RustCount > 0)
+        static uint64 LastFrameTicked = 0;
+        uint64 CurrentFrame = GFrameCounter;
+        if (CurrentFrame != LastFrameTicked)
         {
-            // 2. AGRUPAR POR CATEGORÍA PARA RENDIMIENTO MÁXIMO (HISM Batch)
-            TMap<int32, TArray<FTransform>> GroupedTransforms;
-            
-            // Pre-asignamos memoria para evitar miles de reasignaciones (Esto causaba el lag inicial)
-            GroupedTransforms.FindOrAdd(0).Reserve(RustCount);
-            GroupedTransforms.FindOrAdd(1).Reserve(RustCount);
-            GroupedTransforms.FindOrAdd(2).Reserve(RustCount);
-            
-            for (int32 i = 0; i < RustCount; ++i)
-            {
-                FVector Pos = FVector(RustData[i].X, RustData[i].Y, RustData[i].Z);
-                FVector Scale = FVector(RustData[i].ScaleX, RustData[i].ScaleY, RustData[i].ScaleZ);
-                
-                // Rotación basada en la posición para que no se vean como cubos perfectos alienados
-                FQuat Rot = FQuat::MakeFromEuler(FVector(Pos.X * 13.0f, Pos.Y * 17.0f, Pos.Z * 23.0f));
-                
-                int32 SafeCategory = FMath::Clamp(RustData[i].Category, 0, 2);
-                GroupedTransforms[SafeCategory].Add(FTransform(Rot, Pos, Scale));
-            }
-
-            // 3. ENVIAR AL RENDERIZADOR (Pase de dibujo único por categoría)
-            for (auto& Elem : GroupedTransforms)
-            {
-                if (Elem.Value.Num() > 0)
-                {
-                    FragmentRenderer->UpdateHISMTransforms(Elem.Key, Elem.Value);
-                }
-            }
+            LastFrameTicked = CurrentFrame;
+            USoulForgeBridge::TickPhysics(DeltaTime);
         }
     }
 
-    // El renderizado se maneja ahora en el bloque optimizado de arriba via FragmentRenderer
+    // 2. Niagara
+    UpdateNiagaraVisuals();
+
+    // 2.5 TELEMETRÍA LÁSER (HUD) - Visualización en el Laboratorio
+    if (bActivarHUD && GEngine)
+    {
+        FEngineState PerfState = USoulForgeBridge::GetPerformanceState();
+        
+        FString HUDMsg = FString::Printf(TEXT("[SOULFORGE] Nodos: %.0f | Core FPS: %.0f | Sim: %.1fs | Capacidad: %.0f%%"), 
+                                        PerfState.ActiveNodes, PerfState.FPS, PerfState.SimTime, PerfState.Efficiency * 100.0f);
+        GEngine->AddOnScreenDebugMessage(PersistentDNI, 0.0f, FColor::Cyan, HUDMsg);
+    }
+
+    // 3. Renderizado Rústico (HISMs)
+    if (bUsarRenderizadoRustico && FragmentRenderer)
+    {
+        int32 RustCount = 0;
+        // Usamos el hash calculado en BeginPlay
+        FSoulForgeFragmentData* RustData = USoulForgeBridge::GetAllFragmentData(ObjectFilterHash, RustCount);
+
+        // --- DIAGNÓSTICO DE TELEMETRÍA (SOLICITADO POR USUARIO) ---
+        if (RustCount > 0) 
+        {
+            static int32 LogCounter = 0;
+            if (LogCounter++ % 120 == 0) // Logueamos cada ~2 segundos
+            {
+                UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Debug] Actor: %s | Hash: %u | Fragmentos en Rust: %d"), 
+                       *GetOwner()->GetName(), ObjectFilterHash, RustCount);
+            }
+
+            // Agrupamos por categoría (0, 1, 2)
+            TArray<FTransform> Grouped[3];
+            
+            for (int32 i = 0; i < RustCount; ++i)
+            {
+                int32 Cat = FMath::Clamp(RustData[i].Category, 0, 2);
+                
+                // Conversión protegida
+                FVector Pos(RustData[i].X, RustData[i].Y, RustData[i].Z);
+                FRotator Rot(RustData[i].Pitch, RustData[i].Yaw, RustData[i].Roll);
+                FVector Scale(RustData[i].ScaleX, RustData[i].ScaleY, RustData[i].ScaleZ);
+
+                Grouped[Cat].Add(FTransform(Rot.Quaternion(), Pos, Scale));
+            }
+
+            // Enviamos los batches al renderer (FILTRADO POR ACTOR)
+            for (int32 c = 0; c < 3; ++c)
+            {
+                if (Grouped[c].Num() > 0)
+                {
+                    FragmentRenderer->UpdateHISMTransforms(c, Grouped[c]);
+                }
+            }
+        }
+        else if (bDestroyed)
+        {
+            // Si el objeto explotó pero Rust devuelve 0, hay un problema de filtrado
+            static int32 LogCounterErr = 0;
+            if (LogCounterErr++ % 120 == 0)
+            {
+                UE_LOG(LogTemp, Error, TEXT("[SoulForge-Error] El actor %s está destruido pero Rust no devuelve sus fragmentos (Hash %u)."), 
+                       *ProxyName, ObjectFilterHash);
+            }
+        }
+    }
 }
 
 // ─── EndPlay ─────────────────────────────────────────────────────────────────
@@ -240,10 +276,51 @@ void USoulForgeDestructible::TriggerDestruction()
     SetComponentTickEnabled(true);
 
     DeactivateOriginal();
+    
+    // Obtenemos el epicentro real (Centro del Objeto por defecto)
+    FVector CentroEfecto = GetOwner()->GetActorLocation();
+
+    // Sincronizar Material y LOD justo antes de detonar para que los cambios en el editor surtan efecto
+    USoulForgeBridge::SetProxyMilitar(ProxyName, MaterialType, PhysicsLOD);
 
     // 1. Llamada unificada nativa militar (Clásica) - Convierte el objeto en Nodos físicos
-    USoulForgeBridge::DetonarMilitar(ProxyName, CentroEfecto, FuerzaDeImpacto, ExplosiveType, CantidadDeNodos);
-    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Physics] Detonación Física [%s] | Nodos Solicitados: %d"), *CentroEfecto.ToString(), CantidadDeNodos);
+    // --- DETECCIÓN DINÁMICA DE SUELO (EVITAR ATRAVESAR EL PISO) ---
+    FHitResult GroundHit;
+    FVector TraceStart = GetOwner()->GetActorLocation();
+    FVector TraceEnd = TraceStart - FVector(0, 0, 10000.0f); // Trazamos 100 metros hacia abajo
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(GetOwner());
+
+    if (GetWorld()->LineTraceSingleByChannel(GroundHit, TraceStart, TraceEnd, ECC_Visibility, Params))
+    {
+        float RealGroundZ = GroundHit.ImpactPoint.Z;
+        USoulForgeBridge::SetGroundZ(RealGroundZ);
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Physics] Suelo detectado por trazado de rayos en Z: %f"), RealGroundZ);
+    }
+    else
+    {
+        // Si no hay suelo cerca, usamos el Z del actor - un margen pequeño
+        USoulForgeBridge::SetGroundZ(TraceStart.Z - 500.0f);
+    }
+
+    // Convertimos nuestro EExplosiveType a preset de Rust:
+    // TNT=0(Explosion), AgujeroNegro=1(Implosion), RDX=2(Impact), PETN=3(ShapedCharge), 
+    // Matrix=4(Cinematic), Collapse=5(Collapse), RealityShatter=6
+    int32 RustPreset = 0;
+    switch (ExplosiveType) {
+        case EExplosiveType::TNT:            RustPreset = 0; break;
+        case EExplosiveType::AgujeroNegro:   RustPreset = 1; break;
+        case EExplosiveType::RDX:            RustPreset = 2; break;
+        case EExplosiveType::PETN:           RustPreset = 3; break;
+        case EExplosiveType::Matrix:         RustPreset = 4; break;
+        case EExplosiveType::Collapse:       RustPreset = 5; break;
+        case EExplosiveType::RealityShatter: RustPreset = 6; break;
+        default: RustPreset = 0; break;
+    }
+
+    TArray<FSoulForgeFragmentData> OutFragments;
+    USoulForgeBridge::DetonarNativo(ProxyName, FuerzaDeImpacto, RustPreset, FragmentacionJupiter, OutFragments, CantidadDeNodos);
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Physics] Detonación Física [%s] | Preset: %d | Nodos: %d | Radio: %.1f"), *CentroEfecto.ToString(), RustPreset, CantidadDeNodos, RadioDeImpacto);
 
     // --- GENERAR ONDA VFG REACTIVA ---
     USoulForgeVFXLibrary::GenerarOndaReactiva(this, CentroEfecto, FuerzaDeImpacto);
@@ -295,27 +372,34 @@ void USoulForgeDestructible::RecibirImpacto(FVector PuntoDeGolpe, FVector Direcc
 {
     if (!InstancedRenderer || ProxyId <= 0) return;
 
-    // Llamada al Núcleo Maestro Unificado - Ahora respetando la cantidad de nodos
-    TArray<FSoulForgeFragmentData> FragmentData;
-    int32 RealCount = USoulForgeBridge::DetonarNativo(ProxyName, FuerzaDeImpacto, FragmentData, CantidadDeNodos);
+    // Llamada al Núcleo Maestro Unificado    // Detonamos en Rust pasando el PRESET del menú (ExplosiveType) y el nivel de fragmentación de Júpiter
+    TArray<FSoulForgeFragmentData> OutFragments;
+    int32 RealCount = USoulForgeBridge::DetonarNativo(ProxyName, FuerzaDeImpacto, (int32)ExplosiveType, FragmentacionJupiter, OutFragments, CantidadDeNodos);
+    
+    bDestroyed = true;
+    
+    if (FragmentRenderer) { FragmentRenderer->NotifyExplosion(); }
 
     if (RealCount > 0) {
         for (int32 i = 0; i < FMath::Min(RealCount, MaxNodos); i++) {
             NodePool[i].bEstaActivo = 1;
-            NodePool[i].Posicion = FVector(FragmentData[i].X, FragmentData[i].Y, FragmentData[i].Z);
+            NodePool[i].Posicion = FVector(OutFragments[i].X, OutFragments[i].Y, OutFragments[i].Z);
             NodePool[i].Rotacion = FQuat::Identity; // La rotación base
-            NodePool[i].Escala3D = FVector(FragmentData[i].ScaleX, FragmentData[i].ScaleY, FragmentData[i].ScaleZ);
+            NodePool[i].Escala3D = FVector(OutFragments[i].ScaleX, OutFragments[i].ScaleY, OutFragments[i].ScaleZ);
         }
     }
 
-    GetOwner()->SetActorHiddenInGame(true);
+    // NO ocultamos el actor completo o matamos el renderizado de los HISMs
+    // GetOwner()->SetActorHiddenInGame(true); 
     GetOwner()->SetActorEnableCollision(false);
 
-    InstancedRenderer->ClearInstances();
-    for (int32 i = 0; i < MaxNodos; i++) {
-        if (NodePool[i].bEstaActivo == 1) {
-            FTransform Transform(NodePool[i].Rotacion, NodePool[i].Posicion, NodePool[i].Escala3D);
-            InstancedRenderer->AddInstance(Transform);
+    if (InstancedRenderer) {
+        InstancedRenderer->ClearInstances();
+        for (int32 i = 0; i < MaxNodos; i++) {
+            if (NodePool[i].bEstaActivo == 1) {
+                FTransform Transform(NodePool[i].Rotacion, NodePool[i].Posicion, NodePool[i].Escala3D);
+                InstancedRenderer->AddInstance(Transform);
+            }
         }
     }
 }
@@ -371,6 +455,7 @@ float USoulForgeDestructible::GetDensity() const
         default:                          return 0.0024f;
     }
 }
+
 
 void USoulForgeDestructible::PreparaRenderizadoFragmentos()
 {
@@ -453,12 +538,75 @@ void USoulForgeDestructible::ActivarInsight()
     UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Insight] CONFIGURANDO RENDIMIENTO"));
     
     // Enviamos los parámetros al núcleo de Rust
-    USoulForgeBridge::ApplySettings(NucleosCPU, bUsarAceleracionGPU);
+    // --- DIAGNÓSTICO: Un solo hilo para evitar conflictos de Rayon ---
+    USoulForgeBridge::ApplySettings(1, false);
     
-    UE_LOG(LogTemp, Display, TEXT("[SoulForge-Insight] Núcleos CPU: %d"), NucleosCPU);
-    UE_LOG(LogTemp, Display, TEXT("[SoulForge-Insight] GPU Aceleración: %s"), bUsarAceleracionGPU ? TEXT("ACTIVADA") : TEXT("DESACTIVADA"));
+    ProxyId = GetTypeHash(GetOwner()->GetName());
+    ObjectFilterHash = (uint32)ProxyId;
+    ProxyName = GetOwner()->GetName();
+    UE_LOG(LogTemp, Display, TEXT("[SoulForge-Insight] Núcleos CPU: %d"), 1);
+    UE_LOG(LogTemp, Display, TEXT("[SoulForge-Insight] GPU Aceleración: %s"), false ? TEXT("ACTIVADA") : TEXT("DESACTIVADA"));
     UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Insight] Configuración aplicada correctamente."));
     UE_LOG(LogTemp, Warning, TEXT("==========================================="));
+}
+
+void USoulForgeDestructible::UpdateNiagaraVisuals()
+{
+    if (!SharedNiagaraVFX) return;
+
+    int32 NodeCount = 0;
+    const TArray<FVector>& MasterPositions = USoulForgeBridge::GetMasterPositions(NodeCount);
+
+    if (NodeCount > 0)
+    {
+        // TRUCO ZERO-COPY:
+        // Hacemos una copia ultra-rápida (shallow copy / slice assignment si fuera posible, 
+        // pero a nivel de UE TArray usa Copy Constructor o SetNum).
+        // En Unreal 5.x, pasar el TArray ya construido sin loop iterativo es 10x más rápido.
+        TArray<FVector> ActivePositions;
+        
+        // Copiamos solo los nodos activos con memcopy nivel C++ usando Append
+        // (Esto evita el loop for pieza por pieza)
+        ActivePositions.Append(MasterPositions.GetData(), NodeCount);
+
+        // Enviar a Niagara vía Data Interface Array
+        UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(
+            SharedNiagaraVFX,
+            FName("PosicionesDesdeRust"),
+            ActivePositions
+        );
+
+        SharedNiagaraVFX->SetIntParameter(FName("CantidadNodos"), NodeCount);
+    }
+}
+
+void USoulForgeDestructible::SpawnNodeGrid(FVector Center, int32 Width, int32 Height, int32 Depth, float Spacing)
+{
+    TArray<FVector> Positions;
+    Positions.Reserve(Width * Height * Depth);
+
+    FVector Start = Center - FVector(Width * Spacing * 0.5f, Height * Spacing * 0.5f, Depth * Spacing * 0.5f);
+
+    for (int32 z = 0; z < Depth; ++z)
+    {
+        for (int32 y = 0; y < Height; ++y)
+        {
+            for (int32 x = 0; x < Width; ++x)
+            {
+                Positions.Add(Start + FVector(x * Spacing, y * Spacing, z * Spacing));
+            }
+        }
+    }
+
+    USoulForgeBridge::SpawnNodesBulk(Positions, 1.0f, 100); // Material 100 = Efecto Cian Bouncy
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Lab] Generada rejilla de %d nodos."), Positions.Num());
+}
+
+void USoulForgeDestructible::ActivateKamehameha(FVector Origin, FVector Direction, float Intensity)
+{
+    // El Kamehameha en SoulForge es un EnergyBeam (Tipo 0) que dura 8 segundos
+    USoulForgeBridge::ActivarPoder(EPowerType::EnergyBeam, Origin, Direction, Intensity, 8.0f);
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Power] ¡KAMEHAMEHA ACTIVADO! Intensidad: %.1f"), Intensity);
 }
 
 

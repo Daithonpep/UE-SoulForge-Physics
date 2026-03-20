@@ -21,7 +21,7 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 			SingletonFuncArray,
 			UE_ARRAY_COUNT(SingletonFuncArray),
 			PKG_CompiledIn | 0x00000000,
-			0xB25A0F15,
+			0x760DF5D0,
 			0x8BA83068,
 			METADATA_PARAMS(0, nullptr)
 		};
@@ -29,5 +29,5 @@ static_assert(!UE_WITH_CONSTINIT_UOBJECT, "This generated code can only be compi
 	}
 	return Z_Registration_Info_UPackage__Script_SoulForgePhysX.OuterSingleton;
 }
-static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_SoulForgePhysX(Z_Construct_UPackage__Script_SoulForgePhysX, TEXT("/Script/SoulForgePhysX"), Z_Registration_Info_UPackage__Script_SoulForgePhysX, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0xB25A0F15, 0x8BA83068));
+static FRegisterCompiledInInfo Z_CompiledInDeferPackage_UPackage__Script_SoulForgePhysX(Z_Construct_UPackage__Script_SoulForgePhysX, TEXT("/Script/SoulForgePhysX"), Z_Registration_Info_UPackage__Script_SoulForgePhysX, CONSTRUCT_RELOAD_VERSION_INFO(FPackageReloadVersionInfo, 0x760DF5D0, 0x8BA83068));
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

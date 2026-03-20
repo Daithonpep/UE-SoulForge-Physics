@@ -18,7 +18,7 @@
 /ignore:4099
 /ALTERNATENAME:__imp___std_init_once_begin_initialize=__imp_InitOnceBeginInitialize
 /ALTERNATENAME:__imp___std_init_once_complete=__imp_InitOnceComplete
-/DELAYLOAD:"soulforge_core.dll"
+/DELAYLOAD:"soulforge_physx.dll"
 /DELAYLOAD:"d3d12.dll"
 /DELAYLOAD:"DBGHELP.DLL"
 /LIBPATH:"C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/lib/x64"

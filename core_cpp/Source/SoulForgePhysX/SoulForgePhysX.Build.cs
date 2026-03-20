@@ -31,16 +31,8 @@ public class SoulForgePhysX : ModuleRules
         });
 
         // ── Ruta de la DLL de Rust ────────────────────────────────────────────
-        // Después de `cargo build --release`:
-        //   core_rust/target/release/soulforge_physx.dll
-        //        → Plugins/SoulForgePhysX/Binaries/Win64/soulforge_physx.dll
-        //        → Plugins/SoulForgePhysX/Binaries/Win64/soulforge_physx.lib
-
-        string RustBinariesDir = Path.Combine(
-            ModuleDirectory,
-            "..", "..", "..", "..",   // sube hasta la raíz del plugin
-            "Binaries", "Win64"
-        );
+        // Localizada en core_cpp/Binaries/Win64
+        string RustBinariesDir = Path.Combine(PluginDirectory, "Binaries", "Win64");
 
         string ImportLibPath = Path.Combine(RustBinariesDir, "soulforge_physx.lib");
         if (File.Exists(ImportLibPath))

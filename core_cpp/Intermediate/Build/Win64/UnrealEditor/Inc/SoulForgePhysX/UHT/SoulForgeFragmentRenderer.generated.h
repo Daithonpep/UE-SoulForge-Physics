@@ -31,6 +31,7 @@ struct FSoulForgeFragmentInstance;
 	DECLARE_FUNCTION(execGetActiveFragmentCount); \
 	DECLARE_FUNCTION(execCleanup); \
 	DECLARE_FUNCTION(execTickUpdate); \
+	DECLARE_FUNCTION(execNotifyExplosion); \
 	DECLARE_FUNCTION(execUpdateHISMTransforms); \
 	DECLARE_FUNCTION(execClearAllFragments); \
 	DECLARE_FUNCTION(execExplodeIntoFragments);

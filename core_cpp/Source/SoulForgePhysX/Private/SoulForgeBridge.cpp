@@ -10,7 +10,6 @@ DEFINE_LOG_CATEGORY_STATIC(LogSoulForgeBridge, Log, All);
 // Definición real de los punteros (El "Láser")
 DetonarNativoFunc CppDetonarNativo = nullptr;
 GetEngineStateFunc CppGetEngineState = nullptr;
-InsightFilterFunc CppInsightFilter = nullptr;
 GetAllFragmentDataFunc CppGetAllFragmentData = nullptr;
 
 namespace
@@ -19,10 +18,19 @@ namespace
 
     // Símbolos para FFI
     using FnVoid = void(*)();
-    using FnTick = void(*)(float);
+    using FnTick = int32_t(*)(float);
     typedef bool (*FnRegProxy)(const char*, float, float, float, float, float, float, float);
     using FnFree = void(*)(const char*);
     using FnSetPower = void(*)(float);
+
+    struct CExplosionParams {
+        double x, y, z;
+        double energy;
+        double radius;
+        int64_t explosive_type;
+        int64_t fragment_count;
+    };
+
     using FnApplySett = void(*)(int32_t, bool);
     using FnPurge = int32_t(*)();
     using FnFloat = void(*)(float);
@@ -34,6 +42,7 @@ namespace
     FnRegProxy GRegisterProxy = nullptr;
     FnFree GFreeString = nullptr;
     FnSetPower GSetGlobalPower = nullptr;
+    FnSetPower GSetGlobalChaos = nullptr;
     FnApplySett GApplySettings = nullptr;
     FnPurge GPurgeSleeping = nullptr;
     FnFloat GSetGroundZ = nullptr;
@@ -41,7 +50,7 @@ namespace
     _sf_limpiar_nucleo GLimpiarNucleo = nullptr;
     typedef void (*FnSetMilitar)(const char*, int32_t, int32_t);
     FnSetMilitar GSetProxyMilitar = nullptr;
-    typedef void (*FnDetMilitar)(const char*, float, float, float, float, int32_t, int32_t);
+    typedef void (*FnDetMilitar)(const char*, CExplosionParams);
     FnDetMilitar GDetonarMilitar = nullptr;
     typedef void (*FnAddBulk)(const float*, int32_t, float, uint16_t);
     FnAddBulk GAddNodesBulk = nullptr;
@@ -75,6 +84,10 @@ namespace
     typedef int32_t (*FnPEAddNode)(EngineHandle*, float, float, float, float, uint16_t);
     typedef bool (*FnPEKame)(EngineHandle*, float, float, float, float, float, float, float);
     typedef void (*FnPESetGrav)(EngineHandle*, float, float, float);
+    
+    // El TRONO - ZERO COPY
+    typedef void (*FnSetMasterPointer)(FVector*, int32_t);
+    FnSetMasterPointer GSetMasterPointer = nullptr;
 
     FnPECreate GPE_Create = nullptr;
     FnPEDestroy GPE_Destroy = nullptr;
@@ -94,7 +107,7 @@ namespace
     {
         if (GMasterHandle) return true;
 
-        FString DllPath = FPaths::Combine(FPaths::ProjectPluginsDir(), TEXT("SoulForgePhysX/Binaries/Win64/soulforge_physx.dll"));
+        FString DllPath = FPaths::Combine(FPaths::ProjectPluginsDir(), TEXT("SoulForgePhysX/core_cpp/Binaries/Win64/soulforge_physx.dll"));
         GMasterHandle = FPlatformProcess::GetDllHandle(*DllPath);
         
         if (!GMasterHandle) {
@@ -127,7 +140,10 @@ namespace
         GRegistrarLogger = (_sf_registrar_logger)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_registrar_logger"));
         GActivarPoder = (FnActivarPoder)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_activar_poder"));
         GUpdateAllPowers = (FnUpdatePowers)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_update_all_powers"));
-        GGetNodePositions = (FnGetNodePositions)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_get_node_positions"));
+        GSetGlobalChaos = (FnSetPower)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_set_global_chaos"));
+        
+        // Zero-Copy Memory Pointers
+        GSetMasterPointer = (FnSetMasterPointer)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_set_master_pointer"));
         GGetNodeTemperatures = (FnGetNodeTemps)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_get_node_temperatures"));
         
         GPE_Create = (FnPECreate)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("physics_engine_create"));
@@ -141,7 +157,6 @@ namespace
         // Cargar Símbolos Láser
         CppDetonarNativo = (DetonarNativoFunc)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_detonar_nativo"));
         CppGetEngineState = (GetEngineStateFunc)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_get_engine_state"));
-        CppInsightFilter = (InsightFilterFunc)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_insight_filter"));
         CppGetAllFragmentData = (GetAllFragmentDataFunc)FPlatformProcess::GetDllExport(GMasterHandle, TEXT("sf_get_all_fragment_data"));
 
         if (!GInitPhysics) {
@@ -152,11 +167,45 @@ namespace
     }
 }
 
+// Global Static TArray for Zero-Copy
+TArray<FVector> GMasterPositionsArray;
+int32 GActiveNodeCount = 0;
+static float LastTickFrameTimeGlobal = -1.0f;
+
 void USoulForgeBridge::Initialize()
 {
+    static UWorld* LastInitializedWorld = nullptr;
+    UWorld* CurrentWorld = nullptr;
+
+    // Detectar el mundo de juego activo (PIE o Game)
+    if (GEngine)
+    {
+        for (const FWorldContext& Context : GEngine->GetWorldContexts())
+        {
+            if (Context.WorldType == EWorldType::PIE || Context.WorldType == EWorldType::Game)
+            {
+                CurrentWorld = Context.World();
+                break;
+            }
+        }
+    }
+
     if (LoadMasterLibrary()) {
-        if (GInitPhysics) {
+        // Solo inicializamos Rust si cambiamos de Mundo (Inicio de PIE)
+        if (GInitPhysics && CurrentWorld != LastInitializedWorld) {
             GInitPhysics();
+            LastInitializedWorld = CurrentWorld;
+            
+            // --- RESET DE TIEMPO (CRÍTICO PARA PIE) ---
+            LastTickFrameTimeGlobal = -1.0f;
+
+            // Setup Zero-Copy Memory for 100k nodes max by default
+            const int32 MAX_MASTER_NODES = 100000;
+            GMasterPositionsArray.SetNumUninitialized(MAX_MASTER_NODES);
+            if (GSetMasterPointer) {
+                GSetMasterPointer(GMasterPositionsArray.GetData(), MAX_MASTER_NODES);
+                UE_LOG(LogSoulForgeBridge, Display, TEXT("[SF-Bridge] Zero-Copy Master Pointer Established (%d nodes)"), MAX_MASTER_NODES);
+            }
             
             if (GRegistrarLogger)
             {
@@ -164,7 +213,7 @@ void USoulForgeBridge::Initialize()
                 UE_LOG(LogTemp, Display, TEXT("[SoulForge] Canal de telemetría con Rust ESTABLECIDO."));
             }
             
-            UE_LOG(LogSoulForgeBridge, Display, TEXT("Nucleo Maestro SoulForge fusionado y activo."));
+            UE_LOG(LogSoulForgeBridge, Display, TEXT("Nucleo Maestro SoulForge fusionado y activo (Nueva Sesión)."));
         }
     } else {
         UE_LOG(LogSoulForgeBridge, Error, TEXT("[SF-Bridge] ¡FATAL! Fallo crítico al cargar el Nucleo Maestro."));
@@ -183,26 +232,21 @@ FEngineState USoulForgeBridge::GetPerformanceState()
 
 TArray<int32> USoulForgeBridge::FiltrarInstancias(const TArray<FVector>& Posiciones, FVector CamaraPos, float DistanciaVision)
 {
-    TArray<int32> Result;
-    if (!CppInsightFilter || Posiciones.Num() == 0) return Result;
-
-    Result.SetNumUninitialized(Posiciones.Num());
-    
-    // Invocación simplificada según nueva firma
-    CppInsightFilter(Result.GetData(), Posiciones.Num());
-
-    return Result;
+    // La CppInsightFilter y FiltrarInstancias han sido deprecados
+    // porque SoulForgeInsightBridge ahora usa el Núcleo Unificado Maestro
+    // con sf_insight_filter_instances de manera independiente.
+    return TArray<int32>();
 }
 
-int32 USoulForgeBridge::DetonarNativo(FString ProxyId, float Energy, TArray<FSoulForgeFragmentData>& OutData, int32 CantidadNodos)
+int32 USoulForgeBridge::DetonarNativo(FString ProxyId, float Energy, int32 Preset, float FragLevel, TArray<FSoulForgeFragmentData>& OutData, int32 CantidadNodos)
 {
     if (CppDetonarNativo != nullptr)
     {
         FTCHARToUTF8 ConvertId(*ProxyId);
-        CppDetonarNativo(ConvertId.Get(), Energy, 0.0f, 0.0f, 1.0f, CantidadNodos);
+        // Usamos dist=FragLevel y radius=150.0 (o el radio configurado)
+        CppDetonarNativo(ConvertId.Get(), Energy, (float)Preset, FragLevel, 150.0f, CantidadNodos);
     }
     
-    // La nueva firma no devuelve fragmentos directamente
     OutData.Empty();
     return 0;
 }
@@ -245,6 +289,11 @@ void USoulForgeBridge::SetGlobalPower(float Multiplier)
     if (GSetGlobalPower) GSetGlobalPower(Multiplier);
 }
 
+void USoulForgeBridge::SetGlobalChaos(float ChaosFactor)
+{
+    if (GSetGlobalChaos) GSetGlobalChaos(ChaosFactor);
+}
+
 void USoulForgeBridge::ApplySettings(int32 NumThreads, bool bUseGPU)
 {
     if (GApplySettings) GApplySettings(NumThreads, bUseGPU);
@@ -253,6 +302,12 @@ void USoulForgeBridge::ApplySettings(int32 NumThreads, bool bUseGPU)
 void USoulForgeBridge::SetGroundZ(float Z)
 {
     if (GSetGroundZ) GSetGroundZ(Z);
+}
+
+const TArray<FVector>& USoulForgeBridge::GetMasterPositions(int32& OutCount)
+{
+    OutCount = GActiveNodeCount;
+    return GMasterPositionsArray;
 }
 
 const float* USoulForgeBridge::GetNodePositions(int32* OutCount)
@@ -307,12 +362,32 @@ void USoulForgeBridge::SetProxyMilitar(FString ProxyId, EMaterialType Material, 
         GSetProxyMilitar(ConvertId.Get(), (int32)Material, (int32)LOD);
     }
 }
-void USoulForgeBridge::DetonarMilitar(FString ProxyId, FVector PosicionActual, float Energia, EExplosiveType Explosivo, int32 CantidadNodos)
+void USoulForgeBridge::DetonarMilitar(FString ProxyId, FVector PosicionActual, float Energia, EExplosiveType Explosivo, int32 CantidadNodos, float Radio)
 {
     if (GDetonarMilitar)
     {
         FTCHARToUTF8 ConvertId(*ProxyId);
-        GDetonarMilitar(ConvertId.Get(), PosicionActual.X, PosicionActual.Y, PosicionActual.Z, Energia, (int32_t)Explosivo, CantidadNodos);
+        
+        CExplosionParams Params;
+        Params.x = (double)PosicionActual.X;
+        Params.y = (double)PosicionActual.Y;
+        Params.z = (double)PosicionActual.Z;
+        Params.energy = (double)Energia;
+        Params.radius = (double)Radio;
+        Params.explosive_type = (int64_t)Explosivo;
+        Params.fragment_count = (int64_t)CantidadNodos;
+
+        GDetonarMilitar(ConvertId.Get(), Params);
+
+        FString TipoTexto = TEXT("Desconocida");
+        switch(Explosivo) {
+            case EExplosiveType::Matrix: TipoTexto = TEXT("Matrix (Zero-G)"); break;
+            case EExplosiveType::AgujeroNegro: TipoTexto = TEXT("Agujero Negro (Implosión)"); break;
+            case EExplosiveType::TNT: TipoTexto = TEXT("TNT (Clásica)"); break;
+            default: TipoTexto = TEXT("Especial"); break;
+        }
+
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Physics] Detonación [%s] enviada a Rust | Tipo: %s | Nodos: %d | Radio: %.1f"), *ProxyId, *TipoTexto, CantidadNodos, Radio);
     }
 }
 
@@ -346,11 +421,11 @@ TArray<FVector> USoulForgeBridge::GetExplosionPreview(FString ProxyId, float Ene
     return Trayectorias;
 }
 
-FSoulForgeFragmentData* USoulForgeBridge::GetAllFragmentData(int32& OutCount)
+FSoulForgeFragmentData* USoulForgeBridge::GetAllFragmentData(uint32 FilterHash, int32& OutCount)
 {
     if (CppGetAllFragmentData)
     {
-        return (FSoulForgeFragmentData*)CppGetAllFragmentData(&OutCount);
+        return (FSoulForgeFragmentData*)CppGetAllFragmentData(FilterHash, &OutCount);
     }
     OutCount = 0;
     return nullptr;
@@ -381,7 +456,35 @@ void sf_physics_engine_tick(EngineHandle* handle, float dt) {
 
 void USoulForgeBridge::TickPhysics(float DeltaSeconds)
 {
-    if (GTickPhysics) GTickPhysics(DeltaSeconds);
+    if (!GTickPhysics) return;
+
+    // --- PROTECCIÓN ANTI-CONGELAMIENTO (TICK ÚNICO) ---
+    // Si tenemos varios actores, todos intentarán tickear el motor.
+    // Esto asegura que la simulación solo avance UNA VEZ por frame de Unreal.
+    static float LastTickFrameTime = -1.0f;
+    UWorld* World = nullptr;
+    
+    // Obtenemos el mundo de forma segura
+    for (const FWorldContext& Context : GEngine->GetWorldContexts())
+    {
+        if (Context.WorldType == EWorldType::PIE || Context.WorldType == EWorldType::Game)
+        {
+            World = Context.World();
+            break;
+        }
+    }
+
+    if (World)
+    {
+        float CurrentTime = World->GetTimeSeconds();
+        if (CurrentTime <= LastTickFrameTimeGlobal) 
+        {
+            return; // Ya hemos avanzado la física en este frame
+        }
+        LastTickFrameTimeGlobal = CurrentTime;
+
+        GActiveNodeCount = GTickPhysics(DeltaSeconds);
+    }
 }
 
 bool sf_physics_engine_get_render_data(EngineHandle* handle, struct FRenderData* out_data) {

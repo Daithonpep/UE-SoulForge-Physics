@@ -52,6 +52,7 @@
 "C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeSubsystem.cpp.obj"
 "C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeVFXLibrary.cpp.obj"
 "C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/Default.rc2.res"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Binaries/Win64/soulforge_physx.lib"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/Projects/UnrealEditor-Projects.lib"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/RenderCore/UnrealEditor-RenderCore.lib"
 "../Intermediate/Build/Win64/x64/UnrealEditor/Development/Core/UnrealEditor-Core.lib"

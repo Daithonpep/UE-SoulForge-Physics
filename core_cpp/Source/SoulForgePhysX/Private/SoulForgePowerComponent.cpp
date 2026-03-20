@@ -55,18 +55,14 @@ void USoulForgePowerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
     // Actualizar los visuales de Niagara
     UpdateNiagaraVisuals();
 
-    // --- RENDERIZADO RÚSTICO (Mismo estilo que las explosiones) ---
+    // --- RENDERIZADO RÚSTICO ZERO-COPY ---
     if (bUsarRenderizadoRustico)
     {
-        int32 RustCount = 0;
-        const float* RawPositions = USoulForgeBridge::GetNodePositions(&RustCount);
-        if (RawPositions != nullptr && RustCount > 0)
+        int32 NodeCount = 0;
+        const TArray<FVector>& MasterPositions = USoulForgeBridge::GetMasterPositions(NodeCount);
+        for (int32 i = 0; i < NodeCount; ++i)
         {
-            for (int32 i = 0; i < RustCount; ++i)
-            {
-                FVector NodePos = FVector(RawPositions[i*3], RawPositions[i*3+1], RawPositions[i*3+2]);
-                DrawDebugSolidBox(GetWorld(), NodePos, FVector(4.0f), FColor::Cyan, false, 0.05f);
-            }
+            DrawDebugSolidBox(GetWorld(), MasterPositions[i], FVector(4.0f), FColor::Cyan, false, 0.05f);
         }
     }
 }
@@ -76,27 +72,19 @@ void USoulForgePowerComponent::UpdateNiagaraVisuals()
     if (!NiagaraVFX) return;
 
     int32 NodeCount = 0;
-    const float* RawPositions = USoulForgeBridge::GetNodePositions(&NodeCount);
+    const TArray<FVector>& MasterPositions = USoulForgeBridge::GetMasterPositions(NodeCount);
 
-    if (NodeCount > 0 && RawPositions != nullptr)
+    if (NodeCount > 0)
     {
-        TArray<FVector> PositionsArray;
-        PositionsArray.SetNum(NodeCount); // Safe allocation
-
-        for (int32 i = 0; i < NodeCount; ++i)
-        {
-            PositionsArray[i] = FVector(
-                RawPositions[i * 3 + 0],
-                RawPositions[i * 3 + 1],
-                RawPositions[i * 3 + 2]
-            );
-        }
+        // TRUCO ZERO-COPY: Copia de bloque de memoria ultra-rápida
+        TArray<FVector> ActivePositions;
+        ActivePositions.Append(MasterPositions.GetData(), NodeCount);
 
         // Enviar a Niagara vía Data Interface Array
         UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(
             NiagaraVFX,
             FName("PosicionesDesdeRust"),
-            PositionsArray
+            ActivePositions
         );
 
         NiagaraVFX->SetIntParameter(FName("CantidadNodos"), NodeCount);

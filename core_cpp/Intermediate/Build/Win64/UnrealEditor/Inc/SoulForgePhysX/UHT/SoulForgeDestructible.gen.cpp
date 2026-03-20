@@ -13,6 +13,7 @@ void EmptyLinkFunctionForGeneratedCodeSoulForgeDestructible() {}
 
 // ********** Begin Cross Module References ********************************************************
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FGuid();
+COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FQuat();
 COREUOBJECT_API UScriptStruct* Z_Construct_UScriptStruct_FVector();
 ENGINE_API UClass* Z_Construct_UClass_UActorComponent();
 ENGINE_API UClass* Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister();
@@ -51,9 +52,6 @@ struct Z_Construct_UEnum_SoulForgePhysX_ESoulForgePattern_Statics
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Enum_MetaDataParams[] = {
 		{ "BlueprintType", "true" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// Las formas en las que Rust romper\xc3\xa1 el objeto\n" },
-#endif
 		{ "Directional.DisplayName", "Perforaci\xc3\xb3n (Bala)" },
 		{ "Directional.Name", "ESoulForgePattern::Directional" },
 		{ "Implosion.DisplayName", "Implosi\xc3\xb3n (Colapso Interno)" },
@@ -61,9 +59,6 @@ struct Z_Construct_UEnum_SoulForgePhysX_ESoulForgePattern_Statics
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 		{ "Radial.DisplayName", "Explosi\xc3\xb3n Radial (Esfera)" },
 		{ "Radial.Name", "ESoulForgePattern::Radial" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Las formas en las que Rust romper\xc3\xa1 el objeto" },
-#endif
 	};
 #endif // WITH_METADATA
 	static constexpr UECodeGen_Private::FEnumeratorParam Enumerators[] = {
@@ -103,17 +98,37 @@ struct Z_Construct_UScriptStruct_FSoulForgeNode_Statics
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Struct_MetaDataParams[] = {
 		{ "BlueprintType", "true" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// Esta es la estructura s\xc3\xbaper optimizada (Solo n\xc3\xbameros puros)\n" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Esta es la estructura s\xc3\xbaper optimizada (Solo n\xc3\xbameros puros)" },
-#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Posicion_MetaData[] = {
+		{ "Category", "SoulForgeNode" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Rotacion_MetaData[] = {
+		{ "Category", "SoulForgeNode" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Velocidad_MetaData[] = {
+		{ "Category", "SoulForgeNode" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Escala3D_MetaData[] = {
+		{ "Category", "SoulForgeNode" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bEstaActivo_MetaData[] = {
+		{ "Category", "SoulForgeNode" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
 #endif // WITH_METADATA
 
 // ********** Begin ScriptStruct FSoulForgeNode constinit property declarations ********************
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Posicion;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Rotacion;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Velocidad;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_Escala3D;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_bEstaActivo;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End ScriptStruct FSoulForgeNode constinit property declarations **********************
 	static void* NewStructOps()
 	{
@@ -130,13 +145,29 @@ class UScriptStruct* FSoulForgeNode::StaticStruct()
 	}
 	return Z_Registration_Info_UScriptStruct_FSoulForgeNode.OuterSingleton;
 	}
+
+// ********** Begin ScriptStruct FSoulForgeNode Property Definitions *******************************
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Posicion = { "Posicion", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeNode, Posicion), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Posicion_MetaData), NewProp_Posicion_MetaData) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Rotacion = { "Rotacion", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeNode, Rotacion), Z_Construct_UScriptStruct_FQuat, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Rotacion_MetaData), NewProp_Rotacion_MetaData) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Velocidad = { "Velocidad", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeNode, Velocidad), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Velocidad_MetaData), NewProp_Velocidad_MetaData) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Escala3D = { "Escala3D", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeNode, Escala3D), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Escala3D_MetaData), NewProp_Escala3D_MetaData) };
+const UECodeGen_Private::FBytePropertyParams Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_bEstaActivo = { "bEstaActivo", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeNode, bEstaActivo), nullptr, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bEstaActivo_MetaData), NewProp_bEstaActivo_MetaData) };
+const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UScriptStruct_FSoulForgeNode_Statics::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Posicion,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Rotacion,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Velocidad,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_Escala3D,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewProp_bEstaActivo,
+};
+static_assert(UE_ARRAY_COUNT(Z_Construct_UScriptStruct_FSoulForgeNode_Statics::PropPointers) < 2048);
+// ********** End ScriptStruct FSoulForgeNode Property Definitions *********************************
 const UECodeGen_Private::FStructParams Z_Construct_UScriptStruct_FSoulForgeNode_Statics::StructParams = {
 	(UObject* (*)())Z_Construct_UPackage__Script_SoulForgePhysX,
 	nullptr,
 	&NewStructOps,
 	"SoulForgeNode",
-	nullptr,
-	0,
+	Z_Construct_UScriptStruct_FSoulForgeNode_Statics::PropPointers,
+	UE_ARRAY_COUNT(Z_Construct_UScriptStruct_FSoulForgeNode_Statics::PropPointers),
 	sizeof(FSoulForgeNode),
 	alignof(FSoulForgeNode),
 	RF_Public|RF_Transient|RF_MarkAsNative,
@@ -158,15 +189,8 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics
 {
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "CallInEditor", "true" },
-		{ "Category", "SoulForge|Rendimiento" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// El bot\xc3\xb3n maestro para encender el monitor de Insight\n" },
-#endif
+		{ "Category", "SoulForge|Debug" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "El bot\xc3\xb3n maestro para encender el monitor de Insight" },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -177,7 +201,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics
 const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "ActivarInsight", 	nullptr, 
 	0, 
 0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics::Function_MetaDataParams)},  };
+RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight_Statics::Function_MetaDataParams)},  };
 UFunction* Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight()
 {
 	static UFunction* ReturnFunction = nullptr;
@@ -207,7 +231,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ActivateKamehameha_Statics
 	};
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge" },
+		{ "Category", "SoulForge|Debug" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
 #endif // WITH_METADATA
@@ -268,13 +292,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ApplyDamage_Statics
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "Category", "SoulForge|Destruction" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Aplica da\xc3\xb1o al objeto. */" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Aplica da\xc3\xb1o al objeto." },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -316,104 +334,13 @@ DEFINE_FUNCTION(USoulForgeDestructible::execApplyDamage)
 }
 // ********** End Class USoulForgeDestructible Function ApplyDamage ********************************
 
-// ********** Begin Class USoulForgeDestructible Function AutoLinkToRust ***************************
-struct Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust_Statics
-{
-#if WITH_METADATA
-	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge|Admin" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/**\n\x09 * Re-vincula el objeto con el n\xc3\xba""cleo de Rust si el ProxyId se ha perdido o es inv\xc3\xa1lido.\n\x09 */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Re-vincula el objeto con el n\xc3\xba""cleo de Rust si el ProxyId se ha perdido o es inv\xc3\xa1lido." },
-#endif
-	};
-#endif // WITH_METADATA
-
-// ********** Begin Function AutoLinkToRust constinit property declarations ************************
-// ********** End Function AutoLinkToRust constinit property declarations **************************
-	static const UECodeGen_Private::FFunctionParams FuncParams;
-};
-const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "AutoLinkToRust", 	nullptr, 
-	0, 
-0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust_Statics::Function_MetaDataParams)},  };
-UFunction* Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust()
-{
-	static UFunction* ReturnFunction = nullptr;
-	if (!ReturnFunction)
-	{
-		UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust_Statics::FuncParams);
-	}
-	return ReturnFunction;
-}
-DEFINE_FUNCTION(USoulForgeDestructible::execAutoLinkToRust)
-{
-	P_FINISH;
-	P_NATIVE_BEGIN;
-	P_THIS->AutoLinkToRust();
-	P_NATIVE_END;
-}
-// ********** End Class USoulForgeDestructible Function AutoLinkToRust *****************************
-
-// ********** Begin Class USoulForgeDestructible Function DeactivateOriginal ***********************
-struct Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal_Statics
-{
-#if WITH_METADATA
-	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge|Actions" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Funci\xc3\xb3n para que el objeto se oculte y desactive colisiones solo */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Funci\xc3\xb3n para que el objeto se oculte y desactive colisiones solo" },
-#endif
-	};
-#endif // WITH_METADATA
-
-// ********** Begin Function DeactivateOriginal constinit property declarations ********************
-// ********** End Function DeactivateOriginal constinit property declarations **********************
-	static const UECodeGen_Private::FFunctionParams FuncParams;
-};
-const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "DeactivateOriginal", 	nullptr, 
-	0, 
-0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal_Statics::Function_MetaDataParams)},  };
-UFunction* Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal()
-{
-	static UFunction* ReturnFunction = nullptr;
-	if (!ReturnFunction)
-	{
-		UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal_Statics::FuncParams);
-	}
-	return ReturnFunction;
-}
-DEFINE_FUNCTION(USoulForgeDestructible::execDeactivateOriginal)
-{
-	P_FINISH;
-	P_NATIVE_BEGIN;
-	P_THIS->DeactivateOriginal();
-	P_NATIVE_END;
-}
-// ********** End Class USoulForgeDestructible Function DeactivateOriginal *************************
-
 // ********** Begin Class USoulForgeDestructible Function ForzarEncendidoRust **********************
 struct Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics
 {
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "CallInEditor", "true" },
 		{ "Category", "SoulForge|Debug" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Bot\xc3\xb3n m\xc3\xa1gico que aparecer\xc3\xa1 en el editor de Unreal */" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Bot\xc3\xb3n m\xc3\xa1gico que aparecer\xc3\xa1 en el editor de Unreal" },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -424,7 +351,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics
 const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "ForzarEncendidoRust", 	nullptr, 
 	0, 
 0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics::Function_MetaDataParams)},  };
+RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust_Statics::Function_MetaDataParams)},  };
 UFunction* Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust()
 {
 	static UFunction* ReturnFunction = nullptr;
@@ -443,105 +370,6 @@ DEFINE_FUNCTION(USoulForgeDestructible::execForzarEncendidoRust)
 }
 // ********** End Class USoulForgeDestructible Function ForzarEncendidoRust ************************
 
-// ********** Begin Class USoulForgeDestructible Function GetHealth ********************************
-struct Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics
-{
-	struct SoulForgeDestructible_eventGetHealth_Parms
-	{
-		float ReturnValue;
-	};
-#if WITH_METADATA
-	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge|State" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Salud actual del objeto [0.0 = destruido, 1.0 = intacto]. */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Salud actual del objeto [0.0 = destruido, 1.0 = intacto]." },
-#endif
-	};
-#endif // WITH_METADATA
-
-// ********** Begin Function GetHealth constinit property declarations *****************************
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_ReturnValue;
-	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
-// ********** End Function GetHealth constinit property declarations *******************************
-	static const UECodeGen_Private::FFunctionParams FuncParams;
-};
-
-// ********** Begin Function GetHealth Property Definitions ****************************************
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeDestructible_eventGetHealth_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::PropPointers[] = {
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::NewProp_ReturnValue,
-};
-static_assert(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::PropPointers) < 2048);
-// ********** End Function GetHealth Property Definitions ******************************************
-const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "GetHealth", 	Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::PropPointers, 
-	UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::PropPointers), 
-sizeof(Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::SoulForgeDestructible_eventGetHealth_Parms),
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x54020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::Function_MetaDataParams)},  };
-static_assert(sizeof(Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::SoulForgeDestructible_eventGetHealth_Parms) < MAX_uint16);
-UFunction* Z_Construct_UFunction_USoulForgeDestructible_GetHealth()
-{
-	static UFunction* ReturnFunction = nullptr;
-	if (!ReturnFunction)
-	{
-		UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_USoulForgeDestructible_GetHealth_Statics::FuncParams);
-	}
-	return ReturnFunction;
-}
-DEFINE_FUNCTION(USoulForgeDestructible::execGetHealth)
-{
-	P_FINISH;
-	P_NATIVE_BEGIN;
-	*(float*)Z_Param__Result=P_THIS->GetHealth();
-	P_NATIVE_END;
-}
-// ********** End Class USoulForgeDestructible Function GetHealth **********************************
-
-// ********** Begin Class USoulForgeDestructible Function PreparaRenderizadoFragmentos *************
-struct Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos_Statics
-{
-#if WITH_METADATA
-	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge|Visual" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Captura la textura del objeto original y la inyecta en los fragmentos */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Captura la textura del objeto original y la inyecta en los fragmentos" },
-#endif
-	};
-#endif // WITH_METADATA
-
-// ********** Begin Function PreparaRenderizadoFragmentos constinit property declarations **********
-// ********** End Function PreparaRenderizadoFragmentos constinit property declarations ************
-	static const UECodeGen_Private::FFunctionParams FuncParams;
-};
-const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "PreparaRenderizadoFragmentos", 	nullptr, 
-	0, 
-0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos_Statics::Function_MetaDataParams)},  };
-UFunction* Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos()
-{
-	static UFunction* ReturnFunction = nullptr;
-	if (!ReturnFunction)
-	{
-		UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos_Statics::FuncParams);
-	}
-	return ReturnFunction;
-}
-DEFINE_FUNCTION(USoulForgeDestructible::execPreparaRenderizadoFragmentos)
-{
-	P_FINISH;
-	P_NATIVE_BEGIN;
-	P_THIS->PreparaRenderizadoFragmentos();
-	P_NATIVE_END;
-}
-// ********** End Class USoulForgeDestructible Function PreparaRenderizadoFragmentos ***************
-
 // ********** Begin Class USoulForgeDestructible Function PreviewExplosion *************************
 struct Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics
 {
@@ -549,13 +377,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "CallInEditor", "true" },
 		{ "Category", "SoulForge|Laboratorio" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** \xf0\x9f\xa7\xaa LABORATORIO: Pre-visualizar patr\xc3\xb3n de explosi\xc3\xb3n sin simular nada */" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "\xf0\x9f\xa7\xaa LABORATORIO: Pre-visualizar patr\xc3\xb3n de explosi\xc3\xb3n sin simular nada" },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -566,7 +388,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics
 const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "PreviewExplosion", 	nullptr, 
 	0, 
 0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics::Function_MetaDataParams)},  };
+RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion_Statics::Function_MetaDataParams)},  };
 UFunction* Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion()
 {
 	static UFunction* ReturnFunction = nullptr;
@@ -595,14 +417,8 @@ struct Z_Construct_UFunction_USoulForgeDestructible_RecibirImpacto_Statics
 	};
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge|Acci\xc3\xb3n" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** LA \xc3\x9aNICA FUNCI\xc3\x93N QUE USAR\xc3\x81S EN BLUEPRINTS (Panel Maestro) */" },
-#endif
+		{ "Category", "SoulForge|Destruction" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "LA \xc3\x9aNICA FUNCI\xc3\x93N QUE USAR\xc3\x81S EN BLUEPRINTS (Panel Maestro)" },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -654,14 +470,8 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
 		{ "CallInEditor", "true" },
-		{ "Category", "SoulForge|Debug" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Bot\xc3\xb3n en el Editor para resetear el estado interno. */" },
-#endif
+		{ "Category", "SoulForge|Laboratorio" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Bot\xc3\xb3n en el Editor para resetear el estado interno." },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -672,7 +482,7 @@ struct Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics
 const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeDestructible, nullptr, "ResetInternalState", 	nullptr, 
 	0, 
 0,
-RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics::Function_MetaDataParams)},  };
+RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04020401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState_Statics::Function_MetaDataParams)},  };
 UFunction* Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState()
 {
 	static UFunction* ReturnFunction = nullptr;
@@ -704,14 +514,8 @@ struct Z_Construct_UFunction_USoulForgeDestructible_SpawnNodeGrid_Statics
 	};
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** \xf0\x9f\x9a\x80 NUEVA API OPTIMIZADA (Llamado masivo de nodos) */" },
-#endif
+		{ "Category", "SoulForge|Debug" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "\xf0\x9f\x9a\x80 NUEVA API OPTIMIZADA (Llamado masivo de nodos)" },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -774,13 +578,13 @@ struct Z_Construct_UFunction_USoulForgeDestructible_TriggerDestruction_Statics
 {
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
-		{ "Category", "SoulForge" },
+		{ "Category", "SoulForge|Destruction" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "/**\n\x09 * Destruye el objeto: oculta el mesh original y activa la simulaci\xc3\xb3n.\n\x09 */" },
+		{ "Comment", "// \xe2\x94\x80\xe2\x94\x80 API Blueprint \xe2\x94\x80\xe2\x94\x80\n" },
 #endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Destruye el objeto: oculta el mesh original y activa la simulaci\xc3\xb3n." },
+		{ "ToolTip", "\xe2\x94\x80\xe2\x94\x80 API Blueprint \xe2\x94\x80\xe2\x94\x80" },
 #endif
 	};
 #endif // WITH_METADATA
@@ -847,23 +651,17 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 	static constexpr UECodeGen_Private::FMetaDataPairParam Class_MetaDataParams[] = {
 		{ "BlueprintSpawnableComponent", "" },
 		{ "ClassGroupNames", "SoulForge" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80 Componente Destruible \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\n" },
-#endif
 		{ "IncludePath", "SoulForgeDestructible.h" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80 Componente Destruible \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ProxyName_MetaData[] = {
 		{ "Category", "SoulForge|Stats" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// \xe2\x94\x80\xe2\x94\x80 Configuraci\xc3\xb3n (Mejorada para Panel de Detalles) \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\n" },
+		{ "Comment", "// \xe2\x94\x80\xe2\x94\x80 Configuraci\xc3\xb3n Maestra (V8.4.2) \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\n" },
 #endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "\xe2\x94\x80\xe2\x94\x80 Configuraci\xc3\xb3n (Mejorada para Panel de Detalles) \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80" },
+		{ "ToolTip", "\xe2\x94\x80\xe2\x94\x80 Configuraci\xc3\xb3n Maestra (V8.4.2) \xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80" },
 #endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ProxyId_MetaData[] = {
@@ -872,23 +670,11 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PersistentDNI_MetaData[] = {
 		{ "Category", "SoulForge|Stats" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** DNI persistente calculado por el componente */" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "DNI persistente calculado por el componente" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PersistentGUID_MetaData[] = {
 		{ "Category", "SoulForge|Stats" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** ADN \xc3\xbanico del objeto (Persistente entre sesiones) */" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "ADN \xc3\xbanico del objeto (Persistente entre sesiones)" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaterialType_MetaData[] = {
 		{ "Category", "SoulForge|Laboratorio" },
@@ -902,76 +688,13 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 		{ "Category", "SoulForge|Laboratorio" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HalfExtent_MetaData[] = {
-		{ "Category", "SoulForge|Geometry" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/**\n\x09 * Semi-extensiones de la caja AABB del objeto (cm).\n\x09 * X=ancho/2, Y=profundidad/2, Z=altura/2.\n\x09 */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Semi-extensiones de la caja AABB del objeto (cm).\nX=ancho/2, Y=profundidad/2, Z=altura/2." },
-#endif
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DamagePreset_MetaData[] = {
-		{ "Category", "SoulForge|Destruction" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Preset de da\xc3\xb1o aplicado cuando se destruya este objeto. */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Preset de da\xc3\xb1o aplicado cuando se destruya este objeto." },
-#endif
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DustVFX_MetaData[] = {
-		{ "Category", "SoulForge|VFX" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Sistema Niagara para el polvo y part\xc3\xad""culas finas (Dust category). */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Sistema Niagara para el polvo y part\xc3\xad""culas finas (Dust category)." },
-#endif
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FragmentRenderer_MetaData[] = {
-		{ "Category", "SoulForge|Renderer" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/**\n\x09 * Referencia al renderer de fragmentos del mismo Actor.\n\x09 * Se busca autom\xc3\xa1ticamente en BeginPlay.\n\x09 */" },
-#endif
-		{ "EditInline", "true" },
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Referencia al renderer de fragmentos del mismo Actor.\nSe busca autom\xc3\xa1ticamente en BeginPlay." },
-#endif
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StabilityThreshold_MetaData[] = {
-		{ "Category", "SoulForge|Config" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Sensibilidad de la simulaci\xc3\xb3n de fragmentos (0.0 = ca\xc3\xb3tico, 1.0 = r\xc3\xadgido). */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Sensibilidad de la simulaci\xc3\xb3n de fragmentos (0.0 = ca\xc3\xb3tico, 1.0 = r\xc3\xadgido)." },
-#endif
-	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FuerzaDeImpacto_MetaData[] = {
 		{ "Category", "SoulForge|Laboratorio" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// --- CONFIGURACI\xc3\x93N DE IMPACTO (Panel Maestro) ---\n" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "--- CONFIGURACI\xc3\x93N DE IMPACTO (Panel Maestro) ---" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_RadioDeImpacto_MetaData[] = {
 		{ "Category", "SoulForge|Laboratorio" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// 500 Millones por defecto\n" },
-#endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "500 Millones por defecto" },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FormaDeExplosion_MetaData[] = {
 		{ "Category", "SoulForge|Laboratorio" },
@@ -980,23 +703,70 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CantidadDeNodos_MetaData[] = {
 		{ "Category", "SoulForge|Laboratorio" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Cantidad de fragmentos. Poner en 0 para que Rust calcule el n\xc3\xbamero real seg\xc3\xban la f\xc3\xadsica de Grady-Kipp." },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CantidadDeNodosHecatombe_MetaData[] = {
 		{ "Category", "SoulForge|Laboratorio" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Nodos que genera el Kamehameha para el estr\xc3\xa9s test." },
-#endif
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bUsarRenderizadoRustico_MetaData[] = {
-		{ "Category", "SoulForge | Visuals" },
+		{ "Category", "SoulForge|Laboratorio" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PreviewDuration_MetaData[] = {
+		{ "Category", "SoulForge|Laboratorio" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bActivarHUD_MetaData[] = {
+		{ "Category", "SoulForge|Laboratorio" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FragmentacionJupiter_MetaData[] = {
+		{ "Category", "SoulForge|Laboratorio" },
+		{ "ClampMax", "10.0" },
+		{ "ClampMin", "0.1" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MallaDelNodo_MetaData[] = {
+		{ "Category", "SoulForge|Config" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "// \xe2\x94\x80\xe2\x94\x80 Geometr\xc3\xad""a y Render \xe2\x94\x80\xe2\x94\x80\n" },
+#endif
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "\xe2\x94\x80\xe2\x94\x80 Geometr\xc3\xad""a y Render \xe2\x94\x80\xe2\x94\x80" },
+#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxNodos_MetaData[] = {
+		{ "Category", "SoulForge|Config" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MasterShardMaterial_MetaData[] = {
+		{ "Category", "SoulForge|Config" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_HalfExtent_MetaData[] = {
+		{ "Category", "SoulForge|Geometry" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DamagePreset_MetaData[] = {
+		{ "Category", "SoulForge|Destruction" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_DustVFX_MetaData[] = {
+		{ "Category", "SoulForge|VFX" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FragmentRenderer_MetaData[] = {
+		{ "Category", "SoulForge|Renderer" },
+		{ "EditInline", "true" },
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_StabilityThreshold_MetaData[] = {
+		{ "Category", "SoulForge|Config" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SharedNiagaraVFX_MetaData[] = {
-		{ "Category", "SoulForge | Visuals" },
+		{ "Category", "SoulForge|Visuals" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
@@ -1004,79 +774,30 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 		{ "Category", "SoulForge|Asistencia" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIsEngineReady_MetaData[] = {
-		{ "Category", "SoulForge|Stats" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "/** Indica si el componente tiene conexi\xc3\xb3n activa con el n\xc3\xba""cleo Rust. */" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Indica si el componente tiene conexi\xc3\xb3n activa con el n\xc3\xba""cleo Rust." },
-#endif
-	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bDestroyed_MetaData[] = {
-		{ "Category", "SoulForge|Stats" },
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PreviewDuration_MetaData[] = {
-		{ "Category", "SoulForge|Laboratorio" },
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NucleosCPU_MetaData[] = {
-		{ "Category", "SoulForge|Rendimiento" },
-		{ "ClampMax", "32" },
-		{ "ClampMin", "1" },
 #if !UE_BUILD_SHIPPING
-		{ "Comment", "// --- PANEL DE RENDIMIENTO INSIGHT ---\n" },
+		{ "Comment", "// --- Estado Interno ---\n" },
 #endif
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 #if !UE_BUILD_SHIPPING
-		{ "ToolTip", "--- PANEL DE RENDIMIENTO INSIGHT ---" },
+		{ "ToolTip", "--- Estado Interno ---" },
 #endif
 	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bUsarAceleracionGPU_MetaData[] = {
-		{ "Category", "SoulForge|Rendimiento" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// T\xc3\xba decides cu\xc3\xa1ntos n\xc3\xba""cleos dedicarle\n" },
-#endif
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Health_MetaData[] = {
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "T\xc3\xba decides cu\xc3\xa1ntos n\xc3\xba""cleos dedicarle" },
-#endif
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ObjectFilterHash_MetaData[] = {
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_bIsEngineReady_MetaData[] = {
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_NodePool_MetaData[] = {
+		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
 	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_InstancedRenderer_MetaData[] = {
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// El componente que dibujar\xc3\xa1 los pedazos a la velocidad de la luz\n" },
-#endif
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "El componente que dibujar\xc3\xa1 los pedazos a la velocidad de la luz" },
-#endif
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MaxNodos_MetaData[] = {
-		{ "Category", "SoulForge|Memoria" },
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MallaDelNodo_MetaData[] = {
-		{ "Category", "SoulForge|Visual" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// Tu malla gen\xc3\xa9rica (El cubito o roca que usaremos como \"Nodo\")\n" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "Tu malla gen\xc3\xa9rica (El cubito o roca que usaremos como \"Nodo\")" },
-#endif
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_MasterShardMaterial_MetaData[] = {
-		{ "Category", "SoulForge|Visual" },
-#if !UE_BUILD_SHIPPING
-		{ "Comment", "// El material maestro del fragmento (donde inyectaremos la textura)\n" },
-#endif
-		{ "ModuleRelativePath", "Public/SoulForgeDestructible.h" },
-#if !UE_BUILD_SHIPPING
-		{ "ToolTip", "El material maestro del fragmento (donde inyectaremos la textura)" },
-#endif
 	};
 #endif // WITH_METADATA
 
@@ -1091,12 +812,6 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_PhysicsLOD;
 	static const UECodeGen_Private::FBytePropertyParams NewProp_ExplosiveType_Underlying;
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_ExplosiveType;
-	static const UECodeGen_Private::FStructPropertyParams NewProp_HalfExtent;
-	static const UECodeGen_Private::FBytePropertyParams NewProp_DamagePreset_Underlying;
-	static const UECodeGen_Private::FEnumPropertyParams NewProp_DamagePreset;
-	static const UECodeGen_Private::FObjectPropertyParams NewProp_DustVFX;
-	static const UECodeGen_Private::FObjectPropertyParams NewProp_FragmentRenderer;
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_StabilityThreshold;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_FuerzaDeImpacto;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_RadioDeImpacto;
 	static const UECodeGen_Private::FBytePropertyParams NewProp_FormaDeExplosion_Underlying;
@@ -1105,32 +820,38 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 	static const UECodeGen_Private::FIntPropertyParams NewProp_CantidadDeNodosHecatombe;
 	static void NewProp_bUsarRenderizadoRustico_SetBit(void* Obj);
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bUsarRenderizadoRustico;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_PreviewDuration;
+	static void NewProp_bActivarHUD_SetBit(void* Obj);
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bActivarHUD;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FragmentacionJupiter;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_MallaDelNodo;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxNodos;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_MasterShardMaterial;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_HalfExtent;
+	static const UECodeGen_Private::FBytePropertyParams NewProp_DamagePreset_Underlying;
+	static const UECodeGen_Private::FEnumPropertyParams NewProp_DamagePreset;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_DustVFX;
+	static const UECodeGen_Private::FObjectPropertyParams NewProp_FragmentRenderer;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_StabilityThreshold;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_SharedNiagaraVFX;
 	static void NewProp_bActivarMiraLaser_SetBit(void* Obj);
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bActivarMiraLaser;
-	static void NewProp_bIsEngineReady_SetBit(void* Obj);
-	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsEngineReady;
 	static void NewProp_bDestroyed_SetBit(void* Obj);
 	static const UECodeGen_Private::FBoolPropertyParams NewProp_bDestroyed;
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_PreviewDuration;
-	static const UECodeGen_Private::FIntPropertyParams NewProp_NucleosCPU;
-	static void NewProp_bUsarAceleracionGPU_SetBit(void* Obj);
-	static const UECodeGen_Private::FBoolPropertyParams NewProp_bUsarAceleracionGPU;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Health;
+	static const UECodeGen_Private::FUInt32PropertyParams NewProp_ObjectFilterHash;
+	static void NewProp_bIsEngineReady_SetBit(void* Obj);
+	static const UECodeGen_Private::FBoolPropertyParams NewProp_bIsEngineReady;
+	static const UECodeGen_Private::FStructPropertyParams NewProp_NodePool_Inner;
+	static const UECodeGen_Private::FArrayPropertyParams NewProp_NodePool;
 	static const UECodeGen_Private::FObjectPropertyParams NewProp_InstancedRenderer;
-	static const UECodeGen_Private::FIntPropertyParams NewProp_MaxNodos;
-	static const UECodeGen_Private::FObjectPropertyParams NewProp_MallaDelNodo;
-	static const UECodeGen_Private::FObjectPropertyParams NewProp_MasterShardMaterial;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Class USoulForgeDestructible constinit property declarations *********************
 	static constexpr UE::CodeGen::FClassNativeFunction Funcs[] = {
 		{ .NameUTF8 = UTF8TEXT("ActivarInsight"), .Pointer = &USoulForgeDestructible::execActivarInsight },
 		{ .NameUTF8 = UTF8TEXT("ActivateKamehameha"), .Pointer = &USoulForgeDestructible::execActivateKamehameha },
 		{ .NameUTF8 = UTF8TEXT("ApplyDamage"), .Pointer = &USoulForgeDestructible::execApplyDamage },
-		{ .NameUTF8 = UTF8TEXT("AutoLinkToRust"), .Pointer = &USoulForgeDestructible::execAutoLinkToRust },
-		{ .NameUTF8 = UTF8TEXT("DeactivateOriginal"), .Pointer = &USoulForgeDestructible::execDeactivateOriginal },
 		{ .NameUTF8 = UTF8TEXT("ForzarEncendidoRust"), .Pointer = &USoulForgeDestructible::execForzarEncendidoRust },
-		{ .NameUTF8 = UTF8TEXT("GetHealth"), .Pointer = &USoulForgeDestructible::execGetHealth },
-		{ .NameUTF8 = UTF8TEXT("PreparaRenderizadoFragmentos"), .Pointer = &USoulForgeDestructible::execPreparaRenderizadoFragmentos },
 		{ .NameUTF8 = UTF8TEXT("PreviewExplosion"), .Pointer = &USoulForgeDestructible::execPreviewExplosion },
 		{ .NameUTF8 = UTF8TEXT("RecibirImpacto"), .Pointer = &USoulForgeDestructible::execRecibirImpacto },
 		{ .NameUTF8 = UTF8TEXT("ResetInternalState"), .Pointer = &USoulForgeDestructible::execResetInternalState },
@@ -1139,19 +860,15 @@ struct Z_Construct_UClass_USoulForgeDestructible_Statics
 	};
 	static UObject* (*const DependentSingletons[])();
 	static constexpr FClassFunctionLinkInfo FuncInfo[] = {
-		{ &Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight, "ActivarInsight" }, // 2265005253
-		{ &Z_Construct_UFunction_USoulForgeDestructible_ActivateKamehameha, "ActivateKamehameha" }, // 3222836936
-		{ &Z_Construct_UFunction_USoulForgeDestructible_ApplyDamage, "ApplyDamage" }, // 1657719209
-		{ &Z_Construct_UFunction_USoulForgeDestructible_AutoLinkToRust, "AutoLinkToRust" }, // 1141706354
-		{ &Z_Construct_UFunction_USoulForgeDestructible_DeactivateOriginal, "DeactivateOriginal" }, // 1371365178
-		{ &Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust, "ForzarEncendidoRust" }, // 2324364540
-		{ &Z_Construct_UFunction_USoulForgeDestructible_GetHealth, "GetHealth" }, // 3346019867
-		{ &Z_Construct_UFunction_USoulForgeDestructible_PreparaRenderizadoFragmentos, "PreparaRenderizadoFragmentos" }, // 626005550
-		{ &Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion, "PreviewExplosion" }, // 2121753330
-		{ &Z_Construct_UFunction_USoulForgeDestructible_RecibirImpacto, "RecibirImpacto" }, // 119252405
-		{ &Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState, "ResetInternalState" }, // 2554793391
-		{ &Z_Construct_UFunction_USoulForgeDestructible_SpawnNodeGrid, "SpawnNodeGrid" }, // 3358682910
-		{ &Z_Construct_UFunction_USoulForgeDestructible_TriggerDestruction, "TriggerDestruction" }, // 3552338102
+		{ &Z_Construct_UFunction_USoulForgeDestructible_ActivarInsight, "ActivarInsight" }, // 1620706786
+		{ &Z_Construct_UFunction_USoulForgeDestructible_ActivateKamehameha, "ActivateKamehameha" }, // 4004513100
+		{ &Z_Construct_UFunction_USoulForgeDestructible_ApplyDamage, "ApplyDamage" }, // 3434971908
+		{ &Z_Construct_UFunction_USoulForgeDestructible_ForzarEncendidoRust, "ForzarEncendidoRust" }, // 2719892647
+		{ &Z_Construct_UFunction_USoulForgeDestructible_PreviewExplosion, "PreviewExplosion" }, // 3095844808
+		{ &Z_Construct_UFunction_USoulForgeDestructible_RecibirImpacto, "RecibirImpacto" }, // 2440964619
+		{ &Z_Construct_UFunction_USoulForgeDestructible_ResetInternalState, "ResetInternalState" }, // 3422255988
+		{ &Z_Construct_UFunction_USoulForgeDestructible_SpawnNodeGrid, "SpawnNodeGrid" }, // 3539831291
+		{ &Z_Construct_UFunction_USoulForgeDestructible_TriggerDestruction, "TriggerDestruction" }, // 2818156009
 	};
 	static_assert(UE_ARRAY_COUNT(FuncInfo) < 2048);
 	static constexpr FCppClassTypeInfoStatic StaticCppClassTypeInfo = {
@@ -1170,17 +887,11 @@ const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestru
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PhysicsLOD_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PhysicsLOD = { "PhysicsLOD", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, PhysicsLOD), Z_Construct_UEnum_SoulForgePhysX_EPhysicsLOD, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PhysicsLOD_MetaData), NewProp_PhysicsLOD_MetaData) }; // 2707074426
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ExplosiveType_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ExplosiveType = { "ExplosiveType", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, ExplosiveType), Z_Construct_UEnum_SoulForgePhysX_EExplosiveType, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExplosiveType_MetaData), NewProp_ExplosiveType_MetaData) }; // 4168153385
-const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_HalfExtent = { "HalfExtent", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, HalfExtent), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HalfExtent_MetaData), NewProp_HalfExtent_MetaData) };
-const UECodeGen_Private::FBytePropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset = { "DamagePreset", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, DamagePreset), Z_Construct_UEnum_SoulForgePhysX_ESoulForgeDamagePreset, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DamagePreset_MetaData), NewProp_DamagePreset_MetaData) }; // 3946375310
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DustVFX = { "DustVFX", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, DustVFX), Z_Construct_UClass_UNiagaraSystem_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DustVFX_MetaData), NewProp_DustVFX_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FragmentRenderer = { "FragmentRenderer", nullptr, (EPropertyFlags)0x011400000008000d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, FragmentRenderer), Z_Construct_UClass_USoulForgeFragmentRenderer_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FragmentRenderer_MetaData), NewProp_FragmentRenderer_MetaData) };
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_StabilityThreshold = { "StabilityThreshold", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, StabilityThreshold), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StabilityThreshold_MetaData), NewProp_StabilityThreshold_MetaData) };
+const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ExplosiveType = { "ExplosiveType", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, ExplosiveType), Z_Construct_UEnum_SoulForgePhysX_EExplosiveType, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ExplosiveType_MetaData), NewProp_ExplosiveType_MetaData) }; // 2832337441
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FuerzaDeImpacto = { "FuerzaDeImpacto", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, FuerzaDeImpacto), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FuerzaDeImpacto_MetaData), NewProp_FuerzaDeImpacto_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_RadioDeImpacto = { "RadioDeImpacto", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, RadioDeImpacto), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_RadioDeImpacto_MetaData), NewProp_RadioDeImpacto_MetaData) };
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FormaDeExplosion_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FormaDeExplosion = { "FormaDeExplosion", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, FormaDeExplosion), Z_Construct_UEnum_SoulForgePhysX_ESoulForgePattern, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FormaDeExplosion_MetaData), NewProp_FormaDeExplosion_MetaData) }; // 1577948756
+const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FormaDeExplosion = { "FormaDeExplosion", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, FormaDeExplosion), Z_Construct_UEnum_SoulForgePhysX_ESoulForgePattern, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FormaDeExplosion_MetaData), NewProp_FormaDeExplosion_MetaData) }; // 2794111669
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_CantidadDeNodos = { "CantidadDeNodos", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, CantidadDeNodos), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CantidadDeNodos_MetaData), NewProp_CantidadDeNodos_MetaData) };
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_CantidadDeNodosHecatombe = { "CantidadDeNodosHecatombe", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, CantidadDeNodosHecatombe), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CantidadDeNodosHecatombe_MetaData), NewProp_CantidadDeNodosHecatombe_MetaData) };
 void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarRenderizadoRustico_SetBit(void* Obj)
@@ -1188,33 +899,43 @@ void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarRenderizado
 	((USoulForgeDestructible*)Obj)->bUsarRenderizadoRustico = 1;
 }
 const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarRenderizadoRustico = { "bUsarRenderizadoRustico", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarRenderizadoRustico_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bUsarRenderizadoRustico_MetaData), NewProp_bUsarRenderizadoRustico_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PreviewDuration = { "PreviewDuration", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, PreviewDuration), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PreviewDuration_MetaData), NewProp_PreviewDuration_MetaData) };
+void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarHUD_SetBit(void* Obj)
+{
+	((USoulForgeDestructible*)Obj)->bActivarHUD = 1;
+}
+const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarHUD = { "bActivarHUD", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarHUD_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bActivarHUD_MetaData), NewProp_bActivarHUD_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FragmentacionJupiter = { "FragmentacionJupiter", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, FragmentacionJupiter), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FragmentacionJupiter_MetaData), NewProp_FragmentacionJupiter_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MallaDelNodo = { "MallaDelNodo", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, MallaDelNodo), Z_Construct_UClass_UStaticMesh_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MallaDelNodo_MetaData), NewProp_MallaDelNodo_MetaData) };
+const UECodeGen_Private::FIntPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MaxNodos = { "MaxNodos", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, MaxNodos), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxNodos_MetaData), NewProp_MaxNodos_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MasterShardMaterial = { "MasterShardMaterial", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, MasterShardMaterial), Z_Construct_UClass_UMaterialInterface_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MasterShardMaterial_MetaData), NewProp_MasterShardMaterial_MetaData) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_HalfExtent = { "HalfExtent", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, HalfExtent), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_HalfExtent_MetaData), NewProp_HalfExtent_MetaData) };
+const UECodeGen_Private::FBytePropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FEnumPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset = { "DamagePreset", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, DamagePreset), Z_Construct_UEnum_SoulForgePhysX_ESoulForgeDamagePreset, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DamagePreset_MetaData), NewProp_DamagePreset_MetaData) }; // 391389145
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DustVFX = { "DustVFX", nullptr, (EPropertyFlags)0x0114000000000005, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, DustVFX), Z_Construct_UClass_UNiagaraSystem_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_DustVFX_MetaData), NewProp_DustVFX_MetaData) };
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FragmentRenderer = { "FragmentRenderer", nullptr, (EPropertyFlags)0x011400000008000d, UECodeGen_Private::EPropertyGenFlags::Object | UECodeGen_Private::EPropertyGenFlags::ObjectPtr, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, FragmentRenderer), Z_Construct_UClass_USoulForgeFragmentRenderer_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FragmentRenderer_MetaData), NewProp_FragmentRenderer_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_StabilityThreshold = { "StabilityThreshold", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, StabilityThreshold), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_StabilityThreshold_MetaData), NewProp_StabilityThreshold_MetaData) };
 const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_SharedNiagaraVFX = { "SharedNiagaraVFX", nullptr, (EPropertyFlags)0x001000000008000d, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, SharedNiagaraVFX), Z_Construct_UClass_UNiagaraComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SharedNiagaraVFX_MetaData), NewProp_SharedNiagaraVFX_MetaData) };
 void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarMiraLaser_SetBit(void* Obj)
 {
 	((USoulForgeDestructible*)Obj)->bActivarMiraLaser = 1;
 }
 const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarMiraLaser = { "bActivarMiraLaser", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarMiraLaser_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bActivarMiraLaser_MetaData), NewProp_bActivarMiraLaser_MetaData) };
-void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady_SetBit(void* Obj)
-{
-	((USoulForgeDestructible*)Obj)->bIsEngineReady = 1;
-}
-const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady = { "bIsEngineReady", nullptr, (EPropertyFlags)0x0010000000020015, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIsEngineReady_MetaData), NewProp_bIsEngineReady_MetaData) };
 void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bDestroyed_SetBit(void* Obj)
 {
 	((USoulForgeDestructible*)Obj)->bDestroyed = 1;
 }
-const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bDestroyed = { "bDestroyed", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bDestroyed_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bDestroyed_MetaData), NewProp_bDestroyed_MetaData) };
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PreviewDuration = { "PreviewDuration", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, PreviewDuration), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PreviewDuration_MetaData), NewProp_PreviewDuration_MetaData) };
-const UECodeGen_Private::FIntPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_NucleosCPU = { "NucleosCPU", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, NucleosCPU), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NucleosCPU_MetaData), NewProp_NucleosCPU_MetaData) };
-void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarAceleracionGPU_SetBit(void* Obj)
+const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bDestroyed = { "bDestroyed", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bDestroyed_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bDestroyed_MetaData), NewProp_bDestroyed_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_Health = { "Health", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, Health), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Health_MetaData), NewProp_Health_MetaData) };
+const UECodeGen_Private::FUInt32PropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ObjectFilterHash = { "ObjectFilterHash", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::UInt32, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, ObjectFilterHash), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ObjectFilterHash_MetaData), NewProp_ObjectFilterHash_MetaData) };
+void Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady_SetBit(void* Obj)
 {
-	((USoulForgeDestructible*)Obj)->bUsarAceleracionGPU = 1;
+	((USoulForgeDestructible*)Obj)->bIsEngineReady = 1;
 }
-const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarAceleracionGPU = { "bUsarAceleracionGPU", nullptr, (EPropertyFlags)0x0010000000000005, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarAceleracionGPU_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bUsarAceleracionGPU_MetaData), NewProp_bUsarAceleracionGPU_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_InstancedRenderer = { "InstancedRenderer", nullptr, (EPropertyFlags)0x0010000000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, InstancedRenderer), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InstancedRenderer_MetaData), NewProp_InstancedRenderer_MetaData) };
-const UECodeGen_Private::FIntPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MaxNodos = { "MaxNodos", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, MaxNodos), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MaxNodos_MetaData), NewProp_MaxNodos_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MallaDelNodo = { "MallaDelNodo", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, MallaDelNodo), Z_Construct_UClass_UStaticMesh_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MallaDelNodo_MetaData), NewProp_MallaDelNodo_MetaData) };
-const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MasterShardMaterial = { "MasterShardMaterial", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, MasterShardMaterial), Z_Construct_UClass_UMaterialInterface_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_MasterShardMaterial_MetaData), NewProp_MasterShardMaterial_MetaData) };
+const UECodeGen_Private::FBoolPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady = { "bIsEngineReady", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, sizeof(bool), sizeof(USoulForgeDestructible), &Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady_SetBit, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_bIsEngineReady_MetaData), NewProp_bIsEngineReady_MetaData) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_NodePool_Inner = { "NodePool", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FSoulForgeNode, METADATA_PARAMS(0, nullptr) }; // 986756190
+const UECodeGen_Private::FArrayPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_NodePool = { "NodePool", nullptr, (EPropertyFlags)0x0020080000000000, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, NodePool), EArrayPropertyFlags::None, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_NodePool_MetaData), NewProp_NodePool_MetaData) }; // 986756190
+const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_InstancedRenderer = { "InstancedRenderer", nullptr, (EPropertyFlags)0x0020080000080008, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(USoulForgeDestructible, InstancedRenderer), Z_Construct_UClass_UInstancedStaticMeshComponent_NoRegister, METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_InstancedRenderer_MetaData), NewProp_InstancedRenderer_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_USoulForgeDestructible_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ProxyName,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ProxyId,
@@ -1226,12 +947,6 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_USoulForg
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PhysicsLOD,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ExplosiveType_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ExplosiveType,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_HalfExtent,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset_Underlying,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DustVFX,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FragmentRenderer,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_StabilityThreshold,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FuerzaDeImpacto,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_RadioDeImpacto,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FormaDeExplosion_Underlying,
@@ -1239,17 +954,27 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_USoulForg
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_CantidadDeNodos,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_CantidadDeNodosHecatombe,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarRenderizadoRustico,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PreviewDuration,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarHUD,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FragmentacionJupiter,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MallaDelNodo,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MaxNodos,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MasterShardMaterial,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_HalfExtent,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset_Underlying,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DamagePreset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_DustVFX,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_FragmentRenderer,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_StabilityThreshold,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_SharedNiagaraVFX,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bActivarMiraLaser,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bDestroyed,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_PreviewDuration,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_NucleosCPU,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bUsarAceleracionGPU,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_Health,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_ObjectFilterHash,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_bIsEngineReady,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_NodePool_Inner,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_NodePool,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_InstancedRenderer,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MaxNodos,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MallaDelNodo,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_USoulForgeDestructible_Statics::NewProp_MasterShardMaterial,
 };
 static_assert(UE_ARRAY_COUNT(Z_Construct_UClass_USoulForgeDestructible_Statics::PropPointers) < 2048);
 // ********** End Class USoulForgeDestructible Property Definitions ********************************
@@ -1294,16 +1019,16 @@ USoulForgeDestructible::~USoulForgeDestructible() {}
 struct Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_Statics
 {
 	static constexpr FEnumRegisterCompiledInInfo EnumInfo[] = {
-		{ ESoulForgePattern_StaticEnum, TEXT("ESoulForgePattern"), &Z_Registration_Info_UEnum_ESoulForgePattern, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1577948756U) },
+		{ ESoulForgePattern_StaticEnum, TEXT("ESoulForgePattern"), &Z_Registration_Info_UEnum_ESoulForgePattern, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2794111669U) },
 	};
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ FSoulForgeNode::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewStructOps, TEXT("SoulForgeNode"),&Z_Registration_Info_UScriptStruct_FSoulForgeNode, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeNode), 3800629931U) },
+		{ FSoulForgeNode::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeNode_Statics::NewStructOps, TEXT("SoulForgeNode"),&Z_Registration_Info_UScriptStruct_FSoulForgeNode, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeNode), 986756190U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_USoulForgeDestructible, USoulForgeDestructible::StaticClass, TEXT("USoulForgeDestructible"), &Z_Registration_Info_UClass_USoulForgeDestructible, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeDestructible), 1736090007U) },
+		{ Z_Construct_UClass_USoulForgeDestructible, USoulForgeDestructible::StaticClass, TEXT("USoulForgeDestructible"), &Z_Registration_Info_UClass_USoulForgeDestructible, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeDestructible), 497180517U) },
 	};
 }; // Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_Statics 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_3737368310{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_2624692273{
 	TEXT("/Script/SoulForgePhysX"),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_Statics::ClassInfo),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_Statics::ScriptStructInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeDestructible_h__Script_SoulForgePhysX_Statics::ScriptStructInfo),

@@ -68,9 +68,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SoulForge|Admin")
 	void ClearAllFragments();
 
-    /** Esta es la función que tu Destructible llamará para pasarle los datos de Rust */
     UFUNCTION(BlueprintCallable, Category = "SoulForge|Renderer")
     void UpdateHISMTransforms(int32 Category, const TArray<FTransform>& NewTransforms);
+
+    /** Señaliza que ha ocurrido una explosión para activar efectos internos */
+    UFUNCTION(BlueprintCallable, Category = "SoulForge|Renderer")
+    void NotifyExplosion() { UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Explosión notificada.")); }
+
+	UHierarchicalInstancedStaticMeshComponent* HISMForCategory(int32 Category);
+    void EnsureHISMsCreated();
 
 	// ── Configuración de Meshes por categoría ─────────────────────────────────
 
@@ -129,7 +135,6 @@ private:
 	/** Cuántos fragmentos siguen activos (no dormidos). */
 	int32 ActiveCount = 0;
 
-	UHierarchicalInstancedStaticMeshComponent* HISMForCategory(int32 Category) const;
 	UHierarchicalInstancedStaticMeshComponent* InitHISM(
 		UStaticMesh* Mesh,
 		const FName& Name

@@ -22,9 +22,35 @@ void USoulForgeFragmentRenderer::BeginPlay()
 {
     Super::BeginPlay();
 
-    HISMSlab   = InitHISM(SlabMesh,   TEXT("HISMSlab"));
+    // Auto-detectar mesh del actor si no se asignaron meshes de fragmento
+    UStaticMesh* FallbackMesh = nullptr;
+    if (!SlabMesh || !ChunkMesh || !GravelMesh)
+    {
+        if (AActor* Owner = GetOwner())
+        {
+            if (UStaticMeshComponent* SMC = Owner->FindComponentByClass<UStaticMeshComponent>())
+            {
+                FallbackMesh = SMC->GetStaticMesh();
+                UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Auto-detectado mesh: %s"), FallbackMesh ? *FallbackMesh->GetName() : TEXT("null"));
+            }
+        }
+    }
+
+    if (!SlabMesh)   SlabMesh   = FallbackMesh;
+    if (!ChunkMesh)  ChunkMesh  = FallbackMesh;
+    if (!GravelMesh) GravelMesh = FallbackMesh;
+
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] Inicializando HISMs en BeginPlay..."));
+
+	HISMSlab   = InitHISM(SlabMesh,   TEXT("HISMSlab"));
     HISMChunk  = InitHISM(ChunkMesh,  TEXT("HISMChunk"));
     HISMGravel = InitHISM(GravelMesh, TEXT("HISMGravel"));
+
+    if (HISMSlab && HISMChunk && HISMGravel) {
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] ✅ Todos los HISMs creados y registrados."));
+    } else {
+        UE_LOG(LogTemp, Error, TEXT("[SoulForge-Renderer] ❌ Error creando los componentes HISM!"));
+    }
 }
 
 UHierarchicalInstancedStaticMeshComponent* USoulForgeFragmentRenderer::InitHISM(
@@ -47,8 +73,16 @@ UHierarchicalInstancedStaticMeshComponent* USoulForgeFragmentRenderer::InitHISM(
     if (Mesh) { HISM->SetStaticMesh(Mesh); }
     if (FragmentMaterial) { HISM->SetMaterial(0, FragmentMaterial); }
 
-    HISM->SetCastShadow(false);
+    HISM->SetCastShadow(true);
     HISM->bSelectable = false;
+    
+    // --- OPTIMIZACIÓN CRÍTICA (Anticrash) ---
+    // Los fragmentos son miles; no pueden afectar la navegación ni tener colisión compleja
+    HISM->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    HISM->SetCanEverAffectNavigation(false);
+    HISM->bFillCollisionUnderneathForNavmesh = false;
+    HISM->bUseAsOccluder = false; // Ahorra GPU
+    HISM->SetGenerateOverlapEvents(false);
 
     return HISM;
 }
@@ -84,9 +118,10 @@ int32 USoulForgeFragmentRenderer::GetActiveFragmentCount() const
     return ActiveCount;
 }
 
-UHierarchicalInstancedStaticMeshComponent*
-USoulForgeFragmentRenderer::HISMForCategory(int32 Category) const
+UHierarchicalInstancedStaticMeshComponent* USoulForgeFragmentRenderer::HISMForCategory(int32 Category)
 {
+    EnsureHISMsCreated();
+    
     switch (Category)
     {
         case 0:  return HISMSlab;
@@ -96,12 +131,40 @@ USoulForgeFragmentRenderer::HISMForCategory(int32 Category) const
     }
 }
 
+void USoulForgeFragmentRenderer::EnsureHISMsCreated()
+{
+    if (HISMSlab != nullptr) return;
+
+    UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] 🚀 Inicialización ON-DEMAND de HISMs ante posible fallo de BeginPlay."));
+
+    HISMSlab   = InitHISM(SlabMesh,   TEXT("HISMSlab"));
+    HISMChunk  = InitHISM(ChunkMesh,  TEXT("HISMChunk"));
+    HISMGravel = InitHISM(GravelMesh, TEXT("HISMGravel"));
+
+    if (HISMSlab && HISMChunk && HISMGravel) {
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer] ✅ Pools creados bajo demanda con éxito."));
+    }
+}
+
 void USoulForgeFragmentRenderer::UpdateHISMTransforms(int32 Category, const TArray<FTransform>& NewTransforms)
 {
+    static bool bLogCallOnce = false;
+    if (!bLogCallOnce) {
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge-Renderer-Entry] Llamada a UpdateHISMTransforms: Categoría %d, Transformaciones %d"), Category, NewTransforms.Num());
+        bLogCallOnce = true;
+    }
+
     // 1. Buscamos qué tipo de pedazo vamos a actualizar (Slab, Chunk o Gravel)
     UHierarchicalInstancedStaticMeshComponent* TargetHISM = HISMForCategory(Category);
     
-    if (!TargetHISM || NewTransforms.Num() == 0) return;
+    if (!TargetHISM || NewTransforms.Num() == 0) {
+        static bool bLogFailOnce = false;
+        if (!bLogFailOnce) {
+            UE_LOG(LogTemp, Error, TEXT("[SoulForge-Renderer-Entry] ❌ Error: HISM para categoría %d es NULO o no hay transformaciones."), Category);
+            bLogFailOnce = true;
+        }
+        return;
+    }
 
     // 2. Si no hay suficientes instancias creadas, las creamos de golpe
     int32 CurrentInstances = TargetHISM->GetInstanceCount();
@@ -122,5 +185,8 @@ void USoulForgeFragmentRenderer::UpdateHISMTransforms(int32 Category, const TArr
     }
 
     // 3. LA INYECCIÓN DIRECTA: Actualizamos todas las posiciones en 1 solo frame
-    TargetHISM->BatchUpdateInstancesTransforms(0, NewTransforms, true, true, true);
+    // Ponemos bMarkRenderStateDirty a FALSE para evitar que el sistema se congele
+    // tratando de reconstruir el Octree cada vez que un fragmento se mueve 1cm.
+    TargetHISM->BatchUpdateInstancesTransforms(0, NewTransforms, true, false, true);
+    TargetHISM->MarkRenderTransformDirty();
 }

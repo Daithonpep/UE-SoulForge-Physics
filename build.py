@@ -37,8 +37,8 @@ CORE_PYTHON  = ROOT / "core_python"
 RUST_RELEASE = CORE_RUST / "target" / "release"
 RUST_DEBUG   = CORE_RUST / "target" / "debug"
 
-# Destino dentro del plugin de Unreal
-CPP_BINARIES = ROOT / "Binaries" / "Win64"
+# Destino dentro del plugin de Unreal (ahora en core_cpp)
+CPP_BINARIES = CORE_CPP / "Binaries" / "Win64"
 
 # Nombre de la librería por plataforma
 _PLATFORM = platform.system()

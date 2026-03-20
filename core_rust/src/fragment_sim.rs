@@ -1,259 +1,171 @@
-//! # Fragment Simulation – High Performance Particle Engine
-//! Optimized with SoA (Structure of Arrays) and Rayon for 100k+ particles.
+//! # fragment_sim.rs – Núcleo de Aislamiento V8.6 (Anti-Race)
+//! Sincronizado con TWS (Ticking World Subsystem)
 
-use std::sync::{Mutex, OnceLock};
-use serde::{Deserialize, Serialize};
-use crate::proxy::FragmentCategory;
-use crate::node_buffer::{NodeBuffer, FLAG_ACTIVE};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::OnceLock;
+use std::collections::HashMap;
+use parking_lot::Mutex;
 
-// ════════════════════════════════════════════════════════════════════════════
-// CONSTANTES FÍSICAS
-// ════════════════════════════════════════════════════════════════════════════
+pub const FLAG_ACTIVE: u32 = 1 << 0;
 
-const GROUND_Z: f32 = 0.0;
-
-// ════════════════════════════════════════════════════════════════════════════
-// TIPOS
-// ════════════════════════════════════════════════════════════════════════════
-
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
-pub enum FragmentState {
-    Flying,
-    Bouncing,
-    Sleeping,
+pub struct GlobalSimState {
+    pub nodes: NodeBuffer,
+    pub epicenter: [f32; 3],
+    pub energy: f32,
+    pub born_time: f64,
+    pub sim_time: f64,
+    pub ground_z: f32,
+    pub avg_fps: f32,
+    pub last_tick_time: f64,
+    pub mode: i32,
+    /// Búferes de salida por hash para evitar colisiones de memoria en C++
+    pub output_cache: HashMap<u32, Vec<crate::CFragment>>,
 }
 
-#[derive(Debug, Clone)]
-pub struct ExplosionEvent {
-    pub time: f64,
-    pub center: [f32; 3],
-    pub charge_mass_kg: f64,
+static STATE: OnceLock<Mutex<GlobalSimState>> = OnceLock::new();
+
+pub fn state() -> &'static Mutex<GlobalSimState> {
+    STATE.get_or_init(|| Mutex::new(GlobalSimState {
+        nodes: NodeBuffer::new(50_000),
+        epicenter: [0.0; 3],
+        energy: 1000.0,
+        born_time: 0.0,
+        sim_time: 0.0,
+        ground_z: 0.0,
+        avg_fps: 60.0,
+        last_tick_time: -1.0,
+        mode: 0,
+        output_cache: HashMap::new(),
+    }))
 }
-
-pub(crate) struct FragSimState {
-    pub(crate) nodes: NodeBuffer,
-    pub(crate) events: Vec<ExplosionEvent>,
-    pub(crate) ground_z: f32,
-    pub(crate) sim_time: f64,
-    pub(crate) power_system: crate::powers::PowerSystem,
-}
-
-impl FragSimState {
-    fn new() -> Self {
-        Self {
-            nodes: NodeBuffer::with_capacity(200_000), 
-            events: Vec::new(),
-            ground_z: GROUND_Z,
-            sim_time: 0.0,
-            power_system: crate::powers::PowerSystem::new(),
-        }
-    }
-}
-
-static FRAG_SIM: OnceLock<Mutex<FragSimState>> = OnceLock::new();
-
-pub(crate) fn state() -> &'static Mutex<FragSimState> {
-    FRAG_SIM.get_or_init(|| Mutex::new(FragSimState::new()))
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// API PÚBLICA
-// ════════════════════════════════════════════════════════════════════════════
-
-pub fn register_fragment(
-    _category: FragmentCategory,
-    position: [f32; 3],
-    velocity: [f32; 3],
-    mass:     f32,
-    scale:     [f32; 3],
-    _damage_type: i32,
-    material: u16,
-) -> Result<u32, String> {
-    let s = state().lock().map_err(|e| e.to_string())?;
-    match s.nodes.add_node(position, velocity, mass, material, -1.0, scale, _category as i32, _damage_type) {
-        Some(idx) => Ok(idx as u32),
-        None => Err("Buffer lleno".into()),
-    }
-}
-
-pub fn register_effect_node(pos: [f32; 3], vel: [f32; 3], mass: f32, _radius: f32, life: f32, material: i32) {
-    if let Ok(s) = state().lock() {
-        // Los efectos (chispas, etc) van a la categoría 'Dust' (3) o especial
-        s.nodes.add_node(pos, vel, mass, material as u16, life, [2.0, 2.0, 2.0], 3, 0);
-    }
-}
-
-pub fn clear() {
-    if let Ok(mut s) = state().lock() {
-        s.nodes.count.store(0, std::sync::atomic::Ordering::SeqCst);
-        s.events.clear();
-        s.sim_time = 0.0;
-    }
-}
-
-pub fn set_ground_z(z: f32) {
-    if let Ok(mut s) = state().lock() {
-        s.ground_z = z;
-    }
-}
-
-pub fn total_count() -> usize {
-    state().lock().map(|s| s.nodes.count.load(std::sync::atomic::Ordering::Relaxed)).unwrap_or(0)
-}
-
-pub fn active_count() -> usize {
-    total_count() 
-}
-
-pub fn get_position(id: u32) -> Option<[f32; 3]> {
-    let s = state().lock().ok()?;
-    let i = id as usize;
-    if i < s.nodes.count.load(std::sync::atomic::Ordering::Relaxed) {
-        if s.nodes.state_flags[i] & FLAG_ACTIVE != 0 {
-             return Some([s.nodes.pos_x[i], s.nodes.pos_y[i], s.nodes.pos_z[i]]);
-        }
-    }
-    None
-}
-
-pub fn get_velocity(id: u32) -> Option<[f32; 3]> {
-    let s = state().lock().ok()?;
-    let i = id as usize;
-    if i < s.nodes.count.load(std::sync::atomic::Ordering::Relaxed) {
-        if s.nodes.state_flags[i] & FLAG_ACTIVE != 0 {
-             return Some([s.nodes.vel_x[i], s.nodes.vel_y[i], s.nodes.vel_z[i]]);
-        }
-    }
-    None
-}
-
-pub fn get_state(id: u32) -> Option<FragmentState> {
-    let s = state().lock().ok()?;
-    let i = id as usize;
-    if i < s.nodes.count.load(std::sync::atomic::Ordering::Relaxed) {
-        if s.nodes.state_flags[i] & FLAG_ACTIVE != 0 {
-            return Some(FragmentState::Flying);
-        } else {
-            return Some(FragmentState::Sleeping);
-        }
-    }
-    None
-}
-
-pub fn purge_sleeping() -> usize { 0 }
-
-pub fn add_explosion_event(position: [f32; 3], energy_joules: f64) {
-    if let Ok(mut s) = state().lock() {
-        let charge_kg = energy_joules / 4_184_000.0;
-        let current_time = s.sim_time;
-        s.events.push(ExplosionEvent {
-            time: current_time,
-            center: position,
-            charge_mass_kg: charge_kg,
-        });
-    }
-}
-
-pub fn trigger_auto_power(preset: i32, origin: [f32; 3], energy: f32) {
-    if let Ok(mut s) = state().lock() {
-        let current_time = s.sim_time;
-        if preset == 4 { // DamagePreset::Implosion (Agujero Negro)
-            s.power_system.active_powers.push(crate::powers::ActivePower {
-                power_type: 1, start_time: current_time, duration: 6.0, origin: [origin[0] as f64, origin[1] as f64, origin[2] as f64], direction: [0.0, 0.0, 1.0], intensity: energy as f64 / 1000.0
-            });
-        } else if preset == 5 { // DamagePreset::Cinematic (Matrix / ZeroGravity)
-            s.power_system.active_powers.push(crate::powers::ActivePower {
-                power_type: 2, start_time: current_time, duration: 8.0, origin: [origin[0] as f64, origin[1] as f64, origin[2] as f64], direction: [0.0, 0.0, 1.0], intensity: energy as f64 / 1000.0
-            });
-        }
-    }
-}
-
 
 pub fn tick(dt: f32) {
-    let mut s = state().lock().unwrap();
-    let dt_64 = dt as f64;
-    let current_time = s.sim_time;
+    if dt <= 0.0 { return; }
+    let mut s_g = state().lock();
+    let s = &mut *s_g;
     
-    // 1. Integrar poderes
-    let mut power_system = s.power_system.clone(); 
-    power_system.update(&mut s.nodes, current_time, dt_64);
+    if (s.sim_time - s.last_tick_time).abs() < 0.0001 { return; }
+    s.last_tick_time = s.sim_time;
     
-    // 2. Física en paralelo (Incluye integración y colisión de suelo)
-    let gz = s.ground_z;
-    s.nodes.step_parallel(dt, gz);
+    let cur_fps = 1.0 / dt;
+    s.avg_fps = s.avg_fps * 0.9 + cur_fps * 0.1;
+    s.sim_time += dt as f64;
     
-    s.sim_time += dt_64;
-}
+    let t = s.sim_time; let born = s.born_time; let epi = s.epicenter;
+    let mode = s.mode; let g_z = s.ground_z; let dt64 = dt as f64;
+    let n = s.nodes.count.load(Ordering::Relaxed).min(s.nodes.capacity);
 
-// ════════════════════════════════════════════════════════════════════════════
-// CACHES PARA FFI
-// ════════════════════════════════════════════════════════════════════════════
+    // [FÍSICA DE ALTO RENDIMIENTO]
+    for i in 0..n {
+        if s.nodes.state_flags[i] & FLAG_ACTIVE == 0 { continue; }
+        let m = s.nodes.mass[i] as f64;
+        let mut gravity_mod = -980.0;
 
-static mut POS_CACHE: Vec<f32> = Vec::new();
-static mut FRAG_CACHE: Vec<crate::CFragment> = Vec::new();
-static mut TEMP_CACHE: Vec<f32> = Vec::new();
-
-pub fn get_interleaved_positions() -> (*const f32, usize) {
-    if let Ok(s) = state().lock() {
-        unsafe {
-            let cache = &mut *std::ptr::addr_of_mut!(POS_CACHE);
-            cache.clear();
-            let n = s.nodes.count.load(std::sync::atomic::Ordering::Relaxed);
-            for i in 0..n {
-                if s.nodes.state_flags[i] & FLAG_ACTIVE != 0 {
-                    cache.push(s.nodes.pos_x[i]);
-                    cache.push(s.nodes.pos_y[i]);
-                    cache.push(s.nodes.pos_z[i]);
-                }
-            }
-            (cache.as_ptr(), cache.len() / 3)
+        // Efecto Agujero Negro / Cinematic
+        if (mode == 1 || mode == 4) && (t - born) > 0.8 {
+            let dx = epi[0] - s.nodes.pos_x[i];
+            let dy = epi[1] - s.nodes.pos_y[i];
+            let dz = epi[2] - s.nodes.pos_z[i];
+            let d2 = (dx*dx + dy*dy + dz*dz).max(100.0);
+            let dist = d2.sqrt();
+            // Absorber fragmentos que llegan al centro
+            if dist < 30.0 { s.nodes.state_flags[i] = 0; continue; }
+            // Fuerza gravitacional MASIVA (calibrada para centímetros de Unreal)
+            let time_factor = ((t - born - 0.8) as f32).min(3.0) / 3.0; // Ramp up over 3 seconds
+            let gf = 10000.0 * (s.energy / 1000.0) * time_factor / dist;
+            s.nodes.force_x[i] += (dx/dist * gf) as f64;
+            s.nodes.force_y[i] += (dy/dist * gf) as f64;
+            s.nodes.force_z[i] += (dz/dist * gf) as f64;
+            gravity_mod = 0.0;
+            // Frenado gradual para que orbiten antes de ser absorbidos
+            let drag = 0.97 - (time_factor * 0.05); 
+            s.nodes.vel_x[i] *= drag; s.nodes.vel_y[i] *= drag; s.nodes.vel_z[i] *= drag;
         }
-    } else {
-        (std::ptr::null(), 0)
+
+        s.nodes.vel_x[i] += (s.nodes.force_x[i] / m * dt64) as f32;
+        s.nodes.vel_y[i] += (s.nodes.force_y[i] / m * dt64) as f32;
+        s.nodes.vel_z[i] += ((s.nodes.force_z[i]/m + gravity_mod as f64) * dt64) as f32;
+        
+        s.nodes.pos_x[i] += s.nodes.vel_x[i] * dt;
+        s.nodes.pos_y[i] += s.nodes.vel_y[i] * dt;
+        s.nodes.pos_z[i] += s.nodes.vel_z[i] * dt;
+
+        if s.nodes.pos_z[i] < g_z {
+            s.nodes.pos_z[i] = g_z;
+            s.nodes.vel_z[i] *= -0.4; s.nodes.vel_x[i] *= 0.8; s.nodes.vel_y[i] *= 0.8;
+        }
+        s.nodes.force_x[i] = 0.0; s.nodes.force_y[i] = 0.0; s.nodes.force_z[i] = 0.0;
     }
 }
 
-pub fn get_all_c_fragments() -> (*const crate::CFragment, usize) {
-    if let Ok(s) = state().lock() {
-        unsafe {
-            let cache = &mut *std::ptr::addr_of_mut!(FRAG_CACHE);
-            cache.clear();
-            let n = s.nodes.count.load(std::sync::atomic::Ordering::Relaxed);
-            for i in 0..n {
-                if s.nodes.state_flags[i] & FLAG_ACTIVE != 0 {
-                    cache.push(crate::CFragment {
-                        x: s.nodes.pos_x[i],
-                        y: s.nodes.pos_y[i],
-                        z: s.nodes.pos_z[i],
-                        pitch: s.nodes.scale_x[i],
-                        yaw:   s.nodes.scale_y[i],
-                        roll:  s.nodes.scale_z[i],
-                        category: s.nodes.category[i],
-                    });
-                }
+pub fn get_all_c_fragments(filter_hash: u32) -> (*const crate::CFragment, usize) {
+    let mut s_g = state().lock();
+    let n = s_g.nodes.count.load(Ordering::Relaxed).min(s_g.nodes.capacity);
+    
+    // Desestructuramos para permitir préstamos simultáneos
+    let GlobalSimState { nodes, output_cache, .. } = &mut *s_g;
+    
+    let buffer = output_cache.entry(filter_hash).or_insert_with(|| Vec::with_capacity(1000));
+    buffer.clear();
+
+    for i in 0..n {
+        if nodes.state_flags[i] & FLAG_ACTIVE != 0 {
+            if filter_hash == 0 || nodes.proxy_hash[i] == filter_hash {
+                buffer.push(crate::CFragment {
+                    x: nodes.pos_x[i], y: nodes.pos_y[i], z: nodes.pos_z[i],
+                    pitch: 0.0, yaw: 0.0, roll: 0.0,
+                    sx: nodes.scale[i], sy: nodes.scale[i], sz: nodes.scale[i],
+                    category: nodes.category[i],
+                });
             }
-            (cache.as_ptr(), cache.len())
         }
-    } else {
-        (std::ptr::null(), 0)
+    }
+    (buffer.as_ptr(), buffer.len())
+}
+
+pub fn register_v7(pos: [f32; 3], vel: [f32; 3], mass: f32, scale: f32, category: i32, hash: u32) {
+    let mut s = state().lock();
+    let idx = s.nodes.count.fetch_add(1, Ordering::Relaxed);
+    if idx < s.nodes.capacity {
+        s.nodes.pos_x[idx] = pos[0]; s.nodes.pos_y[idx] = pos[1]; s.nodes.pos_z[idx] = pos[2];
+        s.nodes.vel_x[idx] = vel[0]; s.nodes.vel_y[idx] = vel[1]; s.nodes.vel_z[idx] = vel[2];
+        s.nodes.mass[idx] = mass; s.nodes.scale[idx] = scale;
+        s.nodes.category[idx] = category; s.nodes.proxy_hash[idx] = hash;
+        s.nodes.state_flags[idx] = FLAG_ACTIVE;
     }
 }
 
-pub fn get_active_temperatures() -> (*const f32, usize) {
-    if let Ok(s) = state().lock() {
-        unsafe {
-            let cache = &mut *std::ptr::addr_of_mut!(TEMP_CACHE);
-            cache.clear();
-            let n = s.nodes.count.load(std::sync::atomic::Ordering::Relaxed);
-            for i in 0..n {
-                if s.nodes.state_flags[i] & FLAG_ACTIVE != 0 {
-                    cache.push(20.0); // Placeholder: 20°C
-                }
-            }
-            (cache.as_ptr(), cache.len())
+pub fn trigger_auto_power(preset: i32, pos: [f32; 3], energy: f32) {
+    let mut s = state().lock();
+    s.epicenter = pos; s.energy = energy; s.born_time = s.sim_time; s.mode = preset;
+}
+
+pub fn set_ground_z(z: f32) { state().lock().ground_z = z; }
+pub fn total_count() -> usize { state().lock().nodes.count.load(Ordering::Relaxed) }
+
+pub struct NodeBuffer {
+    pub pos_x: Vec<f32>, pub pos_y: Vec<f32>, pub pos_z: Vec<f32>,
+    pub vel_x: Vec<f32>, pub vel_y: Vec<f32>, pub vel_z: Vec<f32>,
+    pub force_x: Vec<f64>, pub force_y: Vec<f64>, pub force_z: Vec<f64>,
+    pub mass: Vec<f32>, pub scale: Vec<f32>, pub category: Vec<i32>,
+    pub state_flags: Vec<u32>, pub proxy_hash: Vec<u32>,
+    pub count: AtomicUsize, pub capacity: usize,
+}
+impl NodeBuffer {
+    pub fn new(capacity: usize) -> Self {
+        Self {
+            pos_x: vec![0.0; capacity], pos_y: vec![0.0; capacity], pos_z: vec![0.0; capacity],
+            vel_x: vec![0.0; capacity], vel_y: vec![0.0; capacity], vel_z: vec![0.0; capacity],
+            force_x: vec![0.0; capacity], force_y: vec![0.0; capacity], force_z: vec![0.0; capacity],
+            mass: vec![1.0; capacity], scale: vec![1.0; capacity], category: vec![0; capacity],
+            state_flags: vec![0; capacity], proxy_hash: vec![0; capacity],
+            count: AtomicUsize::new(0), capacity,
         }
-    } else {
-        (std::ptr::null(), 0)
     }
+}
+pub fn purge_sleeping() {}
+pub fn clear() {
+    let mut s = state().lock();
+    s.nodes.count.store(0, Ordering::Relaxed);
+    s.output_cache.clear();
 }

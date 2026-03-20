@@ -5,7 +5,8 @@ use rayon::prelude::*;
 
 pub const FLAG_ACTIVE: u8 = 0b00000001;
 
-/// Buffer de nodos pre-asignado y optimizado para multi-threading
+/// Buffer de nodos pre-asignado y optimizado para multi-threading.
+/// Solo datos puros y operaciones genéricas de SoA.
 pub struct NodeBuffer {
     pub capacity: usize,
     pub count: AtomicUsize,
@@ -32,6 +33,23 @@ pub struct NodeBuffer {
     pub scale_y: Vec<f32>,
     pub scale_z: Vec<f32>,
     pub lifetime: Vec<f32>,
+
+    // Nueva Física de Rotación (Realism 2.0)
+    pub rot_x: Vec<f32>,
+    pub rot_y: Vec<f32>,
+    pub rot_z: Vec<f32>,
+    pub ang_vel_x: Vec<f32>,
+    pub ang_vel_y: Vec<f32>,
+    pub ang_vel_z: Vec<f32>,
+
+    // Origen de la explosión (para efectos Black Hole / Matrix)
+    pub source_x: Vec<f32>,
+    pub source_y: Vec<f32>,
+    pub source_z: Vec<f32>,
+    
+    // Jupiter Realism: Factor de deformación / caos
+    pub chaos_factor: Vec<f32>,
+    pub proxy_hash: Vec<u32>, // Nuevo: Para filtrado Zero-Copy
     
     dirty: AtomicBool,
     
@@ -47,6 +65,13 @@ pub struct CompactNodeData {
     pub positions: Vec<f32>, // [x,y,z, x,y,z, ...]
     pub colors: Vec<u32>,    // ABGR packed
     pub scales: Vec<f32>,
+}
+
+static mut GLOBAL_CHAOS: f32 = 0.4; // Por defecto: Cubos irregulares
+
+#[no_mangle]
+pub extern "C" fn sf_set_global_chaos(val: f32) {
+    unsafe { GLOBAL_CHAOS = val.clamp(0.0, 1.0); }
 }
 
 impl NodeBuffer {
@@ -73,13 +98,35 @@ impl NodeBuffer {
             scale_y: vec![1.0; capacity],
             scale_z: vec![1.0; capacity],
             lifetime: vec![0.0; capacity],
+            rot_x: vec![0.0; capacity],
+            rot_y: vec![0.0; capacity],
+            rot_z: vec![0.0; capacity],
+            ang_vel_x: vec![0.0; capacity],
+            ang_vel_y: vec![0.0; capacity],
+            ang_vel_z: vec![0.0; capacity],
+            source_x: vec![0.0; capacity],
+            source_y: vec![0.0; capacity],
+            source_z: vec![0.0; capacity],
+            chaos_factor: vec![0.0; capacity],
+            proxy_hash: vec![0; capacity],
             dirty: AtomicBool::new(false),
             read_buffer: Arc::new(RwLock::new(CompactNodeData::default())),
             write_buffer: Arc::new(RwLock::new(CompactNodeData::default())),
         }
     }
 
-    pub fn add_node(&self, pos: [f32; 3], vel: [f32; 3], mass: f32, mat: u16, life: f32, scale: [f32; 3], cat: i32, dmg_type: i32) -> Option<usize> {
+    pub fn add_node(
+        &mut self, 
+        pos: [f32; 3], 
+        vel: [f32; 3], 
+        mass: f32, 
+        mat: u16, 
+        life: f32, 
+        scale: [f32; 3], 
+        cat: i32, 
+        dmg_type: i32,
+        source: [f32; 3]
+    ) -> Option<usize> {
         let idx = self.count.fetch_add(1, Ordering::Relaxed);
         if idx >= self.capacity {
             self.count.fetch_sub(1, Ordering::Relaxed);
@@ -103,131 +150,75 @@ impl NodeBuffer {
             (&mut (*p).scale_y)[idx] = scale[1];
             (&mut (*p).scale_z)[idx] = scale[2];
             (&mut (*p).lifetime)[idx] = life;
+            
+            // JUPITER REALISM V4: Deformación No-Cúbica
+            let chaos = unsafe { GLOBAL_CHAOS };
+            let r_seed = (pos[0] * 123.0 + pos[1] * 456.0 + pos[2] * 789.0).abs() as u32;
+            
+            // Si nos pasan una escala física (desde proxy.rs), la respetamos.
+            // Si no, usamos los valores por defecto.
+            let mut rx = if scale[0] > 0.0 { scale[0] } else { if cat == 0 { 2.5 } else if cat == 1 { 1.0 } else { 0.4 } };
+            let mut ry = if scale[1] > 0.0 { scale[1] } else { if cat == 0 { 2.5 } else if cat == 1 { 1.0 } else { 0.4 } };
+            let mut rz = if scale[2] > 0.0 { scale[2] } else { if cat == 0 { 2.5 } else if cat == 1 { 1.0 } else { 0.4 } };
+
+            if chaos > 0.0 {
+                let chaos_mult = rx.min(ry).min(rz);
+                rx += ((r_seed % 100) as f32 / 50.0 - 1.0) * chaos * chaos_mult;
+                ry += (((r_seed / 7) % 100) as f32 / 50.0 - 1.0) * chaos * chaos_mult;
+                rz += (((r_seed / 13) % 100) as f32 / 50.0 - 1.0) * chaos * chaos_mult;
+            }
+
+            (&mut (*p).scale_x)[idx] = rx;
+            (&mut (*p).scale_y)[idx] = ry;
+            (&mut (*p).scale_z)[idx] = rz;
+            (&mut (*p).chaos_factor)[idx] = chaos;
+            
+            (&mut (*p).source_x)[idx] = source[0];
+            (&mut (*p).source_y)[idx] = source[1];
+            (&mut (*p).source_z)[idx] = source[2];
+
+            (&mut (*p).rot_x)[idx] = (r_seed % 360) as f32;
+            (&mut (*p).rot_y)[idx] = ((r_seed / 360) % 360) as f32;
+            (&mut (*p).rot_z)[idx] = ((r_seed / 129600) % 360) as f32;
+            
+            let spin_scale = if mat == 100 { 1500.0 } else { 500.0 };
+            (&mut (*p).ang_vel_x)[idx] = ((r_seed % 100) as f32 / 50.0 - 1.0) * spin_scale;
+            (&mut (*p).ang_vel_y)[idx] = (((r_seed / 100) % 100) as f32 / 50.0 - 1.0) * spin_scale;
+            (&mut (*p).ang_vel_z)[idx] = (((r_seed / 10000) % 100) as f32 / 50.0 - 1.0) * spin_scale;
+
             if mat == 100 { (&mut (*p).temperature)[idx] = 5000.0; }
         }
         self.dirty.store(true, Ordering::Relaxed);
         Some(idx)
     }
 
-    pub fn step_parallel(&mut self, dt: f32, ground_z: f32) {
-        let n = self.count.load(Ordering::Relaxed).min(self.capacity);
-        let dt_f64 = dt as f64;
-        let gravity = -980.0; // cm/s^2 (Gravedad estándar de Unreal)
-        let damping = 0.998_f32; // Resistencia al aire (Drag)
-
-        (0..n).into_par_iter().for_each(|i| {
-            if self.state_flags[i] & FLAG_ACTIVE != 0 {
-                let inv_mass = 1.0 / self.mass[i] as f64;
-                
-                // 1. Acumular Gravedad y Fuerzas
-                let ax = self.force_x[i] * inv_mass;
-                let ay = self.force_y[i] * inv_mass;
-                let az = (self.force_z[i] * inv_mass) + gravity as f64;
-
-                unsafe {
-                    let p = self as *const Self as *mut Self;
-                    
-                    // 2. Integrar Velocidad
-                    (&mut (*p).vel_x)[i] += (ax * dt_f64) as f32;
-                    (&mut (*p).vel_y)[i] += (ay * dt_f64) as f32;
-                    (&mut (*p).vel_z)[i] += (az * dt_f64) as f32;
-                    
-                    // 3. Aplicar Damping (Rozamiento con el aire)
-                    (&mut (*p).vel_x)[i] *= damping;
-                    (&mut (*p).vel_y)[i] *= damping;
-                    (&mut (*p).vel_z)[i] *= damping;
-
-                    // 4. Integrar Posición
-                    (&mut (*p).pos_x)[i] += (&mut (*p).vel_x)[i] * dt;
-                    (&mut (*p).pos_y)[i] += (&mut (*p).vel_y)[i] * dt;
-                    (&mut (*p).pos_z)[i] += (&mut (*p).vel_z)[i] * dt;
-                    
-                    // 5. Colisión con el suelo (Nativa y veloz)
-                    if (&(*p).pos_z)[i] < ground_z {
-                        (&mut (*p).pos_z)[i] = ground_z;
-                        
-                        let mat_id = self.material_id[i];
-                        // Material: 0=Acero, 1=Concreto, 2=Madera, 3=Cristal, 4=Carne
-                        let (bounce, friction) = match mat_id {
-                            0 => (0.05, 0.3), // Acero: Cae en seco (casi 0 rebote), alto rozamiento rápido
-                            1 => (0.1,  0.5), // Concreto: Rebota muy poco
-                            2 => (0.25, 0.7), // Madera: Rebota moderado
-                            3 => (0.3,  0.8), // Cristal: Rebota bastante
-                            4 => (0.01, 0.2), // Carne: Splat instantáneo
-                            _ => (0.3,  0.7), // Default
-                        };
-
-                        let bounce_vel = -(&mut (*p).vel_z)[i] * bounce;
-                        if bounce_vel < 30.0 {
-                            (&mut (*p).vel_z)[i] = 0.0;
-                        } else {
-                            (&mut (*p).vel_z)[i] = bounce_vel;
-                        }
-                        
-                        (&mut (*p).vel_x)[i] *= (1.0 - friction);
-                        (&mut (*p).vel_y)[i] *= (1.0 - friction);
-
-                        
-                        // Si no tiene velocidad, lo dejamos quieto pero VISIBLE (no quitamos FLAG_ACTIVE)
-                        if (&(*p).vel_z)[i] == 0.0 && 
-                           (&(*p).vel_x)[i].abs() < 1.0 && 
-                           (&(*p).vel_y)[i].abs() < 1.0 {
-                             (&mut (*p).vel_x)[i] = 0.0;
-                             (&mut (*p).vel_y)[i] = 0.0;
-                        }
-                    }
-
-                    // 6. Resetear Fuerzas para el siguiente tick
-                    (&mut (*p).force_x)[i] = 0.0;
-                    (&mut (*p).force_y)[i] = 0.0;
-                    (&mut (*p).force_z)[i] = 0.0;
-                    
-                    if (&(*p).lifetime)[i] > 0.0 {
-                        (&mut (*p).lifetime)[i] -= dt;
-                        if (&(*p).lifetime)[i] <= 0.0 { (&mut (*p).state_flags)[i] &= !FLAG_ACTIVE; }
-                    }
-                }
-            }
-        });
+    /// La física se ha movido out of here para mayor modularidad.
+    /// node_buffer ahora solo notifica que ha sido modificado.
+    pub fn mark_dirty(&self) {
         self.dirty.store(true, Ordering::Relaxed);
     }
 
     pub fn prepare_render_data(&self) {
         if !self.dirty.swap(false, Ordering::Relaxed) { return; }
-        
-        let n = self.count.load(Ordering::Relaxed);
+        let n = self.count.load(Ordering::Relaxed).min(self.capacity);
         let mut write = self.write_buffer.write();
-        
         write.positions.clear();
         write.colors.clear();
         write.scales.clear();
-        
         for i in 0..n {
             if self.state_flags[i] & FLAG_ACTIVE != 0 {
                 write.positions.push(self.pos_x[i]);
                 write.positions.push(self.pos_y[i]);
                 write.positions.push(self.pos_z[i]);
-                
-                // Color (ABGR)
                 let temp = self.temperature[i];
-                let color = if self.material_id[i] == 100 {
-                    0xFFFFFF00 // Cyan Brillante
-                } else if temp > 1000.0 {
-                    0xFF0055FF // Naranja/Rojo
-                } else {
-                    0xFF888888 // Gris
-                };
+                let color = if self.material_id[i] == 100 { 0xFFFFFF00 } else if temp > 1000.0 { 0xFF0055FF } else { 0xFF888888 };
                 write.colors.push(color);
-                
-                // Escala
                 let scale = if self.material_id[i] == 100 { 2.0 } else { 5.0 };
                 write.scales.push(scale);
             }
         }
         write.count = (write.positions.len() / 3) as u32;
         drop(write);
-        
-        // Swap buffers
         let mut read = self.read_buffer.write();
         let mut write2 = self.write_buffer.write();
         std::mem::swap(&mut *read, &mut *write2);

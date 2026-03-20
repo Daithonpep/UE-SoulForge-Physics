@@ -6,7 +6,6 @@
 void USoulForgeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
-    // No limpiamos el núcleo aquí para evitar borrar actores que se registran temprano
 }
 
 void USoulForgeSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -23,7 +22,6 @@ void USoulForgeSubsystem::SyncGlobalPower()
 void USoulForgeSubsystem::EmergencyReset()
 {
     UE_LOG(LogTemp, Warning, TEXT("[SoulForge] !!! EMERGENCY RESET ACTIVATED !!!"));
-    // El núcleo maestro ahora gestiona su propia limpieza interna
     USoulForgeBridge::LimpiarNucleo();
 }
 
@@ -35,9 +33,6 @@ void USoulForgeSubsystem::ApplyPerformanceSettings()
 void USoulForgeSubsystem::Deinitialize()
 {
     UE_LOG(LogTemp, Warning, TEXT("[SoulForge] Apagando Subsystem... Limpiando memoria."));
-    
-    // Disparamos la limpieza global en Rust al detener la simulación
     USoulForgeBridge::LimpiarNucleo();
-
     Super::Deinitialize();
 }

@@ -60,6 +60,8 @@ struct Z_Construct_UEnum_SoulForgePhysX_ESoulForgeDamagePreset_Statics
 		{ "Impact.DisplayName", "Impact (Cone)" },
 		{ "Impact.Name", "ESoulForgeDamagePreset::Impact" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+		{ "RealityShatter.DisplayName", "Reality Shatter (Epic)" },
+		{ "RealityShatter.Name", "ESoulForgeDamagePreset::RealityShatter" },
 		{ "ShapedCharge.DisplayName", "Shaped Charge (Penetrator)" },
 		{ "ShapedCharge.Name", "ESoulForgeDamagePreset::ShapedCharge" },
 #if !UE_BUILD_SHIPPING
@@ -72,6 +74,7 @@ struct Z_Construct_UEnum_SoulForgePhysX_ESoulForgeDamagePreset_Statics
 		{ "ESoulForgeDamagePreset::Collapse", (int64)ESoulForgeDamagePreset::Collapse },
 		{ "ESoulForgeDamagePreset::Impact", (int64)ESoulForgeDamagePreset::Impact },
 		{ "ESoulForgeDamagePreset::ShapedCharge", (int64)ESoulForgeDamagePreset::ShapedCharge },
+		{ "ESoulForgeDamagePreset::RealityShatter", (int64)ESoulForgeDamagePreset::RealityShatter },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct Z_Construct_UEnum_SoulForgePhysX_ESoulForgeDamagePreset_Statics 
@@ -247,6 +250,8 @@ struct Z_Construct_UEnum_SoulForgePhysX_EExplosiveType_Statics
 		{ "PETN.Name", "EExplosiveType::PETN" },
 		{ "RDX.DisplayName", "RDX (Ca\xc3\xb1\xc3\xb3n de Riel)" },
 		{ "RDX.Name", "EExplosiveType::RDX" },
+		{ "RealityShatter.DisplayName", "Realidad Fracturada (\xc3\x89pico)" },
+		{ "RealityShatter.Name", "EExplosiveType::RealityShatter" },
 		{ "TNT.DisplayName", "TNT (Explosi\xc3\xb3n Convencional)" },
 		{ "TNT.Name", "EExplosiveType::TNT" },
 	};
@@ -258,6 +263,7 @@ struct Z_Construct_UEnum_SoulForgePhysX_EExplosiveType_Statics
 		{ "EExplosiveType::PETN", (int64)EExplosiveType::PETN },
 		{ "EExplosiveType::Matrix", (int64)EExplosiveType::Matrix },
 		{ "EExplosiveType::Collapse", (int64)EExplosiveType::Collapse },
+		{ "EExplosiveType::RealityShatter", (int64)EExplosiveType::RealityShatter },
 	};
 	static const UECodeGen_Private::FEnumParams EnumParams;
 }; // struct Z_Construct_UEnum_SoulForgePhysX_EExplosiveType_Statics 
@@ -403,6 +409,18 @@ struct Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics
 		{ "Category", "SoulForgeFragmentData" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
 	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Pitch_MetaData[] = {
+		{ "Category", "SoulForgeFragmentData" },
+		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Yaw_MetaData[] = {
+		{ "Category", "SoulForgeFragmentData" },
+		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Roll_MetaData[] = {
+		{ "Category", "SoulForgeFragmentData" },
+		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ScaleX_MetaData[] = {
 		{ "Category", "SoulForgeFragmentData" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
@@ -425,6 +443,9 @@ struct Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_X;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_Y;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_Z;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Pitch;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Yaw;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Roll;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_ScaleX;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_ScaleY;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_ScaleZ;
@@ -451,6 +472,9 @@ class UScriptStruct* FSoulForgeFragmentData::StaticStruct()
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_X = { "X", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, X), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_X_MetaData), NewProp_X_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Y = { "Y", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, Y), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Y_MetaData), NewProp_Y_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Z = { "Z", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, Z), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Z_MetaData), NewProp_Z_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Pitch = { "Pitch", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, Pitch), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Pitch_MetaData), NewProp_Pitch_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Yaw = { "Yaw", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, Yaw), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Yaw_MetaData), NewProp_Yaw_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Roll = { "Roll", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, Roll), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Roll_MetaData), NewProp_Roll_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_ScaleX = { "ScaleX", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, ScaleX), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScaleX_MetaData), NewProp_ScaleX_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_ScaleY = { "ScaleY", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, ScaleY), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScaleY_MetaData), NewProp_ScaleY_MetaData) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_ScaleZ = { "ScaleZ", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FSoulForgeFragmentData, ScaleZ), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ScaleZ_MetaData), NewProp_ScaleZ_MetaData) };
@@ -459,6 +483,9 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UScriptStruct_FS
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_X,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Y,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Z,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Pitch,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Yaw,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_Roll,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_ScaleX,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_ScaleY,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewProp_ScaleZ,
@@ -499,29 +526,29 @@ struct Z_Construct_UScriptStruct_FEngineState_Statics
 		{ "BlueprintType", "true" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
 	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_CPUTime_MetaData[] = {
-		{ "Category", "EngineState" },
-		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
-	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_GPUTime_MetaData[] = {
-		{ "Category", "EngineState" },
-		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
-	};
 	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_ActiveNodes_MetaData[] = {
-		{ "Category", "EngineState" },
+		{ "Category", "Stats" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
 	};
-	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_PendingCleanups_MetaData[] = {
-		{ "Category", "EngineState" },
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_FPS_MetaData[] = {
+		{ "Category", "Stats" },
+		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_Efficiency_MetaData[] = {
+		{ "Category", "Stats" },
+		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+	};
+	static constexpr UECodeGen_Private::FMetaDataPairParam NewProp_SimTime_MetaData[] = {
+		{ "Category", "Stats" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
 	};
 #endif // WITH_METADATA
 
 // ********** Begin ScriptStruct FEngineState constinit property declarations **********************
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_CPUTime;
-	static const UECodeGen_Private::FFloatPropertyParams NewProp_GPUTime;
-	static const UECodeGen_Private::FIntPropertyParams NewProp_ActiveNodes;
-	static const UECodeGen_Private::FIntPropertyParams NewProp_PendingCleanups;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ActiveNodes;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FPS;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Efficiency;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_SimTime;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End ScriptStruct FEngineState constinit property declarations ************************
 	static void* NewStructOps()
@@ -541,15 +568,15 @@ class UScriptStruct* FEngineState::StaticStruct()
 	}
 
 // ********** Begin ScriptStruct FEngineState Property Definitions *********************************
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_CPUTime = { "CPUTime", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, CPUTime), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_CPUTime_MetaData), NewProp_CPUTime_MetaData) };
-const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_GPUTime = { "GPUTime", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, GPUTime), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_GPUTime_MetaData), NewProp_GPUTime_MetaData) };
-const UECodeGen_Private::FIntPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_ActiveNodes = { "ActiveNodes", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, ActiveNodes), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActiveNodes_MetaData), NewProp_ActiveNodes_MetaData) };
-const UECodeGen_Private::FIntPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_PendingCleanups = { "PendingCleanups", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, PendingCleanups), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_PendingCleanups_MetaData), NewProp_PendingCleanups_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_ActiveNodes = { "ActiveNodes", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, ActiveNodes), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_ActiveNodes_MetaData), NewProp_ActiveNodes_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_FPS = { "FPS", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, FPS), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_FPS_MetaData), NewProp_FPS_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_Efficiency = { "Efficiency", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, Efficiency), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_Efficiency_MetaData), NewProp_Efficiency_MetaData) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_SimTime = { "SimTime", nullptr, (EPropertyFlags)0x0010000000000014, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(FEngineState, SimTime), METADATA_PARAMS(UE_ARRAY_COUNT(NewProp_SimTime_MetaData), NewProp_SimTime_MetaData) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UScriptStruct_FEngineState_Statics::PropPointers[] = {
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_CPUTime,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_GPUTime,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_ActiveNodes,
-	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_PendingCleanups,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_FPS,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_Efficiency,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UScriptStruct_FEngineState_Statics::NewProp_SimTime,
 };
 static_assert(UE_ARRAY_COUNT(Z_Construct_UScriptStruct_FEngineState_Statics::PropPointers) < 2048);
 // ********** End ScriptStruct FEngineState Property Definitions ***********************************
@@ -1332,6 +1359,7 @@ struct Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics
 		float Energia;
 		EExplosiveType Explosivo;
 		int32 CantidadNodos;
+		float Radio;
 	};
 #if WITH_METADATA
 	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
@@ -1340,6 +1368,7 @@ struct Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics
 		{ "Comment", "/** Detonaci\xc3\xb3n con actualizaci\xc3\xb3n de GPS en tiempo real y n\xc3\xbamero de fragmentos configurable */" },
 #endif
 		{ "CPP_Default_CantidadNodos", "0" },
+		{ "CPP_Default_Radio", "250.000000" },
 		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
 #if !UE_BUILD_SHIPPING
 		{ "ToolTip", "Detonaci\xc3\xb3n con actualizaci\xc3\xb3n de GPS en tiempo real y n\xc3\xbamero de fragmentos configurable" },
@@ -1354,6 +1383,7 @@ struct Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics
 	static const UECodeGen_Private::FBytePropertyParams NewProp_Explosivo_Underlying;
 	static const UECodeGen_Private::FEnumPropertyParams NewProp_Explosivo;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_CantidadNodos;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_Radio;
 	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 // ********** End Function DetonarMilitar constinit property declarations **************************
 	static const UECodeGen_Private::FFunctionParams FuncParams;
@@ -1364,8 +1394,9 @@ const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_USoulForgeBrid
 const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_PosicionActual = { "PosicionActual", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, PosicionActual), Z_Construct_UScriptStruct_FVector, METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Energia = { "Energia", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Energia), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FBytePropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo_Underlying = { "UnderlyingType", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Byte, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, nullptr, METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FEnumPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo = { "Explosivo", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Explosivo), Z_Construct_UEnum_SoulForgePhysX_EExplosiveType, METADATA_PARAMS(0, nullptr) }; // 4168153385
+const UECodeGen_Private::FEnumPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo = { "Explosivo", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Enum, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Explosivo), Z_Construct_UEnum_SoulForgePhysX_EExplosiveType, METADATA_PARAMS(0, nullptr) }; // 2832337441
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_CantidadNodos = { "CantidadNodos", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, CantidadNodos), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Radio = { "Radio", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarMilitar_Parms, Radio), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_ProxyId,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_PosicionActual,
@@ -1373,6 +1404,7 @@ const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulF
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo_Underlying,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Explosivo,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_CantidadNodos,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::NewProp_Radio,
 };
 static_assert(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar_Statics::PropPointers) < 2048);
 // ********** End Function DetonarMilitar Property Definitions *************************************
@@ -1397,9 +1429,10 @@ DEFINE_FUNCTION(USoulForgeBridge::execDetonarMilitar)
 	P_GET_PROPERTY(FFloatProperty,Z_Param_Energia);
 	P_GET_ENUM(EExplosiveType,Z_Param_Explosivo);
 	P_GET_PROPERTY(FIntProperty,Z_Param_CantidadNodos);
+	P_GET_PROPERTY(FFloatProperty,Z_Param_Radio);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	USoulForgeBridge::DetonarMilitar(Z_Param_ProxyId,Z_Param_PosicionActual,Z_Param_Energia,EExplosiveType(Z_Param_Explosivo),Z_Param_CantidadNodos);
+	USoulForgeBridge::DetonarMilitar(Z_Param_ProxyId,Z_Param_PosicionActual,Z_Param_Energia,EExplosiveType(Z_Param_Explosivo),Z_Param_CantidadNodos,Z_Param_Radio);
 	P_NATIVE_END;
 }
 // ********** End Class USoulForgeBridge Function DetonarMilitar ***********************************
@@ -1411,6 +1444,8 @@ struct Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics
 	{
 		FString ProxyId;
 		float Energy;
+		int32 Preset;
+		float FragLevel;
 		TArray<FSoulForgeFragmentData> OutData;
 		int32 CantidadNodos;
 		int32 ReturnValue;
@@ -1432,6 +1467,8 @@ struct Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics
 // ********** Begin Function DetonarNativo constinit property declarations *************************
 	static const UECodeGen_Private::FStrPropertyParams NewProp_ProxyId;
 	static const UECodeGen_Private::FFloatPropertyParams NewProp_Energy;
+	static const UECodeGen_Private::FIntPropertyParams NewProp_Preset;
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_FragLevel;
 	static const UECodeGen_Private::FStructPropertyParams NewProp_OutData_Inner;
 	static const UECodeGen_Private::FArrayPropertyParams NewProp_OutData;
 	static const UECodeGen_Private::FIntPropertyParams NewProp_CantidadNodos;
@@ -1444,13 +1481,17 @@ struct Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics
 // ********** Begin Function DetonarNativo Property Definitions ************************************
 const UECodeGen_Private::FStrPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_ProxyId = { "ProxyId", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Str, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, ProxyId), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_Energy = { "Energy", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, Energy), METADATA_PARAMS(0, nullptr) };
-const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData_Inner = { "OutData", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FSoulForgeFragmentData, METADATA_PARAMS(0, nullptr) }; // 3444550143
-const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData = { "OutData", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, OutData), EArrayPropertyFlags::None, METADATA_PARAMS(0, nullptr) }; // 3444550143
+const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_Preset = { "Preset", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, Preset), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_FragLevel = { "FragLevel", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, FragLevel), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData_Inner = { "OutData", nullptr, (EPropertyFlags)0x0000000000000000, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, 0, Z_Construct_UScriptStruct_FSoulForgeFragmentData, METADATA_PARAMS(0, nullptr) }; // 1825213573
+const UECodeGen_Private::FArrayPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData = { "OutData", nullptr, (EPropertyFlags)0x0010000000000180, UECodeGen_Private::EPropertyGenFlags::Array, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, OutData), EArrayPropertyFlags::None, METADATA_PARAMS(0, nullptr) }; // 1825213573
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_CantidadNodos = { "CantidadNodos", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, CantidadNodos), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FIntPropertyParams Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Int, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventDetonarNativo_Parms, ReturnValue), METADATA_PARAMS(0, nullptr) };
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_ProxyId,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_Energy,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_Preset,
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_FragLevel,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData_Inner,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_OutData,
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_DetonarNativo_Statics::NewProp_CantidadNodos,
@@ -1476,11 +1517,13 @@ DEFINE_FUNCTION(USoulForgeBridge::execDetonarNativo)
 {
 	P_GET_PROPERTY(FStrProperty,Z_Param_ProxyId);
 	P_GET_PROPERTY(FFloatProperty,Z_Param_Energy);
+	P_GET_PROPERTY(FIntProperty,Z_Param_Preset);
+	P_GET_PROPERTY(FFloatProperty,Z_Param_FragLevel);
 	P_GET_TARRAY_REF(FSoulForgeFragmentData,Z_Param_Out_OutData);
 	P_GET_PROPERTY(FIntProperty,Z_Param_CantidadNodos);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	*(int32*)Z_Param__Result=USoulForgeBridge::DetonarNativo(Z_Param_ProxyId,Z_Param_Energy,Z_Param_Out_OutData,Z_Param_CantidadNodos);
+	*(int32*)Z_Param__Result=USoulForgeBridge::DetonarNativo(Z_Param_ProxyId,Z_Param_Energy,Z_Param_Preset,Z_Param_FragLevel,Z_Param_Out_OutData,Z_Param_CantidadNodos);
 	P_NATIVE_END;
 }
 // ********** End Class USoulForgeBridge Function DetonarNativo ************************************
@@ -1675,7 +1718,7 @@ struct Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState_Statics
 };
 
 // ********** Begin Function GetPerformanceState Property Definitions ******************************
-const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventGetPerformanceState_Parms, ReturnValue), Z_Construct_UScriptStruct_FEngineState, METADATA_PARAMS(0, nullptr) }; // 2547023604
+const UECodeGen_Private::FStructPropertyParams Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState_Statics::NewProp_ReturnValue = { "ReturnValue", nullptr, (EPropertyFlags)0x0010000000000580, UECodeGen_Private::EPropertyGenFlags::Struct, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventGetPerformanceState_Parms, ReturnValue), Z_Construct_UScriptStruct_FEngineState, METADATA_PARAMS(0, nullptr) }; // 3212734741
 const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState_Statics::PropPointers[] = {
 	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState_Statics::NewProp_ReturnValue,
 };
@@ -1870,6 +1913,64 @@ DEFINE_FUNCTION(USoulForgeBridge::execRegisterProxy)
 	P_NATIVE_END;
 }
 // ********** End Class USoulForgeBridge Function RegisterProxy ************************************
+
+// ********** Begin Class USoulForgeBridge Function SetGlobalChaos *********************************
+struct Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics
+{
+	struct SoulForgeBridge_eventSetGlobalChaos_Parms
+	{
+		float ChaosFactor;
+	};
+#if WITH_METADATA
+	static constexpr UECodeGen_Private::FMetaDataPairParam Function_MetaDataParams[] = {
+		{ "Category", "SoulForge|Admin" },
+#if !UE_BUILD_SHIPPING
+		{ "Comment", "/** Ajusta qu\xc3\xa9 tan deformados/ca\xc3\xb3ticos son los fragmentos (0.0 = Cubos perfectos, 1.0 = Caos total) */" },
+#endif
+		{ "ModuleRelativePath", "Public/SoulForgeBridge.h" },
+#if !UE_BUILD_SHIPPING
+		{ "ToolTip", "Ajusta qu\xc3\xa9 tan deformados/ca\xc3\xb3ticos son los fragmentos (0.0 = Cubos perfectos, 1.0 = Caos total)" },
+#endif
+	};
+#endif // WITH_METADATA
+
+// ********** Begin Function SetGlobalChaos constinit property declarations ************************
+	static const UECodeGen_Private::FFloatPropertyParams NewProp_ChaosFactor;
+	static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
+// ********** End Function SetGlobalChaos constinit property declarations **************************
+	static const UECodeGen_Private::FFunctionParams FuncParams;
+};
+
+// ********** Begin Function SetGlobalChaos Property Definitions ***********************************
+const UECodeGen_Private::FFloatPropertyParams Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::NewProp_ChaosFactor = { "ChaosFactor", nullptr, (EPropertyFlags)0x0010000000000080, UECodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, nullptr, nullptr, 1, STRUCT_OFFSET(SoulForgeBridge_eventSetGlobalChaos_Parms, ChaosFactor), METADATA_PARAMS(0, nullptr) };
+const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::PropPointers[] = {
+	(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::NewProp_ChaosFactor,
+};
+static_assert(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::PropPointers) < 2048);
+// ********** End Function SetGlobalChaos Property Definitions *************************************
+const UECodeGen_Private::FFunctionParams Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::FuncParams = { { (UObject*(*)())Z_Construct_UClass_USoulForgeBridge, nullptr, "SetGlobalChaos", 	Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::PropPointers, 
+	UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::PropPointers), 
+sizeof(Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::SoulForgeBridge_eventSetGlobalChaos_Parms),
+RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x04022401, 0, 0, METADATA_PARAMS(UE_ARRAY_COUNT(Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::Function_MetaDataParams), Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::Function_MetaDataParams)},  };
+static_assert(sizeof(Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::SoulForgeBridge_eventSetGlobalChaos_Parms) < MAX_uint16);
+UFunction* Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos()
+{
+	static UFunction* ReturnFunction = nullptr;
+	if (!ReturnFunction)
+	{
+		UECodeGen_Private::ConstructUFunction(&ReturnFunction, Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos_Statics::FuncParams);
+	}
+	return ReturnFunction;
+}
+DEFINE_FUNCTION(USoulForgeBridge::execSetGlobalChaos)
+{
+	P_GET_PROPERTY(FFloatProperty,Z_Param_ChaosFactor);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	USoulForgeBridge::SetGlobalChaos(Z_Param_ChaosFactor);
+	P_NATIVE_END;
+}
+// ********** End Class USoulForgeBridge Function SetGlobalChaos ***********************************
 
 // ********** Begin Class USoulForgeBridge Function SetGlobalPower *********************************
 struct Z_Construct_UFunction_USoulForgeBridge_SetGlobalPower_Statics
@@ -2421,6 +2522,7 @@ struct Z_Construct_UClass_USoulForgeBridge_Statics
 		{ .NameUTF8 = UTF8TEXT("Initialize"), .Pointer = &USoulForgeBridge::execInitialize },
 		{ .NameUTF8 = UTF8TEXT("LimpiarNucleo"), .Pointer = &USoulForgeBridge::execLimpiarNucleo },
 		{ .NameUTF8 = UTF8TEXT("RegisterProxy"), .Pointer = &USoulForgeBridge::execRegisterProxy },
+		{ .NameUTF8 = UTF8TEXT("SetGlobalChaos"), .Pointer = &USoulForgeBridge::execSetGlobalChaos },
 		{ .NameUTF8 = UTF8TEXT("SetGlobalPower"), .Pointer = &USoulForgeBridge::execSetGlobalPower },
 		{ .NameUTF8 = UTF8TEXT("SetGroundZ"), .Pointer = &USoulForgeBridge::execSetGroundZ },
 		{ .NameUTF8 = UTF8TEXT("SetProxyMilitar"), .Pointer = &USoulForgeBridge::execSetProxyMilitar },
@@ -2437,14 +2539,15 @@ struct Z_Construct_UClass_USoulForgeBridge_Statics
 		{ &Z_Construct_UFunction_USoulForgeBridge_ApplySettings, "ApplySettings" }, // 1087382506
 		{ &Z_Construct_UFunction_USoulForgeBridge_BorrarProxyEnRust, "BorrarProxyEnRust" }, // 614299429
 		{ &Z_Construct_UFunction_USoulForgeBridge_CalcularOnda, "CalcularOnda" }, // 3728353418
-		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar, "DetonarMilitar" }, // 464455458
-		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarNativo, "DetonarNativo" }, // 2033957222
+		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarMilitar, "DetonarMilitar" }, // 823911029
+		{ &Z_Construct_UFunction_USoulForgeBridge_DetonarNativo, "DetonarNativo" }, // 3292975459
 		{ &Z_Construct_UFunction_USoulForgeBridge_FiltrarInstancias, "FiltrarInstancias" }, // 932500953
 		{ &Z_Construct_UFunction_USoulForgeBridge_GetExplosionPreview, "GetExplosionPreview" }, // 2246220172
-		{ &Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState, "GetPerformanceState" }, // 1726453365
+		{ &Z_Construct_UFunction_USoulForgeBridge_GetPerformanceState, "GetPerformanceState" }, // 576613424
 		{ &Z_Construct_UFunction_USoulForgeBridge_Initialize, "Initialize" }, // 3711600770
 		{ &Z_Construct_UFunction_USoulForgeBridge_LimpiarNucleo, "LimpiarNucleo" }, // 363529589
 		{ &Z_Construct_UFunction_USoulForgeBridge_RegisterProxy, "RegisterProxy" }, // 3352854138
+		{ &Z_Construct_UFunction_USoulForgeBridge_SetGlobalChaos, "SetGlobalChaos" }, // 511066451
 		{ &Z_Construct_UFunction_USoulForgeBridge_SetGlobalPower, "SetGlobalPower" }, // 1912902864
 		{ &Z_Construct_UFunction_USoulForgeBridge_SetGroundZ, "SetGroundZ" }, // 3071926169
 		{ &Z_Construct_UFunction_USoulForgeBridge_SetProxyMilitar, "SetProxyMilitar" }, // 558783063
@@ -2502,25 +2605,25 @@ USoulForgeBridge::~USoulForgeBridge() {}
 struct Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics
 {
 	static constexpr FEnumRegisterCompiledInInfo EnumInfo[] = {
-		{ ESoulForgeDamagePreset_StaticEnum, TEXT("ESoulForgeDamagePreset"), &Z_Registration_Info_UEnum_ESoulForgeDamagePreset, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 3946375310U) },
+		{ ESoulForgeDamagePreset_StaticEnum, TEXT("ESoulForgeDamagePreset"), &Z_Registration_Info_UEnum_ESoulForgeDamagePreset, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 391389145U) },
 		{ EPhysicsLOD_StaticEnum, TEXT("EPhysicsLOD"), &Z_Registration_Info_UEnum_EPhysicsLOD, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2707074426U) },
 		{ EMaterialType_StaticEnum, TEXT("EMaterialType"), &Z_Registration_Info_UEnum_EMaterialType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 497896940U) },
-		{ EExplosiveType_StaticEnum, TEXT("EExplosiveType"), &Z_Registration_Info_UEnum_EExplosiveType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 4168153385U) },
+		{ EExplosiveType_StaticEnum, TEXT("EExplosiveType"), &Z_Registration_Info_UEnum_EExplosiveType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 2832337441U) },
 		{ EPowerType_StaticEnum, TEXT("EPowerType"), &Z_Registration_Info_UEnum_EPowerType, CONSTRUCT_RELOAD_VERSION_INFO(FEnumReloadVersionInfo, 1062630852U) },
 	};
 	static constexpr FStructRegisterCompiledInInfo ScriptStructInfo[] = {
-		{ FSoulForgeFragmentData::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewStructOps, TEXT("SoulForgeFragmentData"),&Z_Registration_Info_UScriptStruct_FSoulForgeFragmentData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeFragmentData), 3444550143U) },
-		{ FEngineState::StaticStruct, Z_Construct_UScriptStruct_FEngineState_Statics::NewStructOps, TEXT("EngineState"),&Z_Registration_Info_UScriptStruct_FEngineState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FEngineState), 2547023604U) },
+		{ FSoulForgeFragmentData::StaticStruct, Z_Construct_UScriptStruct_FSoulForgeFragmentData_Statics::NewStructOps, TEXT("SoulForgeFragmentData"),&Z_Registration_Info_UScriptStruct_FSoulForgeFragmentData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FSoulForgeFragmentData), 1825213573U) },
+		{ FEngineState::StaticStruct, Z_Construct_UScriptStruct_FEngineState_Statics::NewStructOps, TEXT("EngineState"),&Z_Registration_Info_UScriptStruct_FEngineState, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FEngineState), 3212734741U) },
 		{ FShockwaveData::StaticStruct, Z_Construct_UScriptStruct_FShockwaveData_Statics::NewStructOps, TEXT("ShockwaveData"),&Z_Registration_Info_UScriptStruct_FShockwaveData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FShockwaveData), 3033931910U) },
 		{ FActivePowerPayload::StaticStruct, Z_Construct_UScriptStruct_FActivePowerPayload_Statics::NewStructOps, TEXT("ActivePowerPayload"),&Z_Registration_Info_UScriptStruct_FActivePowerPayload, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FActivePowerPayload), 442066524U) },
 		{ FRenderData::StaticStruct, Z_Construct_UScriptStruct_FRenderData_Statics::NewStructOps, TEXT("RenderData"),&Z_Registration_Info_UScriptStruct_FRenderData, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FRenderData), 1047554499U) },
 		{ FActivePowerInstance::StaticStruct, Z_Construct_UScriptStruct_FActivePowerInstance_Statics::NewStructOps, TEXT("ActivePowerInstance"),&Z_Registration_Info_UScriptStruct_FActivePowerInstance, CONSTRUCT_RELOAD_VERSION_INFO(FStructReloadVersionInfo, sizeof(FActivePowerInstance), 3403567033U) },
 	};
 	static constexpr FClassRegisterCompiledInInfo ClassInfo[] = {
-		{ Z_Construct_UClass_USoulForgeBridge, USoulForgeBridge::StaticClass, TEXT("USoulForgeBridge"), &Z_Registration_Info_UClass_USoulForgeBridge, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeBridge), 1779112509U) },
+		{ Z_Construct_UClass_USoulForgeBridge, USoulForgeBridge::StaticClass, TEXT("USoulForgeBridge"), &Z_Registration_Info_UClass_USoulForgeBridge, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(USoulForgeBridge), 354908870U) },
 	};
 }; // Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics 
-static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_2852392888{
+static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_2073485562{
 	TEXT("/Script/SoulForgePhysX"),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ClassInfo),
 	Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ScriptStructInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_proyectos_unreal_explosion_Plugins_SoulForgePhysX_core_cpp_Source_SoulForgePhysX_Public_SoulForgeBridge_h__Script_SoulForgePhysX_Statics::ScriptStructInfo),

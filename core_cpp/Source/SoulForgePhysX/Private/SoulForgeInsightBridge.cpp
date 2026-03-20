@@ -20,7 +20,7 @@ bool USoulForgeInsightBridge::IniciarSoulForgeInsight()
     }
 
     FString PluginDir = Plugin->GetBaseDir();
-    FString DllPath = FPaths::Combine(PluginDir, TEXT("Binaries"), TEXT("Win64"), TEXT("soulforge_insight_core.dll"));
+    FString DllPath = FPaths::Combine(PluginDir, TEXT("Binaries"), TEXT("Win64"), TEXT("soulforge_physx.dll"));
     
     // 2. Intentamos cargarla en la memoria de Unreal si no está ya cargada
     if (InsightDllHandle == nullptr)
@@ -30,12 +30,12 @@ bool USoulForgeInsightBridge::IniciarSoulForgeInsight()
     
     if (InsightDllHandle != nullptr)
     {
-        UE_LOG(LogTemp, Warning, TEXT("[SoulForge] NÚCLEO INSIGHT CONECTADO Y ACTIVO. ¡Potencia Rust lista!"));
+        UE_LOG(LogTemp, Warning, TEXT("[SoulForge] NÚCLEO INSIGHT UNIFICADO (MAESTRO) CONECTADO. ¡Concurrencia Activa!"));
         return true;
     }
     else
     {
-        UE_LOG(LogTemp, Error, TEXT("[SoulForge] ERROR: No se encontró la DLL en la ruta: %s"), *DllPath);
+        UE_LOG(LogTemp, Error, TEXT("[SoulForge] ERROR: No se encontró la DLL Maestra en: %s"), *DllPath);
         return false;
     }
 }
