@@ -51,5 +51,9 @@ This project is a technical demonstration of how developers can extend Unreal En
 - Ensure the resulting `soulforge_core.dll` is placed in the Unreal project's Binaries folder.
 - Compile the Unreal Project via your IDE or UBT.
 
----
+Dynamic Force Fields (Work in Progress): Moving beyond static presets. Implementing a system where users can define custom vector fields in Unreal that the Rust core processes in real-time to dictate specific explosion shapes and trajectories.
+
+Procedural Fragmentation Control: Developing an interface to control fracture density and shrapnel distribution dynamically based on impact velocity and material thickness, rather than relying on pre-calculated patterns.
+
+Real-time Parameter Injection: The FFI bridge is being expanded to allow frame-by-frame adjustment of physics constants (gravity, drag, elasticity) directly from Unreal Blueprints, giving creators total artistic control over the simulation's "feel."---
 *Created as a demonstration of high-performance physics integration for Unreal Engine 5.*
