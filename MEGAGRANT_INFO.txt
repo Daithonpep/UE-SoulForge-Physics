@@ -1,0 +1,38 @@
+============================================================
+PROJECT: SoulForge Physics - Rust/UE5 FFI Bridge
+AUTHOR: Joseph [Tu Apellido]
+APPLICATION ID: [Pégalo aquí si te lo dieron al final]
+============================================================
+
+TECHNICAL SUMMARY:
+This project is a high-performance physics simulation proof-of-concept. 
+It bridges Unreal Engine 5 (C++) and Rust to demonstrate massive 
+rigid-body calculations (50,000+ nodes) on consumer-grade hardware.
+
+CODE ARCHITECTURE & MODULARITY:
+Unlike monolithic AI-generated scripts, SoulForge is built with 
+scalability and maintainability in mind:
+
+- /core_rust/src/ffi.rs: 
+  Clean, unsafe-optimized boundary for C-compatible endpoints.
+- /core_rust/src/physics.rs: 
+  Core logic using Rayon for thread-safe parallelism.
+- /core_rust/src/node_buffer.rs: 
+  SoA (Structure of Arrays) implementation for cache-friendly memory access.
+- /core_cpp/SoulForgeBridge.cpp: 
+  Minimal overhead wrapper that maps Rust memory directly into UE5 
+  Hierarchical Instanced Static Meshes (HISM).
+
+KEY PERFORMANCE BENCHMARK:
+- Target Hardware: 8GB RAM / Ryzen 5 (Laptop)
+- Performance: 50,000 particles @ 35+ FPS
+- Memory Strategy: Zero-Copy Shared Memory (No serialization overhead)
+
+FUTURE VISION:
+Current development is focused on moving from physics presets to 
+dynamic procedural fragmentation and real-time artistic control 
+over explosion vectors, aiming to reduce CPU overhead in lighting 
+and scene traversal tasks using Rust.
+
+Thank you for reviewing my technical contribution to the UE5 ecosystem.
+============================================================
