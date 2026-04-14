@@ -38,3 +38,18 @@ persona_cache/
 .vscode/
 .idea/
 .DS_Store
+
+# Unreal Engine artifacts
+*/Intermediate/
+*/Binaries/
+*/DerivedDataCache/
+*/Saved/
+*/Build/
+.vs/
+
+# Rust artifacts
+target/
+core_rust/target/
+
+# Daithon Intellectual Property (Secret Sauce)
+# ... keep the rest ...

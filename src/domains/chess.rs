@@ -1,18 +1,29 @@
 use shakmaty::{Chess, Position, Move, Role, Square};
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct ChessWorld {
+    #[serde(skip)]
     pub position: Chess,
+    pub fen: String,
+    #[serde(skip)]
     pub move_history: Vec<Move>,
 }
 
 impl ChessWorld {
     pub fn new() -> Self {
+        let chess = Chess::default();
         Self {
-            position: Chess::default(), // Posición inicial
+            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string(),
+            position: chess,
             move_history: Vec::new(),
         }
+    }
+
+    pub fn update_fen(&mut self) {
+        use shakmaty::fen::Fen;
+        self.fen = Fen::from_position(&self.position, shakmaty::EnPassantMode::Always).to_string();
     }
 
     /// Extrae variables para el análisis causal

@@ -1,0 +1,15 @@
+# ─── SoulForge PhysX – Python Orchestrator dependencies ─────────────────────
+# Nota: 'unreal' se importa directamente desde el entorno integrado de Unreal Engine
+#       (No se instala con pip; está disponible dentro del editor de UE5)
+
+# Serialización de datos de Rust → Python
+# (El núcleo Rust emite JSON; Python lo consume)
+
+# Manejo de archivos y rutas
+pathlib2>=2.3.7
+
+# Validación de esquemas JSON (para los datos que llegan desde Rust)
+jsonschema>=4.21.0
+
+# Utilidades de logging estructurado
+colorlog>=6.8.2

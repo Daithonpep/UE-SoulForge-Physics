@@ -1,0 +1,90 @@
+/MANIFEST:NO
+/NOLOGO
+/DEBUG:FULL
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/FIXED:No
+/NXCOMPAT
+/STACK:12000000
+/DELAY:UNLOAD
+/DLL
+/PDBALTPATH:%_PDB%
+/d2:-ExtendedWarningInfo
+/OPT:NOREF
+/OPT:NOICF
+/INCREMENTAL:NO
+/ignore:4199
+/ignore:4099
+/ALTERNATENAME:__imp___std_init_once_begin_initialize=__imp_InitOnceBeginInitialize
+/ALTERNATENAME:__imp___std_init_once_complete=__imp_InitOnceComplete
+/DELAYLOAD:"soulforge_physx.dll"
+/DELAYLOAD:"d3d12.dll"
+/DELAYLOAD:"DBGHELP.DLL"
+/LIBPATH:"C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/lib/x64"
+/LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.22621.0/ucrt/x64"
+/LIBPATH:"C:/Program Files (x86)/Windows Kits/10/lib/10.0.22621.0/um/x64"
+/NODEFAULTLIB:"LIBCMT"
+/NODEFAULTLIB:"LIBCPMT"
+/NODEFAULTLIB:"LIBCMTD"
+/NODEFAULTLIB:"LIBCPMTD"
+/NODEFAULTLIB:"MSVCRTD"
+/NODEFAULTLIB:"MSVCPRTD"
+/NODEFAULTLIB:"LIBC"
+/NODEFAULTLIB:"LIBCP"
+/NODEFAULTLIB:"LIBCD"
+/NODEFAULTLIB:"LIBCPD"
+/FUNCTIONPADMIN:6
+/NOIMPLIB
+/NOEXP
+/NATVIS:"../Intermediate/Build/Win64/x64/UnrealEditor/Development/RenderCore/RenderCore.natvis"
+/NATVIS:"../Plugins/FX/Niagara/Intermediate/Build/Win64/x64/UnrealEditor/Development/Niagara/Niagara.natvis"
+"C:/proyectos unreal/explosion/Intermediate/Build/Win64/x64/explosionEditor/DebugGame/UnrealEd/SharedPCH.UnrealEd.Project.NonOptimized.ValApi.ValExpApi.Cpp20.h.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/Module.SoulForgePhysX.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/RustPhysicsComponent.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeBridge.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeDestructible.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeFragmentRenderer.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeHelper.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeInsightBridge.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgePhysX.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgePowerComponent.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeSubsystem.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/SoulForgeVFXLibrary.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/DebugGame/SoulForgePhysX/Default.rc2.res"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/Projects/UnrealEditor-Projects.lib"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/RenderCore/UnrealEditor-RenderCore.lib"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/Core/UnrealEditor-Core.lib"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/CoreUObject/UnrealEditor-CoreUObject.lib"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/Engine/UnrealEditor-Engine.lib"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/Json/UnrealEditor-Json.lib"
+"../Intermediate/Build/Win64/x64/UnrealEditor/Development/JsonUtilities/UnrealEditor-JsonUtilities.lib"
+"../Plugins/FX/Niagara/Intermediate/Build/Win64/x64/UnrealEditor/Development/Niagara/UnrealEditor-Niagara.lib"
+"delayimp.lib"
+"wininet.lib"
+"rpcrt4.lib"
+"ws2_32.lib"
+"dbghelp.lib"
+"comctl32.lib"
+"Winmm.lib"
+"kernel32.lib"
+"user32.lib"
+"gdi32.lib"
+"winspool.lib"
+"comdlg32.lib"
+"advapi32.lib"
+"shell32.lib"
+"ole32.lib"
+"oleaut32.lib"
+"uuid.lib"
+"odbc32.lib"
+"odbccp32.lib"
+"netapi32.lib"
+"iphlpapi.lib"
+"setupapi.lib"
+"synchronization.lib"
+"dwmapi.lib"
+"imm32.lib"
+/OUT:"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Binaries/Win64/UnrealEditor-SoulForgePhysX-Win64-DebugGame.dll"
+/PDB:"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Binaries/Win64/UnrealEditor-SoulForgePhysX-Win64-DebugGame.pdb"
+/ignore:4078

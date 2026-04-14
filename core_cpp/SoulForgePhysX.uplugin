@@ -1,0 +1,25 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "SoulForge PhysX",
+  "Description": "Puente de integración entre el núcleo de cálculo Rust y Unreal Engine 5.",
+  "Category": "Physics",
+  "CreatedBy": "SoulForge Team",
+  "CanContainContent": true,
+  "IsBetaVersion": true,
+  "IsExperimentalVersion": false,
+  "Modules": [
+    {
+      "Name": "SoulForgePhysX",
+      "Type": "Runtime",
+      "LoadingPhase": "PostEngineInit"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "Niagara",
+      "Enabled": true
+    }
+  ]
+}

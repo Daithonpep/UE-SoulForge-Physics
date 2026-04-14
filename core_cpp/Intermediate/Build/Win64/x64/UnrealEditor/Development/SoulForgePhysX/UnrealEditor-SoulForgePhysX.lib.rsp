@@ -1,0 +1,22 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-SoulForgePhysX.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:/proyectos unreal/explosion/Intermediate/Build/Win64/x64/explosionEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/Module.SoulForgePhysX.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/RustPhysicsComponent.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeBridge.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeDestructible.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeFragmentRenderer.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeHelper.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeInsightBridge.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgePhysX.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgePowerComponent.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeSubsystem.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/SoulForgeVFXLibrary.cpp.obj"
+"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/Default.rc2.res"
+/OUT:"C:/proyectos unreal/explosion/Plugins/SoulForgePhysX/core_cpp/Intermediate/Build/Win64/x64/UnrealEditor/Development/SoulForgePhysX/UnrealEditor-SoulForgePhysX.lib"

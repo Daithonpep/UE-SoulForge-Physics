@@ -5,6 +5,7 @@ use actix_web::{web, HttpResponse, Scope};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use serde::Deserialize;
+use shakmaty::Position;
 
 #[derive(Deserialize)]
 pub struct ManualTrainingRequest {
@@ -38,6 +39,10 @@ pub struct DashboardState {
     pub trinity: Arc<RwLock<crate::trinity::training::triangular_loop::TriangularTrainingLoop>>,
     pub contextus: Arc<RwLock<crate::contextus::DaithonContext>>,
     pub metacog: Arc<RwLock<crate::metacog::MetaCogEngine>>,
+    pub chess: Arc<RwLock<crate::domains::chess::ChessWorld>>,
+    pub domain_learner: Arc<RwLock<crate::learning::domain_learner::DomainLearner>>,
+    pub practice_engine: Arc<RwLock<crate::learning::practice_engine::PracticeEngine>>,
+    pub cognitive_log: Arc<RwLock<crate::learning::cognitive_log::CognitiveLog>>,
 }
 
 // Retorna un Scope de Actix en lugar de Router de Axum para simplificar
@@ -87,6 +92,14 @@ pub fn create_dashboard_routes(state: web::Data<DashboardState>) -> Scope {
         // === CORTEX LAB ==
         .route("/upload_pdf", web::post().to(upload_pdf))
         .route("/lingua/deep_research", web::post().to(deep_research))
+        // === CHESS ARENA ROUTES ===
+        .route("/chess/status", web::get().to(get_chess_status))
+        .route("/chess/move", web::post().to(chess_make_move))
+        .route("/chess/reset", web::post().to(chess_reset))
+        // === AGI LEARNING ROUTES ===
+        .route("/learn_domain", web::post().to(learn_domain))
+        .route("/practice_session", web::post().to(practice_session))
+        .route("/cognitive_log", web::get().to(get_cognitive_log))
 }
 
 async fn save_master_genome(state: web::Data<DashboardState>) -> HttpResponse {
@@ -445,9 +458,9 @@ async fn wm_control(state: web::Data<DashboardState>, req: web::Json<WmControlRe
             
             // Simular lanzamiento de Unreal. 
             // Esto llamaría al start de windows. Descomentar si el .uproject está exactamente ahí.
-            // let _ = std::process::Command::new("cmd")
-            //    .args(&["/C", "start", "\"\"", "\"C:\\proyectos unreal\\explosion\\Explosion.uproject\"", "-game", "-nullrhi"])
-            //    .spawn();
+            let _ = std::process::Command::new("cmd")
+               .args(&["/C", "start", "\"\"", "\"C:\\proyectos unreal\\explosion\\Explosion.uproject\"", "-game", "-nullrhi"])
+               .spawn();
 
             let wm_arc = state.wm_coordinator.clone();
             tokio::spawn(async move {
@@ -1752,9 +1765,146 @@ pub async fn upload_pdf(
     HttpResponse::Ok().json(serde_json::json!({
         "status": "success",
         "pages": text_extracted.len() / 2500 + 1, // aproxima paginas por chars
-        "characters": text_extracted.len(),
         "words_learned": learned_count,
         "entities_added": entities_added,
         "relations_added": relations_added
     }))
+}
+
+// === CHESS HANDLERS ===
+
+async fn get_chess_status(state: web::Data<DashboardState>) -> HttpResponse {
+    let chess = state.chess.read().await;
+    HttpResponse::Ok().json(serde_json::json!({
+        "fen": chess.fen,
+        "is_game_over": chess.is_game_over(),
+        "turn": format!("{:?}", chess.position.turn()),
+        "causal_vars": chess.get_causal_variables()
+    }))
+}
+
+#[derive(Deserialize)]
+pub struct ChessMoveRequest {
+    pub san: Option<String>,      // "e4", "Nf3"
+    pub use_daithon: bool,        // Si es true, Daithon elige la jugada
+}
+
+async fn chess_make_move(state: web::Data<DashboardState>, req: web::Json<ChessMoveRequest>) -> HttpResponse {
+    let mut chess = state.chess.write().await;
+    
+    if req.use_daithon {
+        // Usar Senku y Xeno para decidir
+        let senku = crate::agents::senku_chess::SenkuChessAnalyzer;
+        let xeno = crate::agents::xeno_chess::XenoChessAnalyzer;
+        
+        let senku_a = senku.analyze(&chess);
+        let xeno_a = xeno.analyze(&chess);
+        
+        let chosen = if senku_a.confidence > xeno_a.confidence { senku_a } else { xeno_a };
+        
+        if let Some(mv) = chosen.suggested_move {
+            chess.apply_move(&mv).unwrap();
+            chess.update_fen();
+            return HttpResponse::Ok().json(serde_json::json!({
+                "status": "success",
+                "move": format!("{:?}", mv),
+                "rationale": chosen.rationale,
+                "agent": chosen.agent,
+                "fen": chess.fen
+            }));
+        }
+    }
+
+    HttpResponse::BadRequest().json(serde_json::json!({ "error": "No move executed" }))
+}
+
+async fn chess_reset(state: web::Data<DashboardState>) -> HttpResponse {
+    let mut chess = state.chess.write().await;
+    *chess = crate::domains::chess::ChessWorld::new();
+    chess.update_fen();
+    HttpResponse::Ok().json(serde_json::json!({ "status": "reset", "fen": chess.fen }))
+}
+
+// === AGI LEARNING HANDLERS ===
+
+#[derive(Deserialize)]
+pub struct LearnDomainRequest {
+    pub domain: String,
+    pub manual_text: String,
+}
+
+async fn learn_domain(
+    state: web::Data<DashboardState>,
+    req: web::Json<LearnDomainRequest>,
+) -> HttpResponse {
+    let mut learner = state.domain_learner.write().await;
+    let mut context_guard = state.contextus.write().await;
+    let mut log = state.cognitive_log.write().await;
+    
+    let result = learner.learn_new_domain(
+        &req.domain,
+        &req.manual_text,
+        &mut context_guard.semantic_graph,
+        &mut *log
+    );
+    
+    // Si es ajedrez, inicializar el practice engine
+    if req.domain.to_lowercase() == "chess" {
+        if let Some(knowledge) = learner.learned_domains.get(&req.domain) {
+            let mut practice = state.practice_engine.write().await;
+            practice.init_for_domain(knowledge);
+        }
+    }
+
+    HttpResponse::Ok().json(result)
+}
+
+#[derive(Deserialize)]
+pub struct PracticeRequest {
+    pub domain: String,
+    pub iterations: usize,
+}
+
+async fn practice_session(
+    state: web::Data<DashboardState>,
+    req: web::Json<PracticeRequest>,
+) -> HttpResponse {
+    let domain = req.domain.clone();
+    let domain_for_spawn = domain.clone();
+    let iters = req.iterations;
+    let state_practice = state.practice_engine.clone();
+    let state_chess = state.chess.clone();
+    let state_contextus = state.contextus.clone();
+    let state_learner = state.domain_learner.clone();
+    let state_log = state.cognitive_log.clone();
+
+    // Ejecutar en segundo plano para no bloquear
+    tokio::spawn(async move {
+        for _ in 0..iters {
+            let mut practice = state_practice.write().await;
+            let mut chess = state_chess.write().await;
+            let mut context_guard = state_contextus.write().await;
+            let learner = state_learner.read().await;
+            let mut log = state_log.write().await;
+
+            if domain_for_spawn.to_lowercase() == "chess" {
+                practice.play_one_game_with_full_brain(
+                    &mut *chess,
+                    &mut context_guard.semantic_graph,
+                    &*learner,
+                    &mut *log
+                );
+            }
+        }
+    });
+
+    HttpResponse::Ok().json(serde_json::json!({
+        "status": "started",
+        "message": format!("Sesión de práctica iniciada para {}: {} iteraciones", domain, iters)
+    }))
+}
+
+async fn get_cognitive_log(state: web::Data<DashboardState>) -> HttpResponse {
+    let log = state.cognitive_log.read().await;
+    HttpResponse::Ok().json(&*log)
 }

@@ -1,0 +1,15 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\private\\soulforgehelper.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\proyectos unreal\\explosion\\intermediate\\build\\win64\\x64\\explosioneditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\soulforgephysx\\definitions.soulforgephysx.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\public\\soulforgehelper.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\unrealeditor\\inc\\soulforgephysx\\uht\\soulforgehelper.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

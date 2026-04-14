@@ -1,0 +1,28 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.SoulForgePhysX.cpp.obj": [
+			"RustPhysicsComponent.gen.cpp.obj",
+			"SoulForgeBridge.gen.cpp.obj",
+			"SoulForgeDestructible.gen.cpp.obj",
+			"SoulForgeFragmentRenderer.gen.cpp.obj",
+			"SoulForgeHelper.gen.cpp.obj",
+			"SoulForgeInsightBridge.gen.cpp.obj",
+			"SoulForgePhysX.init.gen.cpp.obj",
+			"SoulForgePowerComponent.gen.cpp.obj",
+			"SoulForgeSubsystem.gen.cpp.obj",
+			"SoulForgeVFXLibrary.gen.cpp.obj",
+			"PerModuleInline.gen.cpp.obj",
+			"RustPhysicsComponent.cpp.obj",
+			"SoulForgeBridge.cpp.obj",
+			"SoulForgeDestructible.cpp.obj",
+			"SoulForgeFragmentRenderer.cpp.obj",
+			"SoulForgeHelper.cpp.obj",
+			"SoulForgeInsightBridge.cpp.obj",
+			"SoulForgePhysX.cpp.obj",
+			"SoulForgePowerComponent.cpp.obj",
+			"SoulForgeSubsystem.cpp.obj",
+			"SoulForgeVFXLibrary.cpp.obj"
+		]
+	}
+}

@@ -64,6 +64,10 @@ pub struct AppState {
     pub metacog: Arc<RwLock<crate::metacog::MetaCogEngine>>, // Nótese que el contexto ya contiene grafo e hipótesis, pero los exponemos para acceso directo si es necesario
     pub lab_engine: Arc<tokio::sync::Mutex<crate::forge::experimental_lab::LabEngine>>,
     pub learner: Arc<crate::forge::autonomous_learner::AutonomousLearner>,
+    pub chess: Arc<RwLock<crate::domains::chess::ChessWorld>>,
+    pub domain_learner: Arc<RwLock<crate::learning::domain_learner::DomainLearner>>,
+    pub practice_engine: Arc<RwLock<crate::learning::practice_engine::PracticeEngine>>,
+    pub cognitive_log: Arc<RwLock<crate::learning::cognitive_log::CognitiveLog>>,
 }
 
 #[derive(Message)]
@@ -468,6 +472,20 @@ fn extract_unreal_commands(response: &str, command_type: &str) -> Vec<UnrealComm
         });
     }
 
+    if response_lower.contains("explosión") || response_lower.contains("explosion")
+        || response_lower.contains("detonar") || response_lower.contains("boom") {
+        commands.push(UnrealCommand {
+            action: "spawn_explosion".to_string(),
+            target: extract_object_name(response),
+            parameters: serde_json::json!({
+                "radius": 500.0,
+                "strength": 1.0,
+                "vfx": "NS_ProxyExplosion"
+            }),
+            priority: 1,
+        });
+    }
+
     if response_lower.contains("blueprint") || response_lower.contains("bp_") {
         commands.push(UnrealCommand {
             action: "create_blueprint".to_string(),
@@ -852,6 +870,10 @@ async fn main() -> std::io::Result<()> {
     let shared_metacog = Arc::new(RwLock::new(crate::metacog::MetaCogEngine::new()));
     let shared_lab = Arc::new(tokio::sync::Mutex::new(crate::forge::experimental_lab::LabEngine::new()));
     let shared_learner = Arc::new(crate::forge::autonomous_learner::AutonomousLearner::new(shared_cortex.clone()));
+    let shared_chess = Arc::new(RwLock::new(crate::domains::chess::ChessWorld::new()));
+    let shared_domain_learner = Arc::new(RwLock::new(crate::learning::domain_learner::DomainLearner::new()));
+    let shared_practice_engine = Arc::new(RwLock::new(crate::learning::practice_engine::PracticeEngine::new()));
+    let shared_cognitive_log = Arc::new(RwLock::new(crate::learning::cognitive_log::CognitiveLog::new()));
 
     let dashboard_state = web::Data::new(gym::dashboard_api::DashboardState {
         gym: gym_arc.clone(),
@@ -869,6 +891,10 @@ async fn main() -> std::io::Result<()> {
         trinity: shared_trinity.clone(),
         contextus: shared_contextus.clone(),
         metacog: shared_metacog.clone(),
+        chess: shared_chess.clone(),
+        domain_learner: shared_domain_learner.clone(),
+        practice_engine: shared_practice_engine.clone(),
+        cognitive_log: shared_cognitive_log.clone(),
     });
 
     let data = web::Data::new(AppState {
@@ -882,6 +908,10 @@ async fn main() -> std::io::Result<()> {
         metacog: shared_metacog.clone(),
         lab_engine: shared_lab.clone(),
         learner: shared_learner.clone(),
+        chess: shared_chess.clone(),
+        domain_learner: shared_domain_learner.clone(),
+        practice_engine: shared_practice_engine.clone(),
+        cognitive_log: shared_cognitive_log.clone(),
     });
 
     // --- XENO PROTOCOL (AUTONOMOUS IMPULSE) ---

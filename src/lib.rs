@@ -34,3 +34,4 @@ pub mod knowledge;
 pub mod causal;
 pub mod meta_learning;
 pub mod domains;
+pub mod learning;

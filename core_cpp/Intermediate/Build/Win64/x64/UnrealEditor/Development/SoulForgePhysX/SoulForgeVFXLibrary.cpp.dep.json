@@ -1,0 +1,33 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\private\\soulforgevfxlibrary.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\proyectos unreal\\explosion\\intermediate\\build\\win64\\x64\\explosioneditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.h.pch",
+        "Includes": [
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\soulforgephysx\\definitions.soulforgephysx.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\public\\soulforgevfxlibrary.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\unrealeditor\\inc\\soulforgephysx\\uht\\soulforgevfxlibrary.generated.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\source\\soulforgephysx\\public\\soulforgebridge.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\uobject\\noexporttypes.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\uobject\\propertyaccessutil.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\coreuobject\\uht\\propertyaccessutil.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\coreuobject\\public\\serialization\\testundeclaredscriptstructobjectreferences.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\coreuobject\\uht\\testundeclaredscriptstructobjectreferences.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\core\\public\\math\\unitconversion.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\core\\public\\math\\unitconversion.inl",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\core\\public\\internationalization\\polyglottextdata.h",
+            "c:\\proyectos unreal\\explosion\\plugins\\soulforgephysx\\core_cpp\\intermediate\\build\\win64\\unrealeditor\\inc\\soulforgephysx\\uht\\soulforgebridge.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\classes\\kismet\\gameplaystatics.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\classes\\kismet\\kismetsystemlibrary.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\kismetsystemlibrary.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\classes\\sound\\dialoguetypes.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\dialoguetypes.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\source\\runtime\\engine\\classes\\kismet\\gameplaystaticstypes.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gameplaystaticstypes.generated.h",
+            "c:\\program files\\epic games\\ue_5.7\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\gameplaystatics.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
