@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORTEX/TRINITY Lab - Daithon</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-panel: #14141e;
+            --accent: #00ffcc;
+            --accent-glow: rgba(0, 255, 204, 0.4);
+            --danger: #ff3366;
+            --warn: #ffcc00;
+            --text-main: #e0e0e0;
+            --text-dim: #888899;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--bg-dark);
+            background: var(--accent);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .chat-section {
+            display: flex;
+            flex-direction: column;
+            flex: 3;
+            background: var(--bg-panel);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .controls-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 300px;
+            overflow-y: auto;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .message {
+            max-width: 90%;
+            padding: 15px 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .msg-user {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+
+        .msg-daithon {
+            background: rgba(0, 255, 204, 0.05);
+            color: var(--accent);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            gap: 15px;
+        }
+
+        textarea {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            resize: none;
+            height: 60px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-dark);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-research {
+            background: rgba(0, 255, 204, 0.15);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .btn-research:hover {
+            background: var(--accent);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .btn-research:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* PDF Upload Zone */
+        .upload-zone {
+            border: 2px dashed rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(0, 255, 204, 0.02);
+            margin-bottom: 15px;
+        }
+
+        .upload-zone:hover, .upload-zone.dragging {
+            border-color: var(--accent);
+            background: rgba(0, 255, 204, 0.08);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+        }
+
+        .upload-zone .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .upload-zone .label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .upload-zone .filename {
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        #pdf-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+            display: none;
+        }
+
+        #pdf-progress .bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .research-loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(0,255,204,0.3);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-title">
+            <div class="logo">TRINITY/CORTEX</div>
+            <div>
+                <h2 style="margin:0; font-size: 1.2rem;">Sintesis Conversacional + Laboratorio Textual</h2>
+                <span style="color: var(--text-dim); font-size: 0.85rem;">Dr. Xeno / Daithon</span>
+            </div>
+        </div>
+        <div style="display:flex; gap: 15px; align-items:center;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 10px var(--warn);"></div>
+            <span style="font-family: 'JetBrains Mono'; font-size: 0.85rem; color: var(--warn);">CORTEX STANDBY</span>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- CONTROLS LEFT -->
+        <div class="controls-section">
+            
+            <div class="panel">
+                <h3>📄 Subir Documento (PDF / Texto)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-dim);">Sube un PDF de hasta 500 páginas o pega texto. Daithon lo leerá, estudiará y podrá responder preguntas profundas sobre el contenido.</p>
+                
+                <!-- PDF File Upload -->
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('pdf-file').click()">
+                    <div class="icon">📎</div>
+                    <div class="label">Arrastra un PDF aquí o haz clic para seleccionar</div>
+                    <div class="filename" id="pdf-filename"></div>
+                    <input type="file" id="pdf-file" accept=".pdf,.txt" style="display: none;" onchange="handleFileSelect(event)">
+                </div>
+                <div id="pdf-progress"><div class="bar" id="pdf-bar"></div></div>
+                <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" id="btn-upload-pdf" onclick="uploadPDF()" disabled>⬆ SUBIR Y PROCESAR PDF</button>
+                
+                <!-- Fallback: Paste text -->
+                <details style="margin-top: 10px;">
+                    <summary style="cursor: pointer; color: var(--text-dim); font-size: 0.8rem;">O pega texto directamente...</summary>
+                    <div class="form-group" style="margin-top: 10px;">
+                        <textarea id="doc-upload" style="height: 100px;" placeholder="Pega aquí el paper o ensayo..."></textarea>
+                    </div>
+                    <button class="btn-primary" style="width: 100%;" onclick="learnDocument()">Procesar Texto</button>
+                </details>
+            </div>
+
+            <div class="panel">
+                <h3>Entrenamiento Masivo Triangular</h3>
+                <p style="font-size: 0.85rem; color: var(--text-dim);">Desata el simulador de conversaciones entre el Agente A y B y fusiona los resultados.</p>
+                <div class="form-group">
+                    <label>Iteraciones</label>
+                    <input type="number" id="train-iters" value="100000">
+                </div>
+                <div class="form-group">
+                    <label>Tema de Deriva CORTEX</label>
+                    <input type="text" id="train-topic" value="teoría de cuerdas">
+                </div>
+                <button class="btn-danger" style="width: 100%;" onclick="startMassiveTrain()">> START CORTEX SLEEP CYCLE</button>
+            </div>
+
+            <div class="panel" id="autonomous-panel" style="border: 1px solid rgba(0, 255, 204, 0.3);">
+                <h3 style="color: var(--accent);">🧠 AUTONOMOUS LEARNING</h3>
+                <p style="font-size: 0.85rem; color: var(--text-dim);">Daithon explora Wikipedia, aprende palabras nuevas y debate con TRINITY automáticamente. Los resultados se guardan para no repetir investigaciones.</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn-primary" style="flex: 1;" id="btn-auto-start" onclick="startAutonomous()">▶ INICIAR</button>
+                    <button class="btn-danger" style="flex: 1;" id="btn-auto-stop" onclick="stopAutonomous()" disabled>■ DETENER</button>
+                </div>
+                <div id="autonomous-stats" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; min-height: 60px;">
+                    Estado: Detenido<br>
+                    Palabras: —<br>
+                    Temas explorados: —
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CHAT RIGHT -->
+        <div class="chat-section">
+            <div class="chat-history" id="chat-history">
+                <div class="message msg-daithon">
+// Sistema CORTEX iniciado. Memoria holográfica operativa.
+// A la espera de documentos para asimilar o podemos simplemente conversar, Dr. Xeno.
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <textarea id="chat-input" placeholder="Pregúntame algo extenso sobre lo que leí, o pídeme un poema..."></textarea>
+                <button class="btn-primary" onclick="sendMessage()">ENVIAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatHistory = document.getElementById('chat-history');
+        const chatInput = document.getElementById('chat-input');
+        let lastSubject = ''; // Tracking last topic for "Investigar" button
+        
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function addMessage(sender, text, showResearchBtn = false, needsResearch = false) {
+            const el = document.createElement('div');
+            el.className = `message ${sender === 'user' ? 'msg-user' : 'msg-daithon'}`;
+            el.textContent = sender === 'user' ? `> ${text}` : text;
+            
+            if (showResearchBtn && sender === 'daithon' && lastSubject) {
+                const btn = document.createElement('button');
+                btn.className = 'btn-research';
+                btn.textContent = needsResearch ? '🔍 REALIZAR INVESTIGACIÓN' : '🔍 EXPANDIR CONOCIMIENTO';
+                if(needsResearch) {
+                    btn.style.borderColor = 'var(--danger)';
+                    btn.style.color = 'var(--danger)';
+                    btn.style.background = 'rgba(255, 51, 102, 0.1)';
+                }
+                btn.setAttribute('data-topic', lastSubject);
+                btn.onclick = function() { deepResearch(this); };
+                el.appendChild(btn);
+            }
+            
+            chatHistory.appendChild(el);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if(!text) return;
+            
+            addMessage('user', text);
+            chatInput.value = '';
+
+            try {
+                const res = await fetch('/api/training/lingua/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: text
+                    })
+                });
+                const data = await res.json();
+                lastSubject = data.subject || '';
+                // Solo mostramos el botón si hay un sujeto válido
+                const showButton = lastSubject.length > 2;
+                addMessage('daithon', data.response, showButton, data.needs_research);
+            } catch(e) {
+                addMessage('daithon', '[ERROR]: Sistema de habla desconectado. ' + e.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        //  DEEP RESEARCH (Botón "Investigar más a fondo")
+        // ═══════════════════════════════════════════════
+        async function deepResearch(btn) {
+            const topic = btn.getAttribute('data-topic');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="research-loading"></span> INVESTIGANDO...';
+
+            try {
+                const res = await fetch('/api/training/lingua/deep_research', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ topic: topic })
+                });
+                const data = await res.json();
+                btn.style.display = 'none';
+                addMessage('daithon', data.response, false);
+            } catch(e) {
+                btn.textContent = 'ERROR';
+                addMessage('daithon', '[ERROR RESEARCH]: ' + e.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        //  PDF UPLOAD
+        // ═══════════════════════════════════════════════
+        let selectedFile = null;
+
+        const uploadZone = document.getElementById('upload-zone');
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragging');
+        });
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragging');
+        });
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragging');
+            if (e.dataTransfer.files.length > 0) {
+                selectFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            if (event.target.files.length > 0) {
+                selectFile(event.target.files[0]);
+            }
+        }
+
+        function selectFile(file) {
+            selectedFile = file;
+            document.getElementById('pdf-filename').textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+            document.getElementById('btn-upload-pdf').disabled = false;
+        }
+
+        async function uploadPDF() {
+            if (!selectedFile) return;
+            
+            const btn = document.getElementById('btn-upload-pdf');
+            btn.disabled = true;
+            btn.textContent = '⏳ PROCESANDO...';
+
+            const progress = document.getElementById('pdf-progress');
+            const bar = document.getElementById('pdf-bar');
+            progress.style.display = 'block';
+            bar.style.width = '10%';
+
+            addMessage('daithon', `[CORTEX] Recibiendo "${selectedFile.name}"... Preparando extracción de texto.`);
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                bar.style.width = '30%';
+                const res = await fetch('/api/training/upload_pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+                bar.style.width = '80%';
+                const data = await res.json();
+                bar.style.width = '100%';
+
+                if (data.status === 'success') {
+                    addMessage('daithon', `¡Documento asimilado por completo!\n\n📄 Páginas procesadas: ${data.pages}\n📝 Caracteres extraídos: ${data.characters}\n🧠 Palabras nuevas aprendidas: ${data.words_learned}\n📚 Entidades integradas: ${data.entities_added}\n\nYa puedo responder preguntas profundas sobre este documento. Pregúntame lo que quieras.`);
+                    selectedFile = null;
+                    document.getElementById('pdf-filename').textContent = '';
+                } else {
+                    addMessage('daithon', `[ERROR]: ${data.message || 'Error procesando PDF'}`);
+                }
+            } catch(e) {
+                addMessage('daithon', '[ERROR]: No pude procesar el PDF. ' + e.message);
+            }
+
+            btn.textContent = '⬆ SUBIR Y PROCESAR PDF';
+            btn.disabled = false;
+            setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 2000);
+        }
+
+        // ═══════════════════════════════════════════════
+        //  TEXT DOCUMENT UPLOAD (legacy)
+        // ═══════════════════════════════════════════════
+        async function learnDocument() {
+            const text = document.getElementById('doc-upload').value.trim();
+            if(!text) {
+                alert("Debes pegar texto primero.");
+                return;
+            }
+
+            addMessage('daithon', '[CORTEX] Asimilando documento... Procesando ontología y relaciones causales...');
+            
+            try {
+                const res = await fetch('/learn_document', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ document_text: text })
+                });
+                const data = await res.json();
+                
+                if(data.status === 'success') {
+                    addMessage('daithon', `¡Conocimiento Asimilado!\n+ Entidades añadidas: ${data.entities_added}\n+ Relaciones integradas: ${data.relations_added}\n+ Cadenas causales (verificables en Unreal): ${data.causal_chains}`);
+                    document.getElementById('doc-upload').value = '';
+                }
+            } catch(e) {
+                addMessage('daithon', '[ERROR CORTEX]: Falla en asimilación sintáctica. ' + e.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        //  MASSIVE TRAINING
+        // ═══════════════════════════════════════════════
+        async function startMassiveTrain() {
+            const iters = parseInt(document.getElementById('train-iters').value);
+            const topic = document.getElementById('train-topic').value;
+
+            addMessage('daithon', `[TRINITY] Iniciando Ciclo de Sueño (Background)...\n- Iteraciones: ${iters}\n- Tema Principal CORTEX: ${topic}`);
+
+            try {
+                const res = await fetch('/train_massive', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ interactions: iters, topic: topic })
+                });
+                const data = await res.json();
+                addMessage('daithon', `[SISTEMA]: ${data.message}\nEste proceso continuará en segundo plano (poda sináptica incluida) mientras hablas libremente.`);
+            } catch (e) {
+                addMessage('daithon', '[ERROR]: ' + e.message);
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        //  AUTONOMOUS LEARNING CONTROLS
+        // ═══════════════════════════════════════════════
+        let autonomousPoller = null;
+
+        async function startAutonomous() {
+            addMessage('daithon', '[AUTONOMOUS] Activando modo de aprendizaje libre...');
+            try {
+                const res = await fetch('/api/training/autonomous/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await res.json();
+                addMessage('daithon', `[SISTEMA]: ${data.message}`);
+
+                document.getElementById('btn-auto-start').disabled = true;
+                document.getElementById('btn-auto-stop').disabled = false;
+                document.getElementById('autonomous-panel').style.borderColor = 'rgba(0, 255, 204, 0.7)';
+
+                autonomousPoller = setInterval(pollAutonomousStatus, 5000);
+            } catch (e) {
+                addMessage('daithon', '[ERROR AUTONOMOUS]: ' + e.message);
+            }
+        }
+
+        async function stopAutonomous() {
+            addMessage('daithon', '[AUTONOMOUS] Enviando señal de parada...');
+            try {
+                const res = await fetch('/api/training/autonomous/stop', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                const data = await res.json();
+                addMessage('daithon', `[SISTEMA]: ${data.message}`);
+
+                document.getElementById('btn-auto-start').disabled = false;
+                document.getElementById('btn-auto-stop').disabled = true;
+                document.getElementById('autonomous-panel').style.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+                if (autonomousPoller) {
+                    clearInterval(autonomousPoller);
+                    autonomousPoller = null;
+                }
+            } catch (e) {
+                addMessage('daithon', '[ERROR]: ' + e.message);
+            }
+        }
+
+        async function pollAutonomousStatus() {
+            try {
+                const res = await fetch('/api/training/autonomous/status');
+                const data = await res.json();
+                const statsDiv = document.getElementById('autonomous-stats');
+
+                const topicsStr = data.topics_explored ? data.topics_explored.slice(0, 8).join(', ') : '—';
+
+                statsDiv.innerHTML = `
+                    Estado: <span style="color: ${data.running ? 'var(--accent)' : 'var(--danger)'};">${data.running ? '● ACTIVO' : '○ Detenido'}</span><br>
+                    Vocabulario: <strong style="color: #fff;">${data.total_words_learned || '—'}</strong> palabras<br>
+                    Temas explorados: <strong style="color: #fff;">${data.total_topics_explored || 0}</strong><br>
+                    <span style="font-size: 0.75rem; color: var(--text-dim);">${topicsStr}</span>
+                `;
+
+                if (!data.running) {
+                    document.getElementById('btn-auto-start').disabled = false;
+                    document.getElementById('btn-auto-stop').disabled = true;
+                    document.getElementById('autonomous-panel').style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    if (autonomousPoller) {
+                        clearInterval(autonomousPoller);
+                        autonomousPoller = null;
+                    }
+                }
+            } catch (e) { /* silenciar errores de polling */ }
+        }
+
+        // Chequear estado al cargar la página
+        pollAutonomousStatus();
+    </script>
+
+</body>
+</html>

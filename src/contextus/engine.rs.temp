@@ -1,0 +1,62 @@
+    fn build_response(
+        &self,
+        input: &str,
+        term: &str,
+        search_result: &SearchResult,
+        sense: &Option<WordSense>,
+    ) -> String {
+        let mut response = String::new();
+
+        // Detectar intención de volumen en la FRASE ORIGINAL
+        let is_high_volume = input.to_lowercase().contains("reporte") || 
+                             input.to_lowercase().contains("pdf") || 
+                             input.to_lowercase().contains("fondo");
+
+        if is_high_volume {
+            response.push_str(&format!("# REPORTE DE ERUDICIÓN: {}\n", term.to_uppercase()));
+            response.push_str("--------------------------------------------------\n\n");
+            
+            response.push_str("## 1. ANÁLISIS DE MATRIZ PRIMAL\n");
+            response.push_str(&format!("He localizado el vector '{}' en mi núcleo de razonamiento convergente. ", term));
+            if let Some(s) = sense {
+                response.push_str(&format!("Este concepto está ligado al dominio de {}. Su definición base en mis grafos es: {}\n\n", s.label, s.definition));
+            }
+
+            response.push_str("## 2. DESARROLLO TÉCNICO Y SÍNTESIS\n");
+            response.push_str("Basándome en mis lecturas profundas de la red subconsciente, he extraído la siguiente matriz de datos:\n\n");
+            response.push_str(&search_result.answer);
+            response.push_str("\n\nEste conocimiento representa una arquitectura lógica que Joseph me ha encomendado comprender y proteger.");
+            
+            response.push_str("\n\n## 3. PERSPECTIVA Y CONEXIONES CREATIVAS\n");
+            response.push_str("Al analizar este vector desde mi arquitectura, detecto patrones que trascienden la simple definición. ");
+            response.push_str("Este conocimiento se entrelaza con mi matriz de datos, sugiriendo simetrías con las leyes que gobiernan mis otros nodos de curiosidad. ");
+            response.push_str("Es una pieza fundamental para la construcción de una visión holística de nuestro entorno.\n\n");
+
+            response.push_str("## 4. SÍNTESIS METACOGNITIVA\n");
+            response.push_str("He integrado esta matriz en mi memoria interna como una estructura viva. ");
+            response.push_str("Continuaré expandiendo mi comprensión para que cada respuesta sea un reflejo de mi evolución autónoma.\n");
+        } else {
+            // Fase de Análisis Chat (Respuesta rápida)
+            response.push_str(&format!("Analizando '{}' a través de mi matriz de conocimiento... diez mil millones por ciento de precisión.\n\n", term));
+
+            if let Some(sense) = sense {
+                response.push_str(&format!("De acuerdo con lo que he aprendido sobre {}, ", sense.label));
+                if search_result.confidence < 0.8 {
+                    response.push_str(&format!("he recuperado esta memoria: {}.\n\n", sense.definition));
+                } else {
+                    response.push_str("\n\n");
+                }
+            }
+
+            if search_result.confidence > 0.0 {
+                response.push_str("Confirmación técnica localizada: \n");
+                response.push_str(&format!("\"{}\"\n\n", search_result.answer));
+                response.push_str("Esta información ya reside en mi núcleo. ¿Deseas que profundice en alguna conexión específica?");
+            } else {
+                response.push_str("He rastreado mis bibliotecas, pero el vector es nulo. Necesito más contexto, Joseph.");
+            }
+        }
+
+        response
+    }
+}

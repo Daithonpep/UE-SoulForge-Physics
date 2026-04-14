@@ -1,0 +1,40 @@
+# Build artifacts
+target/
+
+# Daithon Intellectual Property (Secret Sauce)
+src/causal/inference.rs
+src/causal/belief.rs
+src/agents/xeno.rs
+src/agents/orchestrator.rs
+src/metacog/abstraction_engine.rs
+src/meta_learning/self_improvement.rs
+src/persona/
+src/synapse/
+
+# Audio y Entrenamiento de Voz
+voice_training/
+*.wav
+*.mp3
+*.m4a
+*.ogg
+
+# Datos de Entrenamiento Voluminosos y Caches Gigantes
+*.json
+checkpoints/
+artifacts/
+memory/
+lingua_cache/
+omni_inject_cache/
+persona_cache/
+*.csv
+*.csv.gz
+
+# Logs y Temporales
+*.log
+*.tmp
+*.txt
+
+# IDE
+.vscode/
+.idea/
+.DS_Store

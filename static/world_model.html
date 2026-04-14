@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daithon | World Model Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="/dashboard/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        :root {
+            --bg-color: #050508;
+            --surface-alpha: rgba(14, 18, 28, 0.6);
+            --surface-border: rgba(45, 55, 75, 0.4);
+            --text-main: #f0f4f8;
+            --text-muted: #8292a8;
+            --accent: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.4);
+            --success: #00e676;
+            --warning: #ffb300;
+            --danger: #ff1744;
+            --glass-blur: blur(12px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; 
+            background-image: radial-gradient(circle at 50% 0%, rgba(0, 210, 255, 0.1) 0%, transparent 60%);
+        }
+        
+        .navbar { height: 64px; display: flex; align-items: center; padding: 0 32px; background: rgba(5,5,8,0.8); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--surface-border); z-index: 100; gap: 40px; }
+        .logo { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-item { font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: 0.3s; position: relative; }
+        .nav-item:hover { color: #fff; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active::after { content: ''; position: absolute; bottom: -24px; left: 0; width: 100%; height: 2px; background: var(--accent); box-shadow: 0 -2px 10px var(--accent-glow); }
+        
+        .main-layout { display: grid; grid-template-columns: 320px 1fr 340px; gap: 20px; padding: 20px; flex: 1; min-height: 0; }
+        
+        /* Glassmorphism Panels */
+        .panel { background: var(--surface-alpha); backdrop-filter: var(--glass-blur); border: 1px solid var(--surface-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.3s, border-color 0.3s; flex-shrink: 0; }
+        .panel:hover { border-color: rgba(0, 210, 255, 0.3); }
+        .panel-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        
+        /* Center Column - Canvas & ML Stats */
+        .center-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; background: var(--surface-alpha); border: 1px solid var(--surface-border); border-radius: 16px; padding: 16px; }
+        .stat-item { display: flex; flex-direction: column; gap: 4px; border-right: 1px solid rgba(255,255,255,0.05); padding-right: 16px; }
+        .stat-item:last-child { border-right: none; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .stat-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        
+        .canvas-container { flex: 1; background: #000; border-radius: 16px; border: 1px solid var(--surface-border); position: relative; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,210,255,0.05); }
+        .canvas-overlay { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; z-index: 10; pointer-events: none; }
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono'; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Column Containers */
+        .left-col, .right-col { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            padding-right: 12px; 
+            height: 100%; 
+            scroll-behavior: smooth; 
+        }
+
+        /* Visible Scrollbar Styling */
+        .left-col::-webkit-scrollbar, .right-col::-webkit-scrollbar { 
+            width: 8px; 
+        }
+        .left-col::-webkit-scrollbar-track, .right-col::-webkit-scrollbar-track { 
+            background: rgba(0,0,0,0.3); 
+            border-radius: 10px; 
+        }
+        .left-col::-webkit-scrollbar-thumb, .right-col::-webkit-scrollbar-thumb { 
+            background: rgba(0, 210, 255, 0.4); 
+            border-radius: 10px; 
+            border: 2px solid rgba(0, 0, 0, 0.2); 
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        }
+        .left-col::-webkit-scrollbar-thumb:hover, .right-col::-webkit-scrollbar-thumb:hover { 
+            background: var(--accent); 
+            box-shadow: 0 0 15px var(--accent-glow); 
+        }
+
+        /* Padding for bottom transparency */
+        .left-col::after, .right-col::after { 
+            content: ''; 
+            height: 40px; 
+            display: block;
+            flex-shrink: 0; 
+        }
+        
+        /* UI Elements */
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .metric-box { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); }
+        .metric-box .val { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 2px; }
+        .metric-box .lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+
+        .input-group { margin-bottom: 12px; }
+        .input-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 600; text-transform: uppercase; }
+        .input-field { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--surface-border); border-radius: 8px; padding: 10px 12px; color: #fff; font-family: 'Outfit'; font-size: 13px; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+        
+        .btn { border: none; border-radius: 8px; padding: 12px 16px; font-family: 'Outfit'; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s; width: 100%; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: 0.5s; }
+        .btn:hover::before { left: 100%; }
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-primary { background: linear-gradient(135deg, var(--accent), #0077ff); color: #fff; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+        .btn-danger { background: rgba(255,23,68,0.1); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px rgba(255,23,68,0.4); }
+        
+        .terminal { background: #020203; border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--success); height: 180px; overflow-y: auto; border: 1px solid rgba(0,255,0,0.1); border-left: 3px solid var(--success); }
+        
+        /* Animations */
+        @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+        .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 10px; background: linear-gradient(to bottom, transparent, rgba(0,210,255,0.1), transparent); animation: scanline 8s linear infinite; pointer-events: none; z-index: 9999; }
+        
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
+</head>
+<body>
+    <div class="scanline"></div>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">DAITHON AI</div>
+        <div class="nav-links">
+            <a href="/dashboard/index.html" class="nav-item">Gymnasium</a>
+            <a href="#" class="nav-item active">World Model Console</a>
+        </div>
+        <div style="flex:1"></div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div class="status-dot"></div>
+            <span style="font-size:12px; font-weight:700; color:var(--text-muted); font-family: 'JetBrains Mono';">SYSTEM ONLINE</span>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        
+        <!-- LEFT: PHOENIX Physics & Metrics -->
+        <div class="left-col">
+            <div class="panel">
+                <div class="panel-header">⚡ PHOENIX Physics Engine</div>
+                <div class="input-group">
+                    <span class="input-label">Active Reality Profile</span>
+                    <select id="sim-profile" class="input-field" onchange="simulatePhysicsUpdate()">
+                        <option value="Tierra">🌍 EARTH REALITY (1G, 1 Atm)</option>
+                        <option value="Marte">🔴 MARS COLONY (38% G, 0.6% Atm)</option>
+                        <option value="Luna">🌑 MOON BASE (1/6 G, Vacuum)</option>
+                        <option value="Oceano">🌊 UNDERWATER (500 Atm pressure)</option>
+                    </select>
+                </div>
+                
+                <div class="metrics-grid" style="margin-top:10px;">
+                    <div class="metric-box">
+                        <div class="val" id="metric-gravity">9.81 <span style="font-size:10px;color:#8292a8">m/s²</span></div>
+                        <div class="lbl">Gravity Vector</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-pressure">101.3 <span style="font-size:10px;color:#8292a8">kPa</span></div>
+                        <div class="lbl">Atmospheric Pres.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">💨 CFD Aerodynamics</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="val" id="metric-cd" style="color:var(--success)">0.284</div>
+                        <div class="lbl">Drag Coef (Cd)</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-cl" style="color:var(--warning)">0.112</div>
+                        <div class="lbl">Lift Coef (Cl)</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-dragforce">185.3 <span style="font-size:10px;color:#8292a8">N</span></div>
+                        <div class="lbl">Total Drag Force</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-efficiency">0.42</div>
+                        <div class="lbl">Aero Efficiency</div>
+                    </div>
+                </div>
+                <div style="margin-top: 12px; font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border-left: 2px solid var(--accent);">
+                    <span id="metric-cfd-status">No turbulent zones detected. Optimal airflow.</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header" style="color:#ff00e6">✨ HARMONIA Multi-Objective</div>
+                <div class="input-group">
+                    <span class="input-label">MUSE Context Profile</span>
+                    <select id="harmonia-context" class="input-field" onchange="updateHarmoniaUI()">
+                        <option value="ENGINEERING_REALISTIC">🛠️ ENGINEERING REALISTIC</option>
+                        <option value="HIGH_DESIGN_ARCHITECTURE">🎨 HIGH DESIGN ARCHITECTURE</option>
+                        <option value="AEROSPACE_EXTREME">🚀 AEROSPACE EXTREME</option>
+                        <option value="FANTASY_CREATIVE">🪄 FANTASY CREATIVE</option>
+                        <option value="RACING_PERFORMANCE">🏎️ RACING PERFORMANCE</option>
+                        <option value="CONCEPTUAL_ART">💡 CONCEPTUAL ART</option>
+                    </select>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="val" id="metric-aesthetic" style="color:#ff00e6">85%</div>
+                        <div class="lbl">Aesthetic Harmony</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-innovation">low</div>
+                        <div class="lbl">Innovation Factor</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-symmetry">1.0</div>
+                        <div class="lbl">Symmetry (Fib)</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-golden">1.618</div>
+                        <div class="lbl">Golden Ratio</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">🏗️ SOFIA Structural & Material</div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="val" id="metric-stress">14.2 <span style="font-size:10px;color:#8292a8">MPa</span></div>
+                        <div class="lbl">Max Struct Stress</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="val" id="metric-safety" style="color:var(--success)">2.8x</div>
+                        <div class="lbl">Safety Factor</div>
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 15px;">
+                    <span class="input-label">Seismic Stress Test (Richter)</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="range" id="seismic-slider" min="0" max="9" step="0.5" value="0" style="flex:1; accent-color: var(--accent);" oninput="document.getElementById('seismic-val').innerText = this.value + 'M'; simulatePhysicsUpdate();">
+                        <span id="seismic-val" style="font-family:'JetBrains Mono'; font-size: 14px; font-weight:700; width: 40px; text-align:right;">0M</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: Canvas & ML Stats -->
+        <div class="center-col">
+            <!-- ML Top Banner -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-loss" style="color:var(--danger)">0.000</div>
+                    <div class="stat-label">Current Loss</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-best">0.000</div>
+                    <div class="stat-label">Best Loss</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-steps">0</div>
+                    <div class="stat-label">Total Steps</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-status" style="color:var(--success)">IDLE</div>
+                    <div class="stat-label">Engine Status</div>
+                </div>
+            </div>
+
+            <!-- 3D Viewport (Evolutionary Branch Viewer) -->
+            <div id="evolutionary-views" style="display:flex; flex-direction:column; gap:10px; height:100%;">
+                <!-- Branch 1: Conservative -->
+                <div class="canvas-container" id="canvas3d-conservative" style="flex:1;">
+                    <div class="canvas-overlay">
+                        <div class="badge" style="background:rgba(0,100,255,0.2); color:#4dabf7; border-color:#4dabf7;">CONSERVATIVE (PHOENIX)</div>
+                    </div>
+                </div>
+                <!-- Branch 2 & 3: Radical & Hybrid -->
+                <div style="display:flex; gap:10px; flex:1;">
+                    <div class="canvas-container" id="canvas3d-radical" style="flex:1;">
+                        <div class="canvas-overlay">
+                            <div class="badge" style="background:rgba(255,0,0,0.2); color:#ff4d4d; border-color:#ff4d4d;">RADICAL (ENTROPY)</div>
+                        </div>
+                    </div>
+                    <div class="canvas-container" id="canvas3d-hybrid" style="flex:1;">
+                        <div class="canvas-overlay">
+                            <div class="badge" style="background:rgba(0,255,100,0.2); color:#4dff88; border-color:#4dff88;">HYBRID (API DATA)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Controls -->
+        <div class="right-col">
+            <div class="panel">
+                <div class="panel-header">🧬 GENESIS Evolution</div>
+                <div class="metrics-grid">
+                    <div class="input-group">
+                        <span class="input-label">Category (SOFIA)</span>
+                        <select id="evo-category" class="input-field">
+                            <option value="table">Table</option>
+                            <option value="chair">Chair</option>
+                            <option value="car">Vehicle</option>
+                            <option value="wall">Wall</option>
+                            <option value="building">Building</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-label">Generations</span>
+                        <input type="number" class="input-field" id="evo-gens" value="60">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="btn-run-evolution" style="margin-top: 8px;">Run Hybrid Training</button>
+                
+                <div style="margin-top: 20px; margin-bottom:10px; height: 1px; background: var(--surface-border);"></div>
+                
+                <div class="input-group">
+                    <span class="input-label">Design Repertoire (Hall of Fame)</span>
+                    <select id="evo-repertoire" class="input-field">
+                        <option value="">(No designs yet)</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" id="btn-recreate-design">Load into Viewport</button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">⚙️ Neural Predictor</div>
+                <div class="metrics-grid">
+                    <div class="input-group">
+                        <span class="input-label">Epochs</span>
+                        <input type="number" class="input-field" id="ctrl-epochs" value="50">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-label">Learning Rate</span>
+                        <input type="number" class="input-field" id="ctrl-lr" value="0.01" step="0.001">
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top: 10px;">
+                    <button class="btn btn-secondary" id="btn-migrate">Sync Buffer</button>
+                    <button class="btn btn-secondary" id="btn-force-train">Train WM</button>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top: 10px;">
+                    <button class="btn btn-secondary" id="btn-start" style="color:var(--success); border-color:var(--success);">▶ Resume</button>
+                    <button class="btn btn-secondary" id="btn-pause" style="color:var(--warning); border-color:var(--warning);">■ Pause</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header" style="justify-content: space-between;">
+                    <span>Terminal output</span>
+                    <button class="btn btn-danger" id="btn-xeno-protocol" style="padding: 4px 8px; font-size: 9px; width: auto; font-weight:900;">XENO: OFF</button>
+                </div>
+                <div class="terminal" id="term-logs">
+                    [SYSTEM] Daithon Nexus Bridge initialized.<br>
+                    [PHOENIX] Physics Engine ready.<br>
+                    [SOFIA] Universal Validator ready.<br>
+                </div>
+            </div>
+            
+            <!-- Hidden inputs to satisfy existing JS binding if logic untouched -->
+            <div style="display:none;">
+                <canvas id="lossChart"></canvas>
+                <span id="stat-buffer"></span>
+                <span id="stat-predictions"></span>
+                <span id="stat-corrections"></span>
+                <span id="stat-threshold"></span>
+                <div id="fill-loss"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const get = (p) => fetch('/api/training'+p).then(r=>r.ok?r.json():null).catch(()=>null);
+        const post = (p, b={}) => fetch('/api/training'+p, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json()).catch(()=>null);
+        
+        let lossHistory = [];
+        let lossChart = null;
+        let isTraining = false;
+        
+        let scene3d, camera3d, renderer3d, controls3d;
+        let refPoints = null, daithonPoints = null;
+
+        let viewers = {};
+        function initViewer(id, colorHex) {
+            const container = document.getElementById(id);
+            if (!container) return null;
+            const rect = container.getBoundingClientRect();
+
+            let scene = new THREE.Scene();
+            let camera = new THREE.PerspectiveCamera(45, rect.width / rect.height, 0.1, 1000);
+            camera.position.set(0, 40, 80);
+
+            const grid = new THREE.GridHelper(200, 40, colorHex, 0x1f2937);
+            grid.material.opacity = 0.2;
+            grid.material.transparent = true;
+            scene.add(grid);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambient);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            dirLight.position.set(50, 100, 50);
+            scene.add(dirLight);
+            
+            let renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(rect.width, rect.height);
+            container.appendChild(renderer.domElement);
+
+            let controls = null;
+            if (typeof THREE.OrbitControls !== 'undefined') {
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.autoRotate = true;
+                controls.autoRotateSpeed = 1.5;
+            }
+            return { scene, camera, renderer, controls, container };
+        }
+
+        function init3D() {
+            viewers.conservative = initViewer('canvas3d-conservative', 0x00d2ff);
+            viewers.radical = initViewer('canvas3d-radical', 0xff4d4d);
+            viewers.hybrid = initViewer('canvas3d-hybrid', 0x00e676);
+            animate3D();
+        }
+
+        function buildPointCloud(data, colorHex, size) {
+            const geom = new THREE.BufferGeometry();
+            const vertices = new Float32Array(data.points.flat());
+            geom.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            const mat = new THREE.PointsMaterial({ color: colorHex, size: size, transparent: true, opacity: 0.8 });
+            return new THREE.Points(geom, mat);
+        }
+
+        let pClouds = { conservative: null, radical: null, hybrid: null };
+
+        function update3DScene(clouds) {
+            function updateView(key, colorHex, cloudData) {
+                let v = viewers[key];
+                if (!v || !v.scene || !cloudData || !cloudData.points || cloudData.points.length === 0) return;
+                
+                if (pClouds[key]) v.scene.remove(pClouds[key]);
+                
+                pClouds[key] = buildPointCloud(cloudData, colorHex, 1.5);
+                v.scene.add(pClouds[key]);
+            }
+
+            if (clouds.conservative) updateView('conservative', 0x00d2ff, clouds.conservative);
+            if (clouds.radical) updateView('radical', 0xff4d4d, clouds.radical);
+            if (clouds.hybrid) updateView('hybrid', 0x00e676, clouds.hybrid);
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            for (let key in viewers) {
+                let v = viewers[key];
+                if (v && v.controls) v.controls.update();
+                if (v && v.renderer) v.renderer.render(v.scene, v.camera);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+             for (let key in viewers) {
+                let v = viewers[key];
+                if(v && v.camera && v.renderer) {
+                    const rect = v.container.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0) {
+                        v.camera.aspect = rect.width / rect.height;
+                        v.camera.updateProjectionMatrix();
+                        v.renderer.setSize(rect.width, rect.height);
+                    }
+                }
+             }
+        });
+
+        function appendLog(msg, type = 'info') {
+            const term = document.getElementById('term-logs');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'var(--danger)' : type === 'warn' ? 'var(--warning)' : type === 'success' ? 'var(--success)' : 'var(--accent)';
+            term.innerHTML += `<div style="color:${color}; margin-bottom:4px;">[${time}] ${msg}</div>`;
+            term.scrollTop = term.scrollHeight;
+            if(term.childNodes.length > 100) term.removeChild(term.firstChild);
+        }
+
+        async function update() {
+            const data = await get('/wm_status');
+            if(data && data.world_model) {
+                const wm = data.world_model;
+                document.getElementById('stat-status').innerText = wm.status_text || 'ACTIVE';
+                const loss = wm.predictor.average_loss;
+                const bestLoss = wm.predictor.best_loss;
+                document.getElementById('stat-loss').innerText = loss > 0 ? loss.toFixed(4) : '0.000';
+                document.getElementById('stat-best').innerText = bestLoss > 0 ? bestLoss.toFixed(4) : '0.000';
+                document.getElementById('stat-steps').innerText = wm.predictor.training_steps.toLocaleString();
+            }
+
+            const clouds = await get('/latest_clouds');
+            if (clouds) update3DScene(clouds);
+        }
+
+        // Action Handlers
+        document.getElementById('btn-start').onclick = () => {
+            const epochs = parseInt(document.getElementById('ctrl-epochs').value) || 100;
+            appendLog(`Resuming gym: ${epochs} epochs`, 'info');
+            post('/control', { action:'start', epochs });
+        };
+        document.getElementById('btn-pause').onclick = () => {
+            appendLog('Pausing gym.', 'warn');
+            post('/control', { action:'pause' });
+        };
+        document.getElementById('btn-migrate').onclick = async () => {
+            appendLog('Syncing Gym history → WM...', 'info');
+            const res = await post('/wm_control', { action:'migrate_history' });
+            if (res && res.records !== undefined) appendLog(`Migrated ${res.records} records.`, 'success');
+            else appendLog('Migration failed.', 'error');
+            update();
+        };
+        document.getElementById('btn-force-train').onclick = async () => {
+            const epochs = parseInt(document.getElementById('ctrl-epochs').value) || 50;
+            const lr = parseFloat(document.getElementById('ctrl-lr').value) || 0.01;
+            appendLog(`Training WM: ${epochs} ep...`, 'info');
+            const res = await post('/wm_control', { action:'force_train', epochs, learning_rate: lr });
+            if (res && res.status === 'training_complete') appendLog(`Training complete!`, 'success');
+            update();
+        };
+
+        // Evolutionary Engine 
+        let lastHallOfFame = [];
+        document.getElementById('btn-run-evolution').onclick = async () => {
+            const category = document.getElementById('evo-category').value;
+            const gens = parseInt(document.getElementById('evo-gens').value) || 60;
+            
+            appendLog(`🧬 Starting Hybrid Evolution (SOFIA + NEXUS) for: ${category} (${gens} gens)...`, 'info');
+            const btn = document.getElementById('btn-run-evolution');
+            btn.disabled = true; btn.innerText = 'SIMULATING...';
+            
+            const res = await post('/evolution/run', { category: category, generations_per_era: gens, population_size: 20 });
+            btn.disabled = false; btn.innerText = 'Run Hybrid Training';
+            
+            if (res && res.status === 'completed') {
+                appendLog(`✅ Evolution complete. ${res.total_generations} gens executed.`, 'success');
+                appendLog(`🏆 ${res.hall_of_fame.length} designs survived PHOENIX testing.`, 'success');
+                
+                lastHallOfFame = res.hall_of_fame;
+                const select = document.getElementById('evo-repertoire');
+                select.innerHTML = '';
+                
+                if(res.hall_of_fame.length === 0) {
+                    select.innerHTML = '<option value="">(None survived rules)</option>';
+                } else {
+                    res.hall_of_fame.forEach((entry, idx) => {
+                        const option = document.createElement('option');
+                        option.value = idx;
+                        option.text = `[${entry.era}] Fit: ${entry.fitness.toFixed(2)} - ${entry.innovation || 'Standard'}`;
+                        select.appendChild(option);
+                    });
+                    renderGenomeIn3D(res.hall_of_fame[res.hall_of_fame.length - 1].genome_data);
+                }
+            } else appendLog('❌ Evolution failed.', 'error');
+        };
+
+        document.getElementById('btn-recreate-design').onclick = () => {
+            const idx = document.getElementById('evo-repertoire').value;
+            if (idx !== "") renderGenomeIn3D(lastHallOfFame[idx].genome_data);
+        };
+
+        function renderGenomeIn3D(genome_data) {
+            let v = viewers.conservative;
+            if (!v || !v.scene || !genome_data || !genome_data.genes) return;
+
+            // Limpiar puntos previos
+            if (pClouds.conservative) v.scene.remove(pClouds.conservative);
+            if (daithonPoints) {
+                if (Array.isArray(daithonPoints)) daithonPoints.forEach(p => v.scene.remove(p));
+                else v.scene.remove(daithonPoints);
+            }
+            daithonPoints = [];
+            
+            const getGeneSafe = (name) => genome_data.genes.find(g => g.trait_name === name)?.value;
+            const scaleVal = getGeneSafe('base_scale');
+            const scale = scaleVal && scaleVal.Vector ? scaleVal.Vector : [1,1,1];
+            
+            const width = scale[1] * 30; const depth = scale[0] * 30; const height = scale[2] * 30;
+            
+            const mat = new THREE.MeshStandardMaterial({ color: 0x00d2ff, roughness: 0.4, metalness: 0.6 });
+            
+            // Render logic adapted from original but refined
+            let categoryName = "UNKNOWN";
+            if (genome_data.dna && genome_data.dna.category) categoryName = Object.keys(genome_data.dna.category)[0];
+
+            if (categoryName === "Furniture") {
+                const legVal = getGeneSafe('leg_count');
+                const legCount = legVal && legVal.Integer ? legVal.Integer : 4;
+                
+                const top = new THREE.Mesh(new THREE.BoxGeometry(width, height*0.1, depth), mat);
+                top.position.y = height;
+                v.scene.add(top); daithonPoints.push(top);
+                
+                for(let i=0; i<legCount; i++) {
+                    const leg = new THREE.Mesh(new THREE.BoxGeometry(width*0.05, height, depth*0.05), mat);
+                    const angle = (i / legCount) * Math.PI * 2 + (Math.PI/4);
+                    leg.position.set(Math.cos(angle)*(width/2.2), height/2, Math.sin(angle)*(depth/2.2));
+                    v.scene.add(leg); daithonPoints.push(leg);
+                }
+            } else if (categoryName === "Architecture") {
+                const base = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat);
+                base.position.y = height/2;
+                v.scene.add(base); daithonPoints.push(base);
+            } else {
+                const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat);
+                mesh.position.y = height/2;
+                v.scene.add(mesh); daithonPoints.push(mesh);
+            }
+            
+            // Clear other viewers to avoid confusion
+            if (viewers.radical && viewers.radical.scene && pClouds.radical) viewers.radical.scene.remove(pClouds.radical);
+            if (viewers.hybrid && viewers.hybrid.scene && pClouds.hybrid) viewers.hybrid.scene.remove(pClouds.hybrid);
+            
+            const badge = v.container.querySelector('.badge');
+            if (badge) badge.textContent = `VIEWING EVO-${categoryName.toUpperCase()}`;
+            simulatePhysicsUpdate(); // mock physics UI update on new render
+        }
+
+        let xenoEnabled = false;
+        document.getElementById('btn-xeno-protocol').onclick = async () => {
+            const res = await fetch('/toggle_xeno').then(r=>r.json()).catch(()=>null);
+            if (res) {
+                xenoEnabled = res.enabled;
+                const btn = document.getElementById('btn-xeno-protocol');
+                if (xenoEnabled) {
+                    btn.innerText = "XENO: ON";
+                    btn.classList.replace('btn-danger', 'btn-primary');
+                    btn.style.boxShadow = "0 0 20px var(--danger)";
+                    appendLog("XENO PROTOCOL ACTIVATED: Autonomous mode enabled.", "error");
+                } else {
+                    btn.innerText = "XENO: OFF";
+                    btn.classList.replace('btn-primary', 'btn-danger');
+                    btn.style.boxShadow = "none";
+                    appendLog("Xeno Protocol disabled.", "info");
+                }
+            }
+        };
+
+        // UI Mocking for PHOENIX based on active profile and sliders
+        function simulatePhysicsUpdate() {
+            const profile = document.getElementById('sim-profile').value;
+            let grav = 9.81, press = 101.3, cd = 0.28, cl = 0.11, safety = 2.8;
+            
+            if (profile === 'Marte') { grav = 3.71; press = 0.6; safety = 5.2; cd = 0.08; }
+            if (profile === 'Luna') { grav = 1.62; press = 0.0; safety = 12.0; cd = 0.00; cl = 0.00; }
+            if (profile === 'Oceano') { grav = 9.81; press = 50662.5; safety = 1.1; cd = 1.85; cl = -0.50; document.getElementById('seismic-slider').value = 0;}
+            
+            const seismic = document.getElementById('seismic-slider').value;
+            safety = Math.max(0.1, safety - (seismic * 0.4));
+
+            document.getElementById('metric-gravity').innerHTML = `${grav.toFixed(2)} <span style="font-size:10px;color:#8292a8">m/s²</span>`;
+            document.getElementById('metric-pressure').innerHTML = `${press.toFixed(1)} <span style="font-size:10px;color:#8292a8">kPa</span>`;
+            document.getElementById('metric-cd').innerText = cd.toFixed(3);
+            document.getElementById('metric-cl').innerText = cl.toFixed(3);
+            document.getElementById('metric-safety').innerText = safety.toFixed(1) + 'x';
+            
+            const sfElem = document.getElementById('metric-safety');
+            if(safety < 1.0) {
+                sfElem.style.color = 'var(--danger)';
+                document.getElementById('metric-cfd-status').innerHTML = "⚠️ STRUCTURAL FAILURE: Design cannot withstand environmental stress.";
+                document.getElementById('metric-cfd-status').parentElement.style.borderLeftColor = 'var(--danger)';
+            } else if (safety < 2.0) {
+                sfElem.style.color = 'var(--warning)';
+                document.getElementById('metric-cfd-status').innerHTML = "⚠️ WARNING: Low safety factor. Deformation likely under load.";
+                document.getElementById('metric-cfd-status').parentElement.style.borderLeftColor = 'var(--warning)';
+            } else {
+                sfElem.style.color = 'var(--success)';
+                document.getElementById('metric-cfd-status').innerHTML = "✅ STRUCTURALLY SOUND: Design exceeds safety margins.";
+                document.getElementById('metric-cfd-status').parentElement.style.borderLeftColor = 'var(--success)';
+            }
+        }
+
+        function updateHarmoniaUI() {
+            const context = document.getElementById('harmonia-context').value;
+            let aesthetic = 85, innovation = "medium", symmetry = 1.0, golden = 1.618;
+
+            if (context === "FANTASY_CREATIVE") { aesthetic = 98; innovation = "HIGH"; symmetry = 0.45; golden = 1.95; }
+            if (context === "ENGINEERING_REALISTIC") { aesthetic = 72; innovation = "MODERN"; symmetry = 1.0; golden = 1.618; }
+            if (context === "AEROSPACE_EXTREME") { aesthetic = 65; innovation = "TECH"; symmetry = 1.0; golden = 1.1; }
+            if (context === "CONCEPTUAL_ART") { aesthetic = 92; innovation = "RADICAL"; symmetry = 0.2; golden = 3.14; }
+
+            document.getElementById('metric-aesthetic').innerText = aesthetic + "%";
+            document.getElementById('metric-innovation').innerText = innovation;
+            document.getElementById('metric-symmetry').innerText = symmetry;
+            document.getElementById('metric-golden').innerText = golden;
+            
+            appendLog(`HARMONIA: Context switched to ${context.replace('_', ' ')}`, 'success');
+        }
+
+        window.onload = () => {
+            init3D();
+            setInterval(update, 2000);
+            update();
+            simulatePhysicsUpdate();
+            updateHarmoniaUI();
+        };
+    </script>
+</body>
+</html>

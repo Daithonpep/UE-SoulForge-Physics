@@ -1,0 +1,128 @@
+[package]
+name = "daithon_bridge"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Servidor HTTP local
+actix-web = "4"
+actix-cors = "0.7"
+actix-files = "0.6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+
+# LLM Local - usa llama.cpp bindings
+# Alternativa más simple y estable: 
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+
+# Para logging
+env_logger = "0.10"
+log = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
+actix = "0.13"
+actix-web-actors = "4"
+rand = "0.8"
+fastrand = "2.0"
+candle-core = "0.10.2"
+candle-nn = "0.10.2"
+rapier3d = "0.22.0"
+lru = "0.16.3"
+futures = "0.3.32"
+rayon = "1.11.0"
+nalgebra = "0.34.2"
+pyo3 = "0.28.3"
+uuid = { version = "1.8", features = ["v4"] }
+ttf-parser = "0.20"
+petgraph = "0.6.4"
+flate2 = "1.1.9"
+csv = "1.4.0"
+urlencoding = "2.1.3"
+actix-multipart = "0.7"
+pdf-extract = "0.7"
+regex = "1.12.3"
+hound = "3.5.1"
+strsim = "0.10"
+sysinfo = "0.30"
+shakmaty = "0.30.0"
+console = "0.16.3"
+
+[[bin]]
+name = "daithon_bridge"
+path = "src/main.rs"
+
+[[bin]]
+name = "lab_test"
+path = "src/lab_test.rs"
+
+[[bin]]
+name = "forge_training"
+path = "src/forge_training.rs"
+
+[[bin]]
+name = "daithon_real_solve"
+path = "src/daithon_real_solve.rs"
+
+[[bin]]
+name = "dialectica_test"
+path = "src/dialectica_test.rs"
+
+[[bin]]
+name = "senior_training"
+path = "src/senior_training.rs"
+
+[[bin]]
+name = "post_training_test"
+path = "src/post_training_test.rs"
+
+# [[bin]]
+# name = "voxis_lab"
+# path = "src/voxis_lab.rs"
+
+[[bin]]
+name = "lab_training"
+path = "src/lab_training.rs"
+
+[[bin]]
+name = "imaginarium_demo"
+path = "src/imaginarium_demo.rs"
+
+[[bin]]
+name = "daithon_scientific_cycle"
+path = "src/bin/daithon_scientific_cycle.rs"
+
+[[bin]]
+name = "daithon_causal_reasoning"
+path = "src/bin/daithon_causal_reasoning.rs"
+
+[[bin]]
+name = "daithon_multidomain_oracle"
+path = "src/bin/daithon_multidomain_oracle.rs"
+
+[[bin]]
+name = "daithon_military_strategist"
+path = "src/bin/daithon_military_strategist.rs"
+
+[[bin]]
+name = "daithon_reddit_moderator_test"
+path = "src/bin/daithon_reddit_moderator_test.rs"
+
+[[bin]]
+name = "daithon_flopium_economy_test"
+path = "src/bin/daithon_flopium_economy_test.rs"
+
+[[bin]]
+name = "daithon_canyon_crossing_test"
+path = "src/bin/daithon_canyon_crossing_test.rs"
+
+[[bin]]
+name = "daithon_atractor_bug_test"
+path = "src/bin/daithon_atractor_bug_test.rs"
+
+[[bin]]
+name = "daithon_existential_test"
+path = "src/bin/daithon_existential_test.rs"
+
+[[bin]]
+name = "daithon_chess_learning"
+path = "src/bin/daithon_chess_learning.rs"
